@@ -149,4 +149,3 @@ def import_env_vars(project_root, env_filename):
 
     stage = os.getenv('stage')
     print('stage:', stage)
-
