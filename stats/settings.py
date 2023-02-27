@@ -38,7 +38,6 @@ print('debug:',DEBUG)
 ALLOWED_HOSTS = env('allowed_hosts', cast=[str])
 print('ALLOWED_HOSTS:',ALLOWED_HOSTS)
 
-
 # Application definition
 
 INSTALLED_APPS = [
