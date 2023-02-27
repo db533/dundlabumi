@@ -11,21 +11,32 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+# https://djangostars.com/blog/configuring-django-settings-best-practices/
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+root = environ.Path(__file__) - 3  # get root of the project
+SITE_ROOT = root()
+
+env = environ.Env()
+environ.Env.read_env(overwrite=True)  # reading .env file
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-edp-tk4w825yawt1=#4=k&k6($x)69at_0_cx=e6r2y20it@ye'
+SECRET_KEY = env.str('django_secret_key', default='django-insecure-edp-tk4w825yawt1=#4=k&k6($x)69at_0_cx=e6r2y20it@ye')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('debug', default=False)
+TEMPLATE_DEBUG = DEBUG
+print('debug:',DEBUG)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env('allowed_hosts', cast=[str])
+print('ALLOWED_HOSTS:',ALLOWED_HOSTS)
 
 
 # Application definition
@@ -38,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dati.apps.DatiConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -116,36 +128,42 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+public_root = root.path('public/')
+MEDIA_ROOT = public_root('media')
+MEDIA_URL = env.str('MEDIA_URL', default='media/')
+STATIC_ROOT = public_root(env.str('static_root', default='static'))
+STATIC_URL = env.str('STATIC_URL', default='static/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-def import_env_vars(project_root, env_filename):
-    """Imports some environment variables from a special .env file in the
-    project root directory.
-    """
-    if len(project_root) > 0 and project_root[-1] != '/':
-        project_root += '/'
-    try:
-        print("filename:", project_root + env_filename)
-        envfile = open(project_root + env_filename, "r")
-    except IOError:
-        raiseException("You must have a {0} file in your project root"
-                   "in order to run the server in your local machine."
-                   "This specifies some necessary environment variables.")
-    for line in envfile.readlines():
-        [key, value] = line.strip().split("=")
-        os.environ[key] = value
+EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
+EMAIL_HOST = 'mail.dundlabumi.lv'
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+EMAIL_PORT = 465
+EMAIL_HOST_USER = env.str('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD=env.str('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env.str('EMAIL_HOST_USER')
+SERVER_EMAIL = env.str('EMAIL_HOST_USER')
 
-    if Path("env").is_file():
-        # fileexists
-        print("Foundenvfile.Readingvariables.")
-        import_env_vars('', 'env')
-    else:
-        print("Did not find env file. Expect environment variables to be passed to container.")
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+	'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ] # Added this based on ChatGPT suggestion
+}
+APPEND_SLASH=False
 
-    stage = os.getenv('stage')
-    print('stage:', stage)
+# Set the session engine to use cookies
+#SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
+# Set a unique key for signing cookies
+SESSION_COOKIE_NAME = 'dund_session_key'
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
