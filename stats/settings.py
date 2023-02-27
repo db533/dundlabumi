@@ -123,3 +123,29 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+def import_env_vars(project_root, env_filename):
+    """Imports some environment variables from a special .env file in the
+    project root directory.
+    """
+    if len(project_root) > 0 and project_root[-1] != '/':
+        project_root += '/'
+    try:
+        print("filename:", project_root + env_filename)
+        envfile = open(project_root + env_filename, "r")
+    except IOError:
+        raiseException("You must have a {0} file in your project root"
+                   "in order to run the server in your local machine."
+                   "This specifies some necessary environment variables.")
+    for line in envfile.readlines():
+        [key, value] = line.strip().split("=")
+        os.environ[key] = value
+
+    if Path("env").is_file():
+        # fileexists
+        print("Foundenvfile.Readingvariables.")
+        import_env_vars('', 'env')
+    else:
+        print("Did not find env file. Expect environment variables to be passed to container.")
+
+    stage = os.getenv('stage')
+    print('stage:', stage)
