@@ -44,7 +44,8 @@ print('ALLOWED_HOSTS:',ALLOWED_HOSTS)
 import socket
 hostname = socket.gethostname()
 IP = socket.gethostbyname(hostname)
-HOSTED = env.bool('hosted', default=False)
+HOSTED = env.bool('HOSTED', default=False)
+print('HOSTED:',HOSTED)
 if HOSTED:
     # .env file states this environment is hosted, so use the retrieved IP address.
     host_ip=IP
