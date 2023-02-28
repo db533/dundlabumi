@@ -17,9 +17,11 @@ import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+print('BASE_DIR:',BASE_DIR)
 
 root = environ.Path(__file__) - 3  # get root of the project
 SITE_ROOT = root()
+print('SITE_ROOT:',SITE_ROOT)
 
 env = environ.Env()
 environ.Env.read_env(overwrite=True)  # reading .env file
