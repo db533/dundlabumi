@@ -38,6 +38,18 @@ print('debug:',DEBUG)
 ALLOWED_HOSTS = env('allowed_hosts', cast=[str])
 print('ALLOWED_HOSTS:',ALLOWED_HOSTS)
 
+# Get the IP address of this host
+import socket
+hostname = socket.gethostname()
+IP = socket.gethostbyname(hostname)
+HOSTED = env.bool('hosted', default=False)
+if HOSTED:
+    # .env file states this environment is hosted, so use the retrieved IP address.
+    host_ip=IP
+else:
+    host_ip='127.0.0.1'
+print('host_ip:',host_ip)
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -85,13 +97,26 @@ WSGI_APPLICATION = 'stats.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }
+#}
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': env.str('MYSQL_DB_NAME', default='stats_local'),
+        'USER': 'root',
+        'PASSWORD': env.str('MYSQL_PWD'),
+        'HOST': host_ip,
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        }
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
