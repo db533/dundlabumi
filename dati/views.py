@@ -187,6 +187,8 @@ def link(request, id):
     redirect_record = Redirect.objects.get(redirect_code=id)
     subscriber = redirect_record.subscriber
     target_url = redirect_record.target_url
+    wpid_of_linked_page = redirect_record.wpid_id
+
     # Get the session from the received request
     if 's_key' in request.session:
         session_key = request.session['s_key']
@@ -216,13 +218,13 @@ def link(request, id):
     click = Click.objects.create(redirect_code_id=id, session_key=session_key, session=session, temp_message = temp_message)
 
     # Now increment the User / Link relevance score.
-    wpid_of_linked_page = redirect_record.wpid_id
     clicked_wpid = WPID.objects.get(wp_id=wpid_of_linked_page)
     if UserLink.objects.filter(user_model=subscriber, wpid=clicked_wpid).exists():
         # Already have a relevance score for this link, so it has been clicked in the last 2 years
         user_link=UserLink.objects.get(user_model=subscriber, wpid=clicked_wpid)
         # Increment aged score by 1 as new link click today.
         user_link.aged_score += 1
+        user_link.save()
     else:
         # No relevance score so link not clicked in last 2 years.
         UserLink.objects.create(user_model=subscriber, wpid=clicked_wpid, aged_score = 1)
