@@ -213,8 +213,9 @@ def link(request, id):
         session = Session.objects.create(session_key=session_key)
     # Add the session to the user
     temp_message += "subscriber = "+str(subscriber)
-    if not subscriber.sessions.filter(pk=session.pk).exists():
-        subscriber.sessions.add(session)
+    if subscriber is not None:
+        if not subscriber.sessions.filter(pk=session.pk).exists():
+            subscriber.sessions.add(session)
     # Create the response to return to the user.
     response = redirect(target_url)
     #if session_key is not None:
