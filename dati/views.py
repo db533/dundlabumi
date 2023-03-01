@@ -212,7 +212,7 @@ def link(request, id):
     else:
         session = Session.objects.create(session_key=session_key)
     # Add the session to the user
-    temp_message += "subscriber = "+subscriber
+    temp_message += "subscriber = "+str(subscriber)
     if not subscriber.sessions.filter(pk=session.pk).exists():
         subscriber.sessions.add(session)
     # Create the response to return to the user.
