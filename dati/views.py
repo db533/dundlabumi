@@ -184,6 +184,7 @@ from django.shortcuts import redirect
 
 def link(request, id):
     temp_message=""
+    # Read data about the link that brought the user to the site.
     redirect_record = Redirect.objects.get(redirect_code=id)
     subscriber = redirect_record.subscriber
     target_url = redirect_record.target_url
@@ -191,31 +192,35 @@ def link(request, id):
 
     # Get the session from the received request
     if 's_key' in request.session:
+        # A session key is stored in s_key.
         session_key = request.session['s_key']
         temp_message += "session_key present in request.session. "
+        # Change the session key to the store value from the cookie.
+        request.session.session_key = session_key
         request.session.save()
     if not 's_key' in request.session or session_key == None:
         temp_message += "session_key missing or None. "
         request.session.create()
         request.session.save()
         session_key = request.session.session_key
-        #if not session_key:
-            #request.session.create()
-            #request.session.cycle_key()
-            #session_key = request.session.session_key
-        request.session['session_key'] = session_key
-    #session = Session.objects.get(session_key=session_key)
+        # Save the session to s_key
+        request.session['s_key'] = session_key
     if session_key == None:
         temp_message += "session_key still None. "
     if Session.objects.filter(session_key=session_key).exists():
         session = Session.objects.get(session_key=session_key)
     else:
         session = Session.objects.create(session_key=session_key)
+    # Add the session to the user
+    temp_message += "subscriber = "+subscriber
+    if not subscriber.sessions.filter(pk=session.pk).exists():
+        subscriber.sessions.add(session)
+    # Create the response to return to the user.
     response = redirect(target_url)
-    if session_key is not None:
-        response.set_cookie('s_key', session_key)
-        temp_message += "Setting cookie. "
-    click = Click.objects.create(redirect_code_id=id, session_key=session_key, session=session, temp_message = temp_message)
+    #if session_key is not None:
+    #    response.set_cookie('s_key', session_key)
+    #    temp_message += "Setting cookie. "
+    Click.objects.create(redirect_code_id=id, session_key=session_key, session=session, temp_message = temp_message)
 
     # Now increment the User / Link relevance score.
     clicked_wpid = WPID.objects.get(wp_id=wpid_of_linked_page)
