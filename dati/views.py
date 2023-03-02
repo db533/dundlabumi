@@ -166,7 +166,7 @@ def page(request, id):
         response.set_cookie('s_key', session_key)
     #temp_message += " response.cookies = " + str(response.cookies)
 
-    pageview = Pageview.objects.create(page=id, session_key=session_key, session=session, temp_message=temp_message)
+    pageview = Pageview.objects.create(page=id, session=session, temp_message=temp_message)
 
     # Now increment the User / Pageview relevance score.
     if UserPageview.objects.filter(user_model=subscriber_id, wpid=id).exists():
@@ -221,7 +221,7 @@ def link(request, id):
     #if session_key is not None:
     #    response.set_cookie('s_key', session_key)
     #    temp_message += "Setting cookie. "
-    Click.objects.create(redirect_code_id=id, session_key=session_key, session=session, temp_message = temp_message)
+    Click.objects.create(redirect_code_id=id, session=session, temp_message = temp_message)
 
     # Now increment the User / Link relevance score.
     clicked_wpid = WPID.objects.get(wp_id=wpid_of_linked_page)
