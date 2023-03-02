@@ -227,7 +227,7 @@ def link(request, id):
     clicked_wpid = WPID.objects.get(wp_id=wpid_of_linked_page)
     if UserLink.objects.filter(user_model=subscriber, wpid=clicked_wpid).exists():
         # Already have a relevance score for this link for a specific subscriber, so it has been clicked in the last 2 years
-        user_link=UserLink.objects.get(user_model=subscriber, session=session, wpid=clicked_wpid)
+        user_link=UserLink.objects.get(user_model=subscriber, wpid=clicked_wpid)
         # Increment aged score by 1 as new link click today.
         user_link.aged_score += 1
         user_link.save()
