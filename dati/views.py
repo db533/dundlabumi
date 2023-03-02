@@ -6,6 +6,7 @@ from .models import *
 from rest_framework import status
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
+from django.contrib.auth.models import User
 
 from rest_framework.response import Response
 
@@ -216,7 +217,17 @@ def link(request, id):
         if Session.objects.filter(session_key=session_key).exists():
             session = Session.objects.get(session_key=session_key)
         else:
-            session = Session.objects.create(session_key=session_key)
+            session = Session.objects.create(session_key=sessn_key)
+
+        # Check for a logged in user.
+        session_data = session.get_decoded()
+        uid = session_data.get('_auth_user_id')
+        user = User.objects.get(id=uid)
+        username = user.username
+        temp_message += " username = " + str(username)
+        user_email = user.email
+        temp_message += " user_email = " + str(user_email)
+
         # Add the session to the user
         temp_message += "subscriber = "+str(subscriber)
         if subscriber is not None:
@@ -227,7 +238,8 @@ def link(request, id):
         #if session_key is not None:
         #    response.set_cookie('s_key', session_key)
         #    temp_message += "Setting cookie. "
-        Click.objects.create(redirect_code_id=id, session=session, temp_message = temp_message)
+        #Click.objects.create(redirect_code_id=id, session=session, temp_message = temp_message)
+        Click.objects.create(redirect_code=redirect_record, session=session, temp_message=temp_message)
 
         # Now increment the User / Link relevance score.
         clicked_wpid = WPID.objects.get(wp_id=wpid_of_linked_page)
