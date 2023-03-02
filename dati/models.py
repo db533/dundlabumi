@@ -4,7 +4,6 @@ from django.db import models
 from django.db import models
 from django.db.models.fields import CharField, EmailField, UUIDField
 from django.contrib.sessions.models import Session
-#from djongo.models.fields import ObjectIdField
 
 class List(models.Model):
     list_id = models.IntegerField(default=0, help_text='The ID from the list in the Newsletter plugin')
@@ -18,9 +17,6 @@ class UserModel(models.Model):
     email = EmailField(max_length=254, blank=True, null=True)
     lists = models.ManyToManyField(List, related_name='users')
     sessions = models.ManyToManyField(Session)
-    #sessions = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=False,
-    #                                  help_text='The list of session IDs associated with this user',
-    #                                  verbose_name=('Session ID list'))
 
     def __str__(self):
         return self.email
@@ -72,8 +68,8 @@ class Pageview(models.Model):
     session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=False,
                                  help_text='The session associated with this pageview',
                                  verbose_name=('Session'))
-    session_key = models.CharField(max_length=64, default="",
-                                   help_text='The session id that was associated with this click.')
+    #session_key = models.CharField(max_length=64, default="",
+    #                               help_text='The session id that was associated with this click.')
     temp_message = models.CharField(max_length=255)
 
     def __str__(self):
@@ -84,7 +80,7 @@ class Click(models.Model):
     redirect_code = models.ForeignKey(Redirect, on_delete=models.SET_NULL, null=True, blank=False,
                                    help_text='Code that refers to a link that was clicked',
                                    verbose_name=('Redirect id code'))
-    session_key = models.CharField(max_length=64, default = "", help_text='The session id that was associated with this click.')
+    #session_key = models.CharField(max_length=64, default = "", help_text='The session id that was associated with this click.')
     session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=False,
                                  help_text='The list of session IDs associated with this user',
                                  verbose_name=('Session ID list'))
