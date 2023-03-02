@@ -232,7 +232,7 @@ def link(request, id):
             # User not logged in.
             username = ""
         # Add the session to the user
-        temp_message += "subscriber = "+str(subscriber)
+        temp_message += " subscriber = "+str(subscriber)
         if subscriber is not None:
             if not subscriber.sessions.filter(pk=session.pk).exists():
                 subscriber.sessions.add(session)
@@ -242,7 +242,7 @@ def link(request, id):
             # A user is logged in.
             if subscriber is not None:
                 # the redirect link referred to a specific user.
-                if subscriber.username is None:
+                if subscriber.username is None or subscriber.username == "":
                     # The username of the specific user is not yet stored in the database.
                     subscriber.username=username
                     subscriber.save()
