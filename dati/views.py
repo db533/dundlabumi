@@ -226,13 +226,19 @@ def link(request, id):
     # Now increment the User / Link relevance score.
     clicked_wpid = WPID.objects.get(wp_id=wpid_of_linked_page)
     if UserLink.objects.filter(user_model=subscriber, wpid=clicked_wpid).exists():
-        # Already have a relevance score for this link, so it has been clicked in the last 2 years
-        user_link=UserLink.objects.get(user_model=subscriber, wpid=clicked_wpid)
+        # Already have a relevance score for this link for a specific subscriber, so it has been clicked in the last 2 years
+        user_link=UserLink.objects.get(user_model=subscriber, session=session, wpid=clicked_wpid)
+        # Increment aged score by 1 as new link click today.
+        user_link.aged_score += 1
+        user_link.save()
+    elif UserLink.objects.filter(session=session, wpid=clicked_wpid).exists():
+        # Already have a relevance score for this link for a specific session (but subscriber is not known), so it has been clicked in the last 2 years from this session_key
+        user_link = UserLink.objects.get(session=session, wpid=clicked_wpid)
         # Increment aged score by 1 as new link click today.
         user_link.aged_score += 1
         user_link.save()
     else:
-        # No relevance score so link not clicked in last 2 years.
-        UserLink.objects.create(user_model=subscriber, wpid=clicked_wpid, aged_score = 1)
+        # No relevance score for a subscriber or this session_key so link not clicked in last 2 years.
+        UserLink.objects.create(session=session, wpid=clicked_wpid, aged_score = 1)
 
     return redirect(target_url, response=response)
