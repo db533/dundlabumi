@@ -196,8 +196,8 @@ def link(request, id):
         session_key = request.session['s_key']
         temp_message += "session_key present in request.session. "
         # Change the session key to the store value from the cookie.
-        request.session.session_key = session_key
-        request.session.save()
+        #request.session.session_key = session_key
+        #request.session.save()
     if not 's_key' in request.session or session_key == None:
         temp_message += "session_key missing or None. "
         request.session.create()
