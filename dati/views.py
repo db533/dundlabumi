@@ -188,7 +188,7 @@ def link(request, id):
     # Read data about the link that brought the user to the site.
     if not Redirect.objects.filter(redirect_code=id).exists():
         # The redirect code does not exist in the database. Push user to the shop page instead.
-        target_url = 'https://dundlabumi.lv/index.php/veikals/'
+        target_url = 'dundlabumi.lv/index.php/veikals/'
         response = redirect(target_url)
     else:
         # A valid redirect code was received.
