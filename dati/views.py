@@ -185,63 +185,69 @@ from django.shortcuts import redirect
 def link(request, id):
     temp_message=""
     # Read data about the link that brought the user to the site.
-    redirect_record = Redirect.objects.get(redirect_code=id)
-    subscriber = redirect_record.subscriber
-    target_url = redirect_record.target_url
-    wpid_of_linked_page = redirect_record.wpid_id
-
-    # Get the session from the received request
-    if 's_key' in request.session:
-        # A session key is stored in s_key.
-        session_key = request.session['s_key']
-        temp_message += "session_key present in request.session. "
-        # Change the session key to the store value from the cookie.
-        #request.session.session_key = session_key
-        #request.session.save()
-    if not 's_key' in request.session or session_key == None:
-        temp_message += "session_key missing or None. "
-        request.session.create()
-        request.session.save()
-        session_key = request.session.session_key
-        # Save the session to s_key
-        request.session['s_key'] = session_key
-    if session_key == None:
-        temp_message += "session_key still None. "
-    if Session.objects.filter(session_key=session_key).exists():
-        session = Session.objects.get(session_key=session_key)
+    if not Redirect.objects.filter(redirect_code=id).exists():
+        # The redirect code does not exist in the database. Push user to the shop page instead.
+        target_url = 'https://dundlabumi.lv/index.php/veikals/'
+        response = redirect()
     else:
-        session = Session.objects.create(session_key=session_key)
-    # Add the session to the user
-    temp_message += "subscriber = "+str(subscriber)
-    if subscriber is not None:
-        if not subscriber.sessions.filter(pk=session.pk).exists():
-            subscriber.sessions.add(session)
-    # Create the response to return to the user.
-    response = redirect(target_url)
-    #if session_key is not None:
-    #    response.set_cookie('s_key', session_key)
-    #    temp_message += "Setting cookie. "
-    Click.objects.create(redirect_code_id=id, session=session, temp_message = temp_message)
+        # A valid redirect code was received.
+        redirect_record = Redirect.objects.get(redirect_code=id)
+        subscriber = redirect_record.subscriber
+        target_url = redirect_record.target_url
+        wpid_of_linked_page = redirect_record.wpid_id
 
-    # Now increment the User / Link relevance score.
-    clicked_wpid = WPID.objects.get(wp_id=wpid_of_linked_page)
-    if UserLink.objects.filter(user_model=subscriber, wpid=clicked_wpid).exists():
-        # Already have a relevance score for this link for a specific subscriber, so it has been clicked in the last 2 years
-        user_link=UserLink.objects.get(user_model=subscriber, wpid=clicked_wpid)
-        # Increment aged score by 1 as new link click today.
-        user_link.aged_score += 1
-        user_link.save()
-    elif UserLink.objects.filter(session=session, wpid=clicked_wpid).exists():
-        # Already have a relevance score for this link for a specific session (but subscriber is not known), so it has been clicked in the last 2 years from this session_key
-        user_link = UserLink.objects.get(session=session, wpid=clicked_wpid)
-        # Increment aged score by 1 as new link click today.
-        user_link.aged_score += 1
-        user_link.save()
-    else:
-        # No relevance score for a subscriber or this session_key so link not clicked in last 2 years.
-        if subscriber is not None:
-            UserLink.objects.create(user_model=subscriber, session=session, wpid=clicked_wpid, aged_score=1)
+        # Get the session from the received request
+        if 's_key' in request.session:
+            # A session key is stored in s_key.
+            session_key = request.session['s_key']
+            temp_message += "session_key present in request.session. "
+            # Change the session key to the store value from the cookie.
+            #request.session.session_key = session_key
+            #request.session.save()
+        if not 's_key' in request.session or session_key == None:
+            temp_message += "session_key missing or None. "
+            request.session.create()
+            request.session.save()
+            session_key = request.session.session_key
+            # Save the session to s_key
+            request.session['s_key'] = session_key
+        if session_key == None:
+            temp_message += "session_key still None. "
+        if Session.objects.filter(session_key=session_key).exists():
+            session = Session.objects.get(session_key=session_key)
         else:
-            UserLink.objects.create(session=session, wpid=clicked_wpid, aged_score = 1)
+            session = Session.objects.create(session_key=session_key)
+        # Add the session to the user
+        temp_message += "subscriber = "+str(subscriber)
+        if subscriber is not None:
+            if not subscriber.sessions.filter(pk=session.pk).exists():
+                subscriber.sessions.add(session)
+        # Create the response to return to the user.
+        response = redirect(target_url)
+        #if session_key is not None:
+        #    response.set_cookie('s_key', session_key)
+        #    temp_message += "Setting cookie. "
+        Click.objects.create(redirect_code_id=id, session=session, temp_message = temp_message)
+
+        # Now increment the User / Link relevance score.
+        clicked_wpid = WPID.objects.get(wp_id=wpid_of_linked_page)
+        if UserLink.objects.filter(user_model=subscriber, wpid=clicked_wpid).exists():
+            # Already have a relevance score for this link for a specific subscriber, so it has been clicked in the last 2 years
+            user_link=UserLink.objects.get(user_model=subscriber, wpid=clicked_wpid)
+            # Increment aged score by 1 as new link click today.
+            user_link.aged_score += 1
+            user_link.save()
+        elif UserLink.objects.filter(session=session, wpid=clicked_wpid).exists():
+            # Already have a relevance score for this link for a specific session (but subscriber is not known), so it has been clicked in the last 2 years from this session_key
+            user_link = UserLink.objects.get(session=session, wpid=clicked_wpid)
+            # Increment aged score by 1 as new link click today.
+            user_link.aged_score += 1
+            user_link.save()
+        else:
+            # No relevance score for a subscriber or this session_key so link not clicked in last 2 years.
+            if subscriber is not None:
+                UserLink.objects.create(user_model=subscriber, session=session, wpid=clicked_wpid, aged_score=1)
+            else:
+                UserLink.objects.create(session=session, wpid=clicked_wpid, aged_score = 1)
 
     return redirect(target_url, response=response)
