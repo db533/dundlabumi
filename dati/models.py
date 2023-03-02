@@ -15,6 +15,7 @@ class List(models.Model):
 class UserModel(models.Model):
     subscriber_id = models.IntegerField(default=0, help_text='The subscriber ID from the Newsletter plugin', primary_key=True)
     email = EmailField(max_length=254, blank=True, null=True)
+    username = models.CharField(max_length=255, help_text='The Wordpress username of a registered user.')
     lists = models.ManyToManyField(List, related_name='users')
     sessions = models.ManyToManyField(Session)
 

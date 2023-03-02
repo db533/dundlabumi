@@ -222,17 +222,41 @@ def link(request, id):
         # Check for a logged in user.
         session_data = session.get_decoded()
         uid = session_data.get('_auth_user_id')
-        user = User.objects.get(id=uid)
-        username = user.username
-        temp_message += " username = " + str(username)
-        user_email = user.email
-        temp_message += " user_email = " + str(user_email)
-
+        if uid is not None:
+            user = User.objects.get(id=uid)
+            username = user.username
+            temp_message += " username = " + str(username)
+            user_email = user.email
+            temp_message += " user_email = " + str(user_email)
+        else:
+            # User not logged in.
+            username = ""
         # Add the session to the user
         temp_message += "subscriber = "+str(subscriber)
         if subscriber is not None:
             if not subscriber.sessions.filter(pk=session.pk).exists():
                 subscriber.sessions.add(session)
+
+        # If a username is known, check it is recorded in UserModel.
+        if uid is not None:
+            # A user is logged in.
+            if subscriber is not None:
+                # the redirect link referred to a specific user.
+                if subscriber.username is None:
+                    # The username of the specific user is not yet stored in the database.
+                    subscriber.username=username
+                    subscriber.save()
+            else:
+                # The redirect link did not refer to a specific user.
+                # See if a user already exists for this email.
+                if user_email is not None:
+                    if UserModel.objects.filter(email=user_email).exists():
+                        subscriber = UserModel.objects.get(email=user_email)
+                        if subscriber.username is None:
+                            # The username of the specific user is not yet stored in the database.
+                            subscriber.username = username
+                            subscriber.save()
+
         # Create the response to return to the user.
         response = redirect(target_url)
         #if session_key is not None:
