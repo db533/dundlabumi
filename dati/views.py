@@ -183,12 +183,13 @@ def page(request, id):
 from django.shortcuts import redirect
 
 def link(request, id):
-    temp_message=""
+    temp_message="
+"
     # Read data about the link that brought the user to the site.
     if not Redirect.objects.filter(redirect_code=id).exists():
         # The redirect code does not exist in the database. Push user to the shop page instead.
         target_url = 'https://dundlabumi.lv/index.php/veikals/'
-        response = redirect()
+        response = redirect(target_url)
     else:
         # A valid redirect code was received.
         redirect_record = Redirect.objects.get(redirect_code=id)
