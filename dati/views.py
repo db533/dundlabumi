@@ -239,6 +239,9 @@ def link(request, id):
         user_link.save()
     else:
         # No relevance score for a subscriber or this session_key so link not clicked in last 2 years.
-        UserLink.objects.create(session=session, wpid=clicked_wpid, aged_score = 1)
+        if subscriber is not None:
+            UserLink.objects.create(user_model=subscriber, session=session, wpid=clicked_wpid, aged_score=1)
+        else:
+            UserLink.objects.create(session=session, wpid=clicked_wpid, aged_score = 1)
 
     return redirect(target_url, response=response)
