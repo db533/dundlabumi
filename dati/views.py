@@ -193,7 +193,7 @@ def link(request, id):
     else:
         # A valid redirect code was received.
         redirect_record = Redirect.objects.get(redirect_code=id)
-        subscriber = redirect_record.usermodel
+        usermodel = redirect_record.usermodel
         target_url = redirect_record.target_url
         wpid_of_linked_page = redirect_record.wpid_id
 
@@ -232,30 +232,35 @@ def link(request, id):
             # User not logged in.
             username = ""
         # Add the session to the user
-        temp_message += " subscriber = "+str(subscriber)
-        if subscriber is not None:
-            if not subscriber.sessions.filter(pk=session.pk).exists():
-                subscriber.sessions.add(session)
+        temp_message += " usermodel = "+str(usermodel)
 
         # If a username is known, check it is recorded in UserModel.
         if uid is not None:
             # A user is logged in.
-            if subscriber is not None:
+            if usermodel is not None:
                 # the redirect link referred to a specific user.
-                if subscriber.username is None or subscriber.username == "" or subscriber.username == "saknesar_stats_dev":
+                if usermodel.username is None or usermodel.username == "" or usermodel.username == "saknesar_stats_dev":
                     # The username of the specific user is not yet stored in the database.
-                    subscriber.username=username
-                    subscriber.save()
+                    usermodel.username=username
+                    usermodel.save()
             else:
-                # The redirect link did not refer to a specific user.
+                # User logged in, but the redirect link did not refer to a specific user.
                 # See if a user already exists for this email.
                 if user_email is not None:
                     if UserModel.objects.filter(email=user_email).exists():
-                        subscriber = UserModel.objects.get(email=user_email)
-                        if subscriber.username is None:
+                        usermodel = UserModel.objects.get(email=user_email)
+                        if usermodel.username is None:
                             # The username of the specific user is not yet stored in the database.
-                            subscriber.username = username
-                            subscriber.save()
+                            usermodel.username = username
+                            usermodel.save()
+                    else:
+                        # User is logged in, but is not a subscriber. Create a UserModel for this user.
+                        usermodel = UserModel.objects.create(email=user_email, username=username)
+
+        # Connect the current session to this usermodel, if not already added.
+        if usermodel is not None:
+            if not usermodel.sessions.filter(pk=session.pk).exists():
+                usermodel.sessions.add(session)
 
         # Create the response to return to the user.
         response = redirect(target_url)
@@ -267,22 +272,22 @@ def link(request, id):
 
         # Now increment the User / Link relevance score.
         clicked_wpid = WPID.objects.get(wp_id=wpid_of_linked_page)
-        if UserLink.objects.filter(user_model=subscriber, wpid=clicked_wpid).exists():
-            # Already have a relevance score for this link for a specific subscriber, so it has been clicked in the last 2 years
-            user_link=UserLink.objects.get(user_model=subscriber, wpid=clicked_wpid)
+        if UserLink.objects.filter(user_model=usermodel, wpid=clicked_wpid).exists():
+            # Already have a relevance score for this link for a specific usermodel, so it has been clicked in the last 2 years
+            user_link=UserLink.objects.get(user_model=usermodel, wpid=clicked_wpid)
             # Increment aged score by 1 as new link click today.
             user_link.aged_score += 1
             user_link.save()
         elif UserLink.objects.filter(session=session, wpid=clicked_wpid).exists():
-            # Already have a relevance score for this link for a specific session (but subscriber is not known), so it has been clicked in the last 2 years from this session_key
+            # Already have a relevance score for this link for a specific session (but usermodel is not known), so it has been clicked in the last 2 years from this session_key
             user_link = UserLink.objects.get(session=session, wpid=clicked_wpid)
             # Increment aged score by 1 as new link click today.
             user_link.aged_score += 1
             user_link.save()
         else:
-            # No relevance score for a subscriber or this session_key so link not clicked in last 2 years.
-            if subscriber is not None:
-                UserLink.objects.create(user_model=subscriber, session=session, wpid=clicked_wpid, aged_score=1)
+            # No relevance score for a usermodel or this session_key so link not clicked in last 2 years.
+            if usermodel is not None:
+                UserLink.objects.create(user_model=usermodel, session=session, wpid=clicked_wpid, aged_score=1)
             else:
                 UserLink.objects.create(session=session, wpid=clicked_wpid, aged_score = 1)
 

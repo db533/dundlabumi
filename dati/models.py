@@ -34,12 +34,15 @@ class OutboundEmail(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     sessions = models.ManyToManyField(Session)
 
-    #def __str__(self):
-    #    return self.subject
+    def __str__(self):
+        return self.subject
 
 class Tag(models.Model):
     tag_id = models.IntegerField(default=0, help_text='The ID of the tag in Woocommerce.', primary_key=True)
     tag_name = models.CharField(max_length=120, default="", help_text='Tag name.')
+
+    def __str__(self):
+        return self.tag_name
 
 class WPID(models.Model):
     wp_id = models.IntegerField(default=0, help_text='The ID of the Wordpress record.', primary_key=True)
