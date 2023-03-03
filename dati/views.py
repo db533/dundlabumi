@@ -268,9 +268,9 @@ def link(request, id):
 
         # Create the response to return to the user.
         response = redirect(target_url)
-        #if session_key is not None:
-        #    response.set_cookie('s_key', session_key)
-        #    temp_message += "Setting cookie. "
+        if session_key is not None:
+            response.set_cookie('s_key', session_key)
+            temp_message += "Setting cookie. "
         #Click.objects.create(redirect_code_id=id, session=session, temp_message = temp_message)
         Click.objects.create(redirect_code=redirect_record, session=session, temp_message=temp_message)
 
