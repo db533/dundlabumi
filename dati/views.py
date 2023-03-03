@@ -64,7 +64,7 @@ class SendTemplateMailView(APIView):
         subject = request.data.get('subject')
         #target_user_email = "db5331@gmail.com"
         mail_template = get_template("mail_template.html")
-        email = OutboundEmail.objects.create(recipient=target_user_email, subject=subject,status=False, subscriber=target_user)
+        email = OutboundEmail.objects.create(recipient=target_user_email, subject=subject,status=False, usermodel=target_user)
         context_data_is = dict()
         context_data_is["image_url"] = request.build_absolute_uri(("send/render_image2/")) + str(email.id)
         url_is = context_data_is["image_url"]
@@ -193,7 +193,7 @@ def link(request, id):
     else:
         # A valid redirect code was received.
         redirect_record = Redirect.objects.get(redirect_code=id)
-        subscriber = redirect_record.subscriber
+        subscriber = redirect_record.usermodel
         target_url = redirect_record.target_url
         wpid_of_linked_page = redirect_record.wpid_id
 
