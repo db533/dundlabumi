@@ -22,20 +22,20 @@ class List(models.Model):
 #    def __str__(self):
 #        return self.email
 
-class OutboundEmail(models.Model):
-    recipient = models.EmailField()
+#class OutboundEmail(models.Model):
+    #recipient = models.EmailField()
     #subscriber = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=False,
     #                                  help_text='The subscriber to whom the email was sent',
     #                                  verbose_name=('Email subscriber'), default=1)
-    subject = models.CharField(max_length=255)
-    body = models.TextField()
-    status = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    sessions = models.ManyToManyField(Session)
+    #subject = models.CharField(max_length=255)
+    #body = models.TextField()
+    #status = models.BooleanField(default=False)
+    #created_at = models.DateTimeField(auto_now_add=True)
+    #updated_at = models.DateTimeField(auto_now=True)
+    #sessions = models.ManyToManyField(Session)
 
-    def __str__(self):
-        return self.subject
+    #def __str__(self):
+    #    return self.subject
 
 class Tag(models.Model):
     tag_id = models.IntegerField(default=0, help_text='The ID of the tag in Woocommerce.', primary_key=True)
@@ -50,46 +50,45 @@ class WPID(models.Model):
     def __str__(self):
         return self.name
 
-class Redirect(models.Model):
-    redirect_code = models.IntegerField(default=0, help_text='The ID to be used when calling this redirect.')
-    target_url = models.CharField(max_length=255, help_text='The url to redirect to. Excludes the domain name.')
-    wpid = models.ForeignKey(WPID, on_delete=models.SET_NULL, null=True, blank=True,
-                                 help_text='The Wordpress ID associated with this target_url',
-                                 verbose_name=('WP id'))
+#class Redirect(models.Model):
+#    redirect_code = models.IntegerField(default=0, help_text='The ID to be used when calling this redirect.')
+#    target_url = models.CharField(max_length=255, help_text='The url to redirect to. Excludes the domain name.')
+#    wpid = models.ForeignKey(WPID, on_delete=models.SET_NULL, null=True, blank=True,
+#                                 help_text='The Wordpress ID associated with this target_url',
+#                                 verbose_name=('WP id'))
     #subscriber = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=True,
     #                                  help_text='The subscriber to whom the link was sent',
     #                                  verbose_name=('Email subscriber'), default=1)
 
-    def __str__(self):
-        return str(self.redirect_code)
+#    def __str__(self):
+#        return str(self.redirect_code)
 
-class Pageview(models.Model):
-    page = models.IntegerField(default=0, help_text='The ID of the Wordpress page that was displayed.')
-    view_dt = models.DateTimeField(auto_now=False, auto_now_add=True)
-    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=False,
-                                 help_text='The session associated with this pageview',
-                                 verbose_name=('Session'))
+#class Pageview(models.Model):
+#    page = models.IntegerField(default=0, help_text='The ID of the Wordpress page that was displayed.')
+#    view_dt = models.DateTimeField(auto_now=False, auto_now_add=True)
+#    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=False,
+#                                 help_text='The session associated with this pageview',
+#                                 verbose_name=('Session'))
     #session_key = models.CharField(max_length=64, default="",
     #                               help_text='The session id that was associated with this click.')
-    temp_message = models.CharField(max_length=255)
+#    temp_message = models.CharField(max_length=255)
 
-    def __str__(self):
-        return str(self.page)
+#    def __str__(self):
+#        return str(self.page)
 
 
-class Click(models.Model):
-    redirect_code = models.ForeignKey(Redirect, on_delete=models.SET_NULL, null=True, blank=False,
-                                   help_text='Code that refers to a link that was clicked',
-                                   verbose_name=('Redirect id code'))
-    #session_key = models.CharField(max_length=64, default = "", help_text='The session id that was associated with this click.')
-    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=False,
-                                 help_text='The list of session IDs associated with this user',
-                                 verbose_name=('Session ID list'))
-    click_dt = models.DateTimeField(auto_now=False, auto_now_add=True)
-    temp_message = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.id
+#class Click(models.Model):
+#    redirect_code = models.ForeignKey(Redirect, on_delete=models.SET_NULL, null=True, blank=False,
+#                                   help_text='Code that refers to a link that was clicked',
+#                                   verbose_name=('Redirect id code'))
+#    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=False,
+#                                 help_text='The list of session IDs associated with this user',
+#                                 verbose_name=('Session ID list'))
+#    click_dt = models.DateTimeField(auto_now=False, auto_now_add=True)
+#    temp_message = models.CharField(max_length=255)
+#
+#    def __str__(self):
+#        return self.id
 
 
 class UserPageview(models.Model):
