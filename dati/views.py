@@ -201,23 +201,24 @@ def link(request, id):
         if 's_key' in request.session:
             # A session key is stored in s_key.
             session_key = request.session['s_key']
-            temp_message += "session_key present in request.session. "
+            temp_message += "s_key present in request.session. "
             # Change the session key to the store value from the cookie.
             #request.session.session_key = session_key
             #request.session.save()
         if not 's_key' in request.session or session_key == None:
-            temp_message += "session_key missing or None. "
+            temp_message += "s_key missing or None. "
             request.session.create()
             request.session.save()
             session_key = request.session.session_key
             # Save the session to s_key
             request.session['s_key'] = session_key
+            request.session.save()
         if session_key == None:
-            temp_message += "session_key still None. "
+            temp_message += "s_key still None. "
         if Session.objects.filter(session_key=session_key).exists():
             session = Session.objects.get(session_key=session_key)
         else:
-            session = Session.objects.create(session_key=sessn_key)
+            session = Session.objects.create(session_key=session_key)
 
         # Check for a logged in user.
         session_data = session.get_decoded()
@@ -231,8 +232,6 @@ def link(request, id):
         else:
             # User not logged in.
             username = ""
-        # Add the session to the user
-        temp_message += " usermodel = "+str(usermodel)
 
         # If a username is known, check it is recorded in UserModel.
         if uid is not None:
@@ -243,6 +242,7 @@ def link(request, id):
                     # The username of the specific user is not yet stored in the database.
                     usermodel.username=username
                     usermodel.save()
+                    temp_message += " Added username to UserModel"
             else:
                 # User logged in, but the redirect link did not refer to a specific user.
                 # See if a user already exists for this email.
@@ -253,14 +253,18 @@ def link(request, id):
                             # The username of the specific user is not yet stored in the database.
                             usermodel.username = username
                             usermodel.save()
+                            temp_message += " Setting username to UserModel when redirect had no email."
                     else:
                         # User is logged in, but is not a subscriber. Create a UserModel for this user.
                         usermodel = UserModel.objects.create(email=user_email, username=username)
+                        temp_message += " Created new user for a new logged in user that is not a subscriber."
 
+        temp_message += " usermodel = " + str(usermodel)
         # Connect the current session to this usermodel, if not already added.
         if usermodel is not None:
             if not usermodel.sessions.filter(pk=session.pk).exists():
                 usermodel.sessions.add(session)
+                temp_message += " Session linked to user."
 
         # Create the response to return to the user.
         response = redirect(target_url)
