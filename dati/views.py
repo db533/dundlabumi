@@ -134,50 +134,101 @@ def render_image2(request, id):
 def page(request, id):
     # Get the session from the received request
     temp_message=""
-    request.session.save()
+    # Get the session from the received request
     if 's_key' in request.session:
+        # A session key is stored in s_key.
         session_key = request.session['s_key']
-        temp_message +="From cookie. "
-        request.session = session_key
+        temp_message += "s_key present in request.session. "
+        # Change the session key to the store value from the cookie.
+        # request.session.session_key = session_key
+        # request.session.save()
+    if not 's_key' in request.session or session_key == None:
+        temp_message += "s_key missing or None. "
+        request.session.create()
         request.session.save()
-    if 's_id' in request.session:
-        subscriber_id = request.session['s_id']
-    if not 's_key' in request.session or session_key is None:
         session_key = request.session.session_key
-        temp_message += "No cookie. "
-        if session_key is None:
-            temp_message += "key is None. "
-            request.session.create()
-            request.session.save()
-            session_key = request.session.session_key
-        request.session['session_key'] = session_key
+        # Save the session to s_key
+        request.session['s_key'] = session_key
+        request.session.save()
     if session_key == None:
-        temp_message += "session_key still None. "
+        temp_message += "s_key still None. "
     if Session.objects.filter(session_key=session_key).exists():
         session = Session.objects.get(session_key=session_key)
     else:
         session = Session.objects.create(session_key=session_key)
 
+    # Check for a logged in user.
+    session_data = session.get_decoded()
+    uid = session_data.get('_auth_user_id')
+    if uid is not None:
+        user = User.objects.get(id=uid)
+        username = user.username
+        temp_message += " username = " + str(username)
+        user_email = user.email
+        temp_message += " user_email = " + str(user_email)
+        usermodel=UserModel.objects.get(username=username)
+    else:
+        # User not logged in.
+        username = ""
+
+    # If a username is known, check it is recorded in UserModel.
+    if uid is not None:
+        # A user is logged in.
+        if usermodel is not None:
+            # the redirect link referred to a specific user.
+            if usermodel.username is None or usermodel.username == "" or usermodel.username == "saknesar_stats_dev":
+                # The username of the specific user is not yet stored in the database.
+                usermodel.username = username
+                usermodel.save()
+                temp_message += " Added username to UserModel"
+        else:
+            # User logged in, but the redirect link did not refer to a specific user.
+            # See if a user already exists for this email.
+            if user_email is not None:
+                if UserModel.objects.filter(email=user_email).exists():
+                    usermodel = UserModel.objects.get(email=user_email)
+                    if usermodel.username is None:
+                        # The username of the specific user is not yet stored in the database.
+                        usermodel.username = username
+                        usermodel.save()
+                        temp_message += " Setting username to UserModel when redirect had no email."
+                else:
+                    # User is logged in, but is not a subscriber. Create a UserModel for this user.
+                    usermodel = UserModel.objects.create(email=user_email, username=username)
+                    temp_message += " Created new user for a new logged in user that is not a subscriber."
+
+    temp_message += " usermodel = " + str(usermodel)
+    # Connect the current session to this usermodel, if not already added.
+    if usermodel is not None:
+        if not usermodel.sessions.filter(pk=session.pk).exists():
+            usermodel.sessions.add(session)
+            temp_message += " Session linked to user."
+
+
     image = Image.new('RGB', (1, 1), (255, 255, 255))
     response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
     image.save(response, "PNG")
 
-    # Set the session key as a cookie in the response
-    if session_key is not None:
-        response.set_cookie('s_key', session_key)
-    #temp_message += " response.cookies = " + str(response.cookies)
-
-    pageview = Pageview.objects.create(page=id, session=session, temp_message=temp_message)
+    wpid=WPID.objects.get(wp_id=id)
+    pageview = Pageview.objects.create(wpid=wpid, session=session, temp_message=temp_message)
 
     # Now increment the User / Pageview relevance score.
-    if UserPageview.objects.filter(user_model=subscriber_id, wpid=id).exists():
-        # Already have a relevance score for this page, so it has been viewed in the last 2 years
-        user_pageview=UserPageview.objects.get(user_model=subscriber_id, wpid=id)
-        # Increment aged score by 1 as new pageview today.
-        user_pageview.aged_score += 1
+    if UserPageview.objects.filter(session=session, wpid=wpid).exists():
+        # Already have a relevance score for this page for a specific session, so it has been clicked in the last 2 years from this session_key
+        user_page = UserPageview.objects.get(session=session, wpid=wpid)
+        # Increment aged score by 1 as new link click today.
+        user_page.aged_score += 1
+        if user_page.user_model is None:
+            if usermodel is not None:
+                # Session known, no username associated with the session, but we know the user.
+                user_page.user_model = usermodel
+        user_page.save()
     else:
-        # No relevance score so page not viewed in last 2 years.
-        UserPageview.objects.create(user_model=subscriber_id, wpid=id, aged_score = 1)
+        # No relevance score for a usermodel or this session_key so link not clicked in last 2 years.
+        if usermodel is not None:
+            UserPageview.objects.create(user_model=usermodel, session=session, wpid=wpid, aged_score=1)
+        else:
+            UserPageview.objects.create(session=session, wpid=wpid, aged_score = 1)
 
     return response
 

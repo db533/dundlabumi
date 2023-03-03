@@ -66,16 +66,19 @@ class Redirect(models.Model):
     def __str__(self):
         return str(self.redirect_code)
 
-#class Pageview(models.Model):
-#    page = models.IntegerField(default=0, help_text='The ID of the Wordpress page that was displayed.')
-#    view_dt = models.DateTimeField(auto_now=False, auto_now_add=True)
-#    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=False,
-#                                 help_text='The session associated with this pageview',
-#                                 verbose_name=('Session'))
-#    temp_message = models.CharField(max_length=255)
+class Pageview(models.Model):
+    #page = models.IntegerField(default=0, help_text='The ID of the Wordpress page that was displayed.')
+    wpid = models.ForeignKey(WPID, on_delete=models.SET_NULL, null=True, blank=True,
+                             help_text='The Wordpress ID for the page that was linked to.',
+                             verbose_name=('WP id'))
+    view_dt = models.DateTimeField(auto_now=False, auto_now_add=True)
+    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=False,
+                                 help_text='The session associated with this pageview',
+                                 verbose_name=('Session'))
+    temp_message = models.CharField(max_length=255)
 
-#    def __str__(self):
-#        return str(self.page)
+    def __str__(self):
+        return str(self.page)
 
 
 class Click(models.Model):
@@ -94,9 +97,9 @@ class Click(models.Model):
 
 class UserPageview(models.Model):
     # Model to store the current aged relevance score of a particular page for a particular user.
-    #user_model = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=False,
-    #                             help_text='The user for whom this pageview relevance is being computed',
-    #                             verbose_name=('User'))
+    user_model = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=False,
+                                 help_text='The user for whom this pageview relevance is being computed',
+                                 verbose_name=('User'))
     wpid = models.ForeignKey(WPID, on_delete=models.SET_NULL, null=True, blank=False,
                                   help_text='The Wordpress ID for the page that was linked to.',
                                   verbose_name=('WP id'))
