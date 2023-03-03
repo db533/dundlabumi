@@ -168,8 +168,13 @@ def page(request, id):
         temp_message += " user_email = " + str(user_email)
         usermodel=UserModel.objects.get(username=username)
     else:
-        # User not logged in.
+        # User not logged in. Get a usermodel for this session or create one if it does not exist.
         username = ""
+        if not UserModel.objects.filter(session=session).exists():
+            usermodel = UserModel.objects.create(session=session)
+        else:
+            usermodel = UserModel.objects.get(session=session)
+
 
     # If a username is known, check it is recorded in UserModel.
     if uid is not None:
