@@ -242,7 +242,7 @@ def link(request, id):
             # A user is logged in.
             if subscriber is not None:
                 # the redirect link referred to a specific user.
-                if subscriber.username is None or subscriber.username == "":
+                if subscriber.username is None or subscriber.username == "" or subscriber.username == "saknesar_stats_dev":
                     # The username of the specific user is not yet stored in the database.
                     subscriber.username=username
                     subscriber.save()

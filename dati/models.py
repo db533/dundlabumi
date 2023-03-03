@@ -12,15 +12,15 @@ class List(models.Model):
     def __str__(self):
         return self.name
 
-class UserModel(models.Model):
-    subscriber_id = models.IntegerField(default=0, help_text='The subscriber ID from the Newsletter plugin', primary_key=True)
-    email = EmailField(max_length=254, blank=True, null=True)
-    username = models.CharField(max_length=255, help_text='The Wordpress username of a registered user.')
-    lists = models.ManyToManyField(List, related_name='users')
-    sessions = models.ManyToManyField(Session)
+#class UserModel(models.Model):
+#    subscriber_id = models.IntegerField(default=0, help_text='The subscriber ID from the Newsletter plugin')
+#    email = EmailField(max_length=254, blank=True, null=True)
+#    username = models.CharField(max_length=255, help_text='The Wordpress username of a registered user.')
+#    lists = models.ManyToManyField(List, related_name='users')
+#    sessions = models.ManyToManyField(Session)
 
-    def __str__(self):
-        return self.email
+#    def __str__(self):
+#        return self.email
 
 class OutboundEmail(models.Model):
     recipient = models.EmailField()
@@ -56,9 +56,9 @@ class Redirect(models.Model):
     wpid = models.ForeignKey(WPID, on_delete=models.SET_NULL, null=True, blank=True,
                                  help_text='The Wordpress ID associated with this target_url',
                                  verbose_name=('WP id'))
-    subscriber = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=True,
-                                      help_text='The subscriber to whom the link was sent',
-                                      verbose_name=('Email subscriber'), default=1)
+    #subscriber = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=True,
+    #                                  help_text='The subscriber to whom the link was sent',
+    #                                  verbose_name=('Email subscriber'), default=1)
 
     def __str__(self):
         return str(self.redirect_code)
@@ -94,9 +94,9 @@ class Click(models.Model):
 
 class UserPageview(models.Model):
     # Model to store the current aged relevance score of a particular page for a particular user.
-    user_model = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=False,
-                                 help_text='The user for whom this pageview relevance is being computed',
-                                 verbose_name=('User'))
+    #user_model = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=False,
+    #                             help_text='The user for whom this pageview relevance is being computed',
+    #                             verbose_name=('User'))
     wpid = models.ForeignKey(WPID, on_delete=models.SET_NULL, null=True, blank=False,
                                   help_text='The Wordpress ID for the page that was linked to.',
                                   verbose_name=('WP id'))
@@ -107,9 +107,9 @@ class UserPageview(models.Model):
 
 class UserLink(models.Model):
     # Model to store the current aged relevance score of a particular link click for a particular user.
-    user_model = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=False,
-                                 help_text='The user for whom this link relevance is being computed',
-                                 verbose_name=('User'))
+    #user_model = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=False,
+    #                             help_text='The user for whom this link relevance is being computed',
+    #                             verbose_name=('User'))
     wpid = models.ForeignKey(WPID, on_delete=models.SET_NULL, null=True, blank=False,
                                   help_text='The Wordpress ID for the page that was linked to.',
                                   verbose_name=('WP id'))

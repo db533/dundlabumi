@@ -1,9 +1,9 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import UserModel, OutboundEmail, Tag, WPID, Redirect, Pageview, UserPageview, UserLink, Click, List
+from .models import OutboundEmail, Tag, WPID, Redirect, Pageview, UserPageview, UserLink, Click, List #UserModel
 
-admin.site.register(UserModel)
+#admin.site.register(UserModel)
 admin.site.register(OutboundEmail)
 admin.site.register(Tag)
 admin.site.register(WPID)
