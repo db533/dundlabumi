@@ -171,7 +171,9 @@ def page(request, id):
         # User not logged in. Get a usermodel for this session or create one if it does not exist.
         username = ""
         if not UserModel.objects.filter(session=session).exists():
-            usermodel = UserModel.objects.create(session=session)
+            usermodel = UserModel.objects.create()
+            usermodel.sessions.add(session)
+            usermodel.save()
         else:
             usermodel = UserModel.objects.get(session=session)
 
