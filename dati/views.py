@@ -18,12 +18,12 @@ from django.contrib.sessions.models import Session
 # Create your views here.
 def index(request):
     """View function for home page of site."""
-    subject, from_email, to = 'Subject of the email', 'info@dundlabumi.lv', 'db5331@gmail.com'
-    text_content = 'This is an important message.'
-    html_content = '<p>This is an <strong>important</strong> message.</p>'
-    msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
-    msg.attach_alternative(html_content, "text/html")
-    msg_result=msg.send()
+    #subject, from_email, to = 'Subject of the email', 'info@dundlabumi.lv', 'db5331@gmail.com'
+    #text_content = 'This is an important message.'
+    #html_content = '<p>This is an <strong>important</strong> message.</p>'
+    #msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+    #msg.attach_alternative(html_content, "text/html")
+    #msg_result=msg.send()
 
     # Generate counts of some of the main objects
     num_email_clicks = Email.objects.all().count()
@@ -97,7 +97,7 @@ def render_image2(request, id):
     email_recipient = UserModel.objects.get(email=email.recipient)
 
     # Check if a session_key is associated with this user.
-    user_session_key = email_recipient.sessions
+    user_session_key = email_recipient.session
     if user_session_key != None:
         session_key = user_session_key
         # Set the current session_key in case it differs.
@@ -119,7 +119,7 @@ def render_image2(request, id):
         else:
             session = Session.objects.create(session_key=session_key)
         # Add the session to the UserModel
-        email_recipient.sessions = session
+        email_recipient.session = session
         email_recipient.save()
 
     image = Image.new('RGB', (1, 1), (255, 255, 255))
@@ -134,6 +134,7 @@ def render_image2(request, id):
 def page(request, id):
     # Get the session from the received request
     temp_message=""
+    disabled = True
     # Get the session from the received request
     if 's_key' in request.session:
         # A session key is stored in s_key.
@@ -156,61 +157,44 @@ def page(request, id):
         session = Session.objects.get(session_key=session_key)
     else:
         session = Session.objects.create(session_key=session_key)
+    # Find the usermodels for the current session.
+    usermodels_for_session = session.usermodels.all()
 
     # Check for a logged in user.
     session_data = session.get_decoded()
     uid = session_data.get('_auth_user_id')
     if uid is not None:
         user = User.objects.get(id=uid)
-        username = user.username
-        temp_message += " username = " + str(username)
-        user_email = user.email
-        temp_message += " user_email = " + str(user_email)
-        usermodel=UserModel.objects.get(username=username)
+        logged_in_username = user.username
+        temp_message += " username = " + str(logged_in_username)
+        logged_in_user_email = user.email
+        temp_message += " user_email = " + str(logged_in_user_email)
+
+        # Check if this usermodel already exists, if not create:
+        if not UserModel.objects.filter(username=logged_in_username).exists():
+            usermodel = UserModel.objects.create(username=logged_in_username, email=logged_in_user_email)
+            temp_message += " created usermodel as did not exist."
+        else:
+            usermodel = UserModel.objects.get(username=logged_in_username)
+            temp_message += " retrieved existing usermodel."
+
+        if usermodel not in usermodels_for_session:
+            # This usermodel needs to be conencted to this session.
+            usermodel.sessions.add(session)
+            usermodel.save()
     else:
-        # User not logged in. Get a usermodel for this session or create one if it does not exist.
-        username = ""
-        if not UserModel.objects.filter(session=session).exists():
+        # No logged in user, so username not known.
+        # Get the usermodel for this session. Create if it is not associated.
+        if len(usermodels_for_session) > 0:
+            # A usermodel instance was found for the current session key.
+            usermodel = UserModel.objects.get(sessions=session)
+            temp_message += " retrieved usermodel. "
+        else:
+            # No usermodel exists for this session key. Create one and add the current session.
             usermodel = UserModel.objects.create()
             usermodel.sessions.add(session)
             usermodel.save()
-        else:
-            usermodel = UserModel.objects.get(session=session)
-
-
-    # If a username is known, check it is recorded in UserModel.
-    if uid is not None:
-        # A user is logged in.
-        if usermodel is not None:
-            # the redirect link referred to a specific user.
-            if usermodel.username is None or usermodel.username == "" or usermodel.username == "saknesar_stats_dev":
-                # The username of the specific user is not yet stored in the database.
-                usermodel.username = username
-                usermodel.save()
-                temp_message += " Added username to UserModel"
-        else:
-            # User logged in, but the redirect link did not refer to a specific user.
-            # See if a user already exists for this email.
-            if user_email is not None:
-                if UserModel.objects.filter(email=user_email).exists():
-                    usermodel = UserModel.objects.get(email=user_email)
-                    if usermodel.username is None:
-                        # The username of the specific user is not yet stored in the database.
-                        usermodel.username = username
-                        usermodel.save()
-                        temp_message += " Setting username to UserModel when redirect had no email."
-                else:
-                    # User is logged in, but is not a subscriber. Create a UserModel for this user.
-                    usermodel = UserModel.objects.create(email=user_email, username=username)
-                    temp_message += " Created new user for a new logged in user that is not a subscriber."
-
-    temp_message += " usermodel = " + str(usermodel)
-    # Connect the current session to this usermodel, if not already added.
-    if usermodel is not None:
-        if not usermodel.sessions.filter(pk=session.pk).exists():
-            usermodel.sessions.add(session)
-            temp_message += " Session linked to user."
-
+            temp_message += " created usermodel "
 
     image = Image.new('RGB', (1, 1), (255, 255, 255))
     response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
@@ -232,10 +216,10 @@ def page(request, id):
         user_page.save()
     else:
         # No relevance score for a usermodel or this session_key so link not clicked in last 2 years.
-        if usermodel is not None:
-            UserPageview.objects.create(user_model=usermodel, session=session, wpid=wpid, aged_score=1)
-        else:
-            UserPageview.objects.create(session=session, wpid=wpid, aged_score = 1)
+        #if usermodel is not None:
+        UserPageview.objects.create(user_model=usermodel, session=session, wpid=wpid, aged_score=1)
+        #else:
+        #    UserPageview.objects.create(session=session, wpid=wpid, aged_score = 1)
 
     return response
 
@@ -251,7 +235,7 @@ def link(request, id):
     else:
         # A valid redirect code was received.
         redirect_record = Redirect.objects.get(redirect_code=id)
-        usermodel = redirect_record.usermodel
+        redirect_usermodel = redirect_record.usermodel
         target_url = redirect_record.target_url
         wpid_of_linked_page = redirect_record.wpid_id
 
@@ -278,6 +262,30 @@ def link(request, id):
         else:
             session = Session.objects.create(session_key=session_key)
 
+        # Get the usermodel for this session. Create if it is not associated.
+        # First get a queryset of the usermodels that have this session_key
+        usermodels_for_session = session.usermodels.all()
+        if len(usermodels_for_session) > 0:
+            # A usermodel instance was found for the current session key.
+            usermodel = UserModel.objects.get(sessions=session)
+            #saved_username = usermodel.username
+            #saved_email = usermodel.email
+            temp_message += " retrieved usermodel. "
+        elif redirect_usermodel is not None :
+            # Session is new, but is apparently for an existing username.
+            usermodel = redirect_usermodel
+            usermodel.sessions.add(session)
+            usermodel.save()
+            temp_message += " New session, but username known. "
+        else:
+            # No usermodel exists for this session key. Create one and add the current session.
+            usermodel = UserModel.objects.create()
+            usermodel.sessions.add(session)
+            usermodel.save()
+            temp_message += " created usermodel "
+            #saved_username = ""
+            #saved_email = ""
+
         # Check for a logged in user.
         session_data = session.get_decoded()
         uid = session_data.get('_auth_user_id')
@@ -294,35 +302,36 @@ def link(request, id):
         # If a username is known, check it is recorded in UserModel.
         if uid is not None:
             # A user is logged in.
-            if usermodel is not None:
-                # the redirect link referred to a specific user.
-                if usermodel.username is None or usermodel.username == "" or usermodel.username == "saknesar_stats_dev":
-                    # The username of the specific user is not yet stored in the database.
-                    usermodel.username=username
-                    usermodel.save()
-                    temp_message += " Added username to UserModel"
-            else:
+            #if usermodel is not None:
+            # the redirect link referred to a specific user.
+            if usermodel.username is None or usermodel.username == "" or usermodel.username == "saknesar_stats_dev":
+                # The username of the specific user is not yet stored in the database.
+                usermodel.username=username
+                usermodel.save()
+                temp_message += " Added username to UserModel"
+            #else:
                 # User logged in, but the redirect link did not refer to a specific user.
                 # See if a user already exists for this email.
-                if user_email is not None:
-                    if UserModel.objects.filter(email=user_email).exists():
-                        usermodel = UserModel.objects.get(email=user_email)
-                        if usermodel.username is None:
-                            # The username of the specific user is not yet stored in the database.
-                            usermodel.username = username
-                            usermodel.save()
-                            temp_message += " Setting username to UserModel when redirect had no email."
-                    else:
-                        # User is logged in, but is not a subscriber. Create a UserModel for this user.
-                        usermodel = UserModel.objects.create(email=user_email, username=username)
-                        temp_message += " Created new user for a new logged in user that is not a subscriber."
+            #    if user_email is not None:
+            #        if UserModel.objects.filter(email=user_email).exists():
+            #            usermodel = UserModel.objects.get(email=user_email)
+            #            if usermodel.username is None:
+            #                # The username of the specific user is not yet stored in the database.
+            #                usermodel.username = username
+            #                usermodel.save()
+            #                temp_message += " Setting username to UserModel when redirect had no email."
+            #        else:
+            #            # User is logged in, but is not a subscriber. Create a UserModel for this user.
+            #            usermodel = UserModel.objects.create(email=user_email, username=username, session=session)
+            #            temp_message += " Created new user for a new logged in user that is not a subscriber."
 
-        temp_message += " usermodel = " + str(usermodel)
+        #temp_message += " usermodel = " + str(usermodel)
         # Connect the current session to this usermodel, if not already added.
-        if usermodel is not None:
-            if not usermodel.sessions.filter(pk=session.pk).exists():
-                usermodel.sessions.add(session)
-                temp_message += " Session linked to user."
+
+        if usermodel.sessions != session:
+            usermodel.sessions.add(session)
+            usermodel.save()
+            temp_message += " Session linked to user."
 
         # Create the response to return to the user.
         response = redirect(target_url)
@@ -340,21 +349,11 @@ def link(request, id):
             # Increment aged score by 1 as new link click today.
             user_link.aged_score += 1
             if user_link.user_model is None:
-                if usermodel is not None:
-                    # Session known, no username associated with the session, but we know the user.
-                    user_link.user_model = usermodel
+                # Session known, no username associated with the session, but we know the user.
+                user_link.user_model = usermodel
             user_link.save()
-        #elif UserLink.objects.filter(user_model=usermodel, wpid=clicked_wpid).exists():
-            # Already have a relevance score for this link for a specific usermodel, so it has been clicked in the last 2 years
-        #    user_link=UserLink.objects.get(user_model=usermodel, wpid=clicked_wpid)
-            # Increment aged score by 1 as new link click today.
-        #    user_link.aged_score += 1
-        #    user_link.save()
         else:
             # No relevance score for a usermodel or this session_key so link not clicked in last 2 years.
-            if usermodel is not None:
-                UserLink.objects.create(user_model=usermodel, session=session, wpid=clicked_wpid, aged_score=1)
-            else:
-                UserLink.objects.create(session=session, wpid=clicked_wpid, aged_score = 1)
+            UserLink.objects.create(user_model=usermodel, session=session, wpid=clicked_wpid, aged_score=1)
 
     return redirect(target_url, response=response)

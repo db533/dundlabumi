@@ -13,11 +13,11 @@ class List(models.Model):
         return self.name
 
 class UserModel(models.Model):
-    subscriber_id = models.IntegerField(default=0, help_text='The subscriber ID from the Newsletter plugin')
+    subscriber_id = models.IntegerField(default=None, blank=True, null=True, help_text='The subscriber ID from the Newsletter plugin')
     email = EmailField(max_length=254, blank=True, null=True)
     username = models.CharField(max_length=255, help_text='The Wordpress username of a registered user.', null=True, default=None)
     lists = models.ManyToManyField(List, related_name='users')
-    sessions = models.ManyToManyField(Session)
+    sessions = models.ManyToManyField(Session, related_name="usermodels")
 
     def __str__(self):
         return self.email
@@ -32,7 +32,7 @@ class OutboundEmail(models.Model):
     status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    sessions = models.ManyToManyField(Session)
+    #sessions = models.ManyToManyField(Session)
 
     def __str__(self):
         return self.subject
