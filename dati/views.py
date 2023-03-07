@@ -196,10 +196,10 @@ def page(request, id):
             usermodel.save()
             temp_message += " created usermodel "
 
-    #image = Image.new('RGB', (1, 1), (255, 255, 255))
-    #response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
-    response = HttpResponse(status=status.HTTP_200_OK)
-    #image.save(response, "PNG")
+    image = Image.new('RGB', (1, 1), (255, 255, 255))
+    response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
+    #response = HttpResponse(status=status.HTTP_200_OK)
+    image.save(response, "PNG")
 
     wpid=WPID.objects.get(wp_id=id)
     pageview = Pageview.objects.create(wpid=wpid, session=session, temp_message=temp_message)
