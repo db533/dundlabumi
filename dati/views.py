@@ -136,6 +136,8 @@ def page(request, id):
     temp_message=""
     disabled = True
     # Get the session from the received request
+    if 'PHPSESSID' in request.session:
+        temp_message += "PHPSESSID. "
     if 's_key' in request.session:
         # A session key is stored in s_key.
         session_key = request.session['s_key']
