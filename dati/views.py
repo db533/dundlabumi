@@ -135,6 +135,7 @@ def page(request, id):
     # Get the session from the received request
     temp_message=""
     # Get the session from the received request
+    temp_message += "request.COOKIES: "+str(request.COOKIES)+" "
     if 's_key' in request.COOKIES:
         session_key = request.COOKIES['s_key']
         temp_message += "s_key present in request. "
