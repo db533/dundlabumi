@@ -135,7 +135,7 @@ def page(request, id):
     # Get the session from the received request
     temp_message=""
     # Get the session from the received request
-    temp_message += "request.COOKIES: "+str(request.COOKIES)+" "
+    #temp_message += "request.COOKIES: "+str(request.COOKIES)+" "
     if 's_key' in request.session:
         # A session key is stored in s_key.
         session_key = request.session['s_key']
@@ -149,8 +149,6 @@ def page(request, id):
         # Save the session to s_key
         request.session['s_key'] = session_key
         request.session.save()
-    if session_key == None:
-        temp_message += "s_key still None. "
     if Session.objects.filter(session_key=session_key).exists():
         session = Session.objects.get(session_key=session_key)
     else:
@@ -198,8 +196,8 @@ def page(request, id):
     response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
     #response = HttpResponse(status=status.HTTP_200_OK)
     image.save(response, "PNG")
-    response.set_cookie('s_key', session_key, max_age=365 * 86400, path='/')
-    temp_message += " Setting cookie. "
+    #response.set_cookie('s_key', session_key, max_age=365 * 86400, path='/')
+    #temp_message += " Setting cookie. "
 
     wpid=WPID.objects.get(wp_id=id)
     pageview = Pageview.objects.create(wpid=wpid, session=session, temp_message=temp_message)
