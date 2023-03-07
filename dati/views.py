@@ -134,31 +134,22 @@ def render_image2(request, id):
 def page(request, id):
     # Get the session from the received request
     temp_message=""
-    disabled = True
     # Get the session from the received request
-    if 'PHPSESSID' in request.session:
-        temp_message += "PHPSESSID. "
-    if 's_key' in request.session:
-        # A session key is stored in s_key.
-        session_key = request.session['s_key']
-        temp_message += "s_key present in request.session. "
-        # Change the session key to the store value from the cookie.
-        # request.session.session_key = session_key
-        # request.session.save()
-    if not 's_key' in request.session or session_key == None:
-        temp_message += "s_key missing or None. "
-        request.session.create()
-        request.session.save()
-        session_key = request.session.session_key
-        # Save the session to s_key
-        request.session['s_key'] = session_key
-        request.session.save()
-    if session_key == None:
-        temp_message += "s_key still None. "
-    if Session.objects.filter(session_key=session_key).exists():
-        session = Session.objects.get(session_key=session_key)
+    if 's_key' in request.COOKIES:
+        session_key = request.COOKIES['s_key']
+        temp_message += "s_key present in request. "
     else:
-        session = Session.objects.create(session_key=session_key)
+        session_key = None
+        temp_message += "s_key missing in request. "
+
+    if not session_key or not Session.objects.filter(session_key=session_key).exists():
+        session = Session()
+        session.save()
+        session_key = session.session_key
+        temp_message += "created new session. "
+    else:
+        session = Session.objects.get(session_key=session_key)
+        temp_message += "retrieved existing session. "
     # Find the usermodels for the current session.
     usermodels_for_session = session.usermodels.all()
 
@@ -202,7 +193,7 @@ def page(request, id):
     response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
     #response = HttpResponse(status=status.HTTP_200_OK)
     image.save(response, "PNG")
-    response.set_cookie('s_key', session_key)
+    response.set_cookie('s_key', session_key, max_age=365 * 86400, path='/')
     temp_message += " Setting cookie. "
 
     wpid=WPID.objects.get(wp_id=id)
