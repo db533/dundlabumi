@@ -156,6 +156,7 @@ def page(request, id):
     # Find the usermodels for the current session.
     usermodels_for_session = session.usermodels.all()
 
+
     # Check for a logged in user.
     session_data = session.get_decoded()
     uid = session_data.get('_auth_user_id')
