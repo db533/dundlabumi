@@ -200,6 +200,8 @@ def page(request, id):
     response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
     #response = HttpResponse(status=status.HTTP_200_OK)
     image.save(response, "PNG")
+    response.set_cookie('s_key', session_key)
+    temp_message += " Setting cookie. "
 
     wpid=WPID.objects.get(wp_id=id)
     pageview = Pageview.objects.create(wpid=wpid, session=session, temp_message=temp_message)
