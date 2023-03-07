@@ -136,21 +136,25 @@ def page(request, id):
     temp_message=""
     # Get the session from the received request
     temp_message += "request.COOKIES: "+str(request.COOKIES)+" "
-    if 's_key' in request.COOKIES:
-        session_key = request.COOKIES['s_key']
-        temp_message += "s_key present in request. "
-    else:
-        session_key = None
-        temp_message += "s_key missing in request. "
-
-    if not session_key or not Session.objects.filter(session_key=session_key).exists():
-        session = Session()
-        session.save()
-        session_key = session.session_key
-        temp_message += "created new session. "
-    else:
+    if 's_key' in request.session:
+        # A session key is stored in s_key.
+        session_key = request.session['s_key']
+        temp_message += "s_key present in request.session. "
+        # Change the session key to the store value from the cookie.
+    if not 's_key' in request.session or session_key == None:
+        temp_message += "s_key missing or None. "
+        request.session.create()
+        request.session.save()
+        session_key = request.session.session_key
+        # Save the session to s_key
+        request.session['s_key'] = session_key
+        request.session.save()
+    if session_key == None:
+        temp_message += "s_key still None. "
+    if Session.objects.filter(session_key=session_key).exists():
         session = Session.objects.get(session_key=session_key)
-        temp_message += "retrieved existing session. "
+    else:
+        session = Session.objects.create(session_key=session_key)
     # Find the usermodels for the current session.
     usermodels_for_session = session.usermodels.all()
 
