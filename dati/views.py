@@ -40,6 +40,38 @@ def index(request):
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
 
+from bs4 import BeautifulSoup
+from django.urls import reverse
+import re
+
+def render_with_redirect(mail_template, redirect_set):
+    """
+    Renders the provided mail_template, replacing links with redirect URLs.
+    Returns a tuple containing the rendered HTML and a set of new Redirect instances created.
+    """
+    html_detail = mail_template.render({})
+    redirect_instances = set()
+
+    def replace_link(match):
+        url = match.group(1)
+        existing_redirect = next((r for r in redirect_set if r.target_url == url), None)
+        if existing_redirect:
+            redirect_code = existing_redirect.redirect_code
+        else:
+            redirect_code = Redirect.objects.aggregate(Max('redirect_code'))['redirect_code__max'] or 1
+            redirect_code += 1
+            redirect = Redirect.objects.create(redirect_code=redirect_code, target_url=url)
+            redirect_instances.add(redirect)
+            redirect_set.add(redirect)
+
+        redirect_url = reverse('redirect', args=[redirect_code])
+        return f'<a href="{redirect_url}">{url}</a>'
+
+    pattern = r'<a href="(https?://[^"]+)"'
+    html_detail = re.sub(pattern, replace_link, html_detail)
+
+    return html_detail, redirect_instances
+
 
 def email_viewed(request, email_id):
     # update the email record to indicate that it was viewed
@@ -56,32 +88,40 @@ def email_viewed(request, email_id):
 # https://manojadhikari.medium.com/track-email-opened-status-django-rest-framework-5fcd1fbdecfb
 class SendTemplateMailView(APIView):
     def post(self, request, *args, **kwargs):
-        #all_data = request.data
         target_user_email = request.data.get('email')
-        # Check if this email is already defined for a subscriber, if not, add the user.
         target_user = UserModel.objects.get(email=target_user_email)
-        from_email, to = 'info@dundlabumi.lv', [target_user_email]
+        from_email = 'info@dundlabumi.lv'
+        to = [target_user_email]
         subject = request.data.get('subject')
-        #target_user_email = "db5331@gmail.com"
         mail_template = get_template("mail_template.html")
-        email = OutboundEmail.objects.create(recipient=target_user_email, subject=subject,status=False, usermodel=target_user)
-        context_data_is = dict()
-        context_data_is["image_url"] = request.build_absolute_uri(("send/render_image2/")) + str(email.id)
-        url_is = context_data_is["image_url"]
-        context_data_is['url_is'] = url_is
-        context_data_is['cid'] = email.id
-        html_detail = mail_template.render(context_data_is)
-        email.body = html_detail
-        email.save()
+
+        context_data = {
+            "image_url": request.build_absolute_uri("send/render_image2/") + str(email.id),
+            "cid": email.id,
+        }
+
+        # render the email body with redirect links
+        html_detail = self.render_with_redirect(mail_template, context_data)
+
+        email = OutboundEmail.objects.create(
+            recipient=target_user_email,
+            subject=subject,
+            status=False,
+            usermodel=target_user,
+            body=html_detail,
+        )
+
         msg = EmailMultiAlternatives(subject, html_detail, from_email, to)
         msg.content_subtype = 'html'
-        msg_result=msg.send()
+        msg_result = msg.send()
 
-        response_dict={}
-        response_dict['target_user_email']=target_user_email
-        response_dict["email_id"] = email.id
-        response_dict['msg_result'] = msg_result
-        response_dict['success'] = True
+        response_dict = {
+            'target_user_email': target_user_email,
+            'email_id': email.id,
+            'msg_result': msg_result,
+            'success': True,
+        }
+
         return Response(response_dict)
 
 from django.http import HttpResponse
