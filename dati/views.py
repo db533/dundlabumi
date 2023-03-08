@@ -108,7 +108,7 @@ class SendTemplateMailView(APIView):
         }
 
         # render the email body with redirect links
-        html_detail = self.render_with_redirect(mail_template, context_data)
+        html_detail, redirect_instances = render_with_redirect(mail_template, set())
 
         email.body=html_detail
         email.save()
