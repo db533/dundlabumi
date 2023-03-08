@@ -44,7 +44,7 @@ import requests
 
 def get_wordpress_id(url):
     # Set up the API endpoint
-    api_url = 'https://yourwordpresssite.com/wp-json/wp/v2'
+    api_url = 'https://dundlabumi.lv/wp-json/wp/v2'
 
     # Send a request to the API to retrieve the post or product with the given URL
     response = requests.get(api_url + '/posts?slug=' + url)
