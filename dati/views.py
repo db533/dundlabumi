@@ -43,6 +43,7 @@ def index(request):
 from bs4 import BeautifulSoup
 from django.urls import reverse
 import re
+from django.db.models import Max
 
 def render_with_redirect(mail_template, redirect_set):
     """
