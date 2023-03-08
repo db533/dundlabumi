@@ -46,17 +46,21 @@ def get_wordpress_id(url):
     # Set up the API endpoint
     api_url = 'https://dundlabumi.lv/wp-json/wp/v2'
 
-    # Send a request to the API to retrieve the post or product with the given URL
-    response = requests.get(api_url + '/products?slug=' + url)
+    # Extract the product title from the URL
+    product_title = url.split('/')[-2]
+
+    # Send a request to the API to retrieve the product with the given title
+    response = requests.get(api_url + '/products?search=' + product_title)
 
     # Check if the response was successful
     if response.status_code != 200:
+        print('Failed. response:',response)
         return None
 
     # Extract the Wordpress ID from the response
-    post_id = response.json()[0]['id']
+    product_id = response.json()[0]['id']
 
-    return post_id
+    return product_id
 
 from bs4 import BeautifulSoup
 from django.urls import reverse
