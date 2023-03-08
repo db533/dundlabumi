@@ -95,6 +95,13 @@ class SendTemplateMailView(APIView):
         subject = request.data.get('subject')
         mail_template = get_template("mail_template.html")
 
+        email = OutboundEmail.objects.create(
+            recipient=target_user_email,
+            subject=subject,
+            status=False,
+            usermodel=target_user,
+        )
+
         context_data = {
             "image_url": request.build_absolute_uri("send/render_image2/") + str(email.id),
             "cid": email.id,
@@ -103,13 +110,8 @@ class SendTemplateMailView(APIView):
         # render the email body with redirect links
         html_detail = self.render_with_redirect(mail_template, context_data)
 
-        email = OutboundEmail.objects.create(
-            recipient=target_user_email,
-            subject=subject,
-            status=False,
-            usermodel=target_user,
-            body=html_detail,
-        )
+        email.body=html_detail
+        email.save()
 
         msg = EmailMultiAlternatives(subject, html_detail, from_email, to)
         msg.content_subtype = 'html'
