@@ -47,7 +47,7 @@ def get_wordpress_id(url):
     api_url = 'https://dundlabumi.lv/wp-json/wp/v2'
 
     # Send a request to the API to retrieve the post or product with the given URL
-    response = requests.get(api_url + '/posts?slug=' + url)
+    response = requests.get(api_url + '/products?slug=' + url)
 
     # Check if the response was successful
     if response.status_code != 200:
