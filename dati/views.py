@@ -40,6 +40,24 @@ def index(request):
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
 
+import requests
+
+def get_wordpress_id(url):
+    # Set up the API endpoint
+    api_url = 'https://yourwordpresssite.com/wp-json/wp/v2'
+
+    # Send a request to the API to retrieve the post or product with the given URL
+    response = requests.get(api_url + '/posts?slug=' + url)
+
+    # Check if the response was successful
+    if response.status_code != 200:
+        return None
+
+    # Extract the Wordpress ID from the response
+    post_id = response.json()[0]['id']
+
+    return post_id
+
 from bs4 import BeautifulSoup
 from django.urls import reverse
 import re
@@ -61,7 +79,8 @@ def render_with_redirect(mail_template, redirect_set):
         else:
             redirect_code = Redirect.objects.aggregate(Max('redirect_code'))['redirect_code__max'] or 1
             redirect_code += 1
-            redirect = Redirect.objects.create(redirect_code=redirect_code, target_url=url)
+            wordpress_id = get_wordpress_id('url')
+            redirect = Redirect.objects.create(redirect_code=redirect_code, target_url=url, wpid=wordpress_id)
             redirect_instances.add(redirect)
             redirect_set.add(redirect)
 
