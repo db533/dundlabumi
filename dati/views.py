@@ -65,7 +65,7 @@ def render_with_redirect(mail_template, redirect_set):
             redirect_instances.add(redirect)
             redirect_set.add(redirect)
 
-        redirect_url = reverse('redirect', args=[redirect_code])
+        redirect_url = reverse('link', args=[redirect_code])
         return f'<a href="{redirect_url}">{url}</a>'
 
     pattern = r'<a href="(https?://[^"]+)"'
