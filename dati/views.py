@@ -65,6 +65,7 @@ def render_with_redirect(mail_template, redirect_set, email, context_data):
             redirect = Redirect.objects.create(redirect_code=redirect_code, target_url=url, wpid=target_wpid)
             if email is not None:
                 redirect.outbound_email = email
+                redirect.save()
             redirect_instances.add(redirect)
             redirect_set.add(redirect)
 
