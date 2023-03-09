@@ -20,7 +20,7 @@ class UserModel(models.Model):
     sessions = models.ManyToManyField(Session, related_name="usermodels")
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 class OutboundEmail(models.Model):
     recipient = models.EmailField()
