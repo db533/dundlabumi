@@ -40,28 +40,6 @@ def index(request):
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
 
-import requests
-
-def get_wordpress_id(url):
-    # Set up the API endpoint
-    api_url = 'https://dundlabumi.lv/wp-json/wp/v2'
-
-    # Extract the product title from the URL
-    product_title = url.split('/')[-2]
-
-    # Send a request to the API to retrieve the product with the given title
-    response = requests.get(api_url + '/products?search=' + product_title)
-
-    # Check if the response was successful
-    if response.status_code != 200:
-        print('Failed. response:',response)
-        return None
-
-    # Extract the Wordpress ID from the response
-    product_id = response.json()[0]['id']
-
-    return product_id
-
 from bs4 import BeautifulSoup
 from django.urls import reverse
 import re
@@ -83,8 +61,7 @@ def render_with_redirect(mail_template, redirect_set):
         else:
             redirect_code = Redirect.objects.aggregate(Max('redirect_code'))['redirect_code__max'] or 1
             redirect_code += 1
-            wordpress_id = get_wordpress_id('url')
-            redirect = Redirect.objects.create(redirect_code=redirect_code, target_url=url, wpid=wordpress_id)
+            redirect = Redirect.objects.create(redirect_code=redirect_code, target_url=url)
             redirect_instances.add(redirect)
             redirect_set.add(redirect)
 

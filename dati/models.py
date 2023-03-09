@@ -49,6 +49,7 @@ class WPID(models.Model):
     post_type = models.CharField(max_length=20, default = "", help_text='Post type of the record.')
     name = models.CharField(max_length=120, default="", help_text='Name of the record.')
     tags = models.ManyToManyField(Tag, help_text='Tags associated with this WP id.', blank=True)
+    link = models.CharField(max_length=255, help_text='The url to the wordpress object.')
 
     def __str__(self):
         return self.name
