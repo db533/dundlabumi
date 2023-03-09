@@ -63,6 +63,9 @@ class Redirect(models.Model):
     usermodel = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=True,
                                       help_text='The subscriber to whom the link was sent',
                                       verbose_name=('Email subscriber'), default=1)
+    outbound_email = models.ForeignKey(OutboundEmail, on_delete=models.SET_NULL, null=True, blank=True,
+                                      help_text='The outbound email in which this link was included',
+                                      verbose_name=('Outbound email'))
 
     def __str__(self):
         return str(self.redirect_code)

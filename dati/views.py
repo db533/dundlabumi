@@ -45,7 +45,7 @@ from django.urls import reverse
 import re
 from django.db.models import Max
 
-def render_with_redirect(mail_template, redirect_set):
+def render_with_redirect(mail_template, redirect_set, email):
     """
     Renders the provided mail_template, replacing links with redirect URLs.
     Returns a tuple containing the rendered HTML and a set of new Redirect instances created.
@@ -63,6 +63,8 @@ def render_with_redirect(mail_template, redirect_set):
             redirect_code += 1
             target_wpid = WPID.objects.get(link = url)
             redirect = Redirect.objects.create(redirect_code=redirect_code, target_url=url, wpid=target_wpid)
+            if email is not None:
+                redirect.outbound_email = email
             redirect_instances.add(redirect)
             redirect_set.add(redirect)
 
@@ -110,7 +112,7 @@ class SendTemplateMailView(APIView):
         }
 
         # render the email body with redirect links
-        html_detail, redirect_instances = render_with_redirect(mail_template, set())
+        html_detail, redirect_instances = render_with_redirect(mail_template, set(), email)
 
         email.body=html_detail
         email.save()
