@@ -45,12 +45,12 @@ from django.urls import reverse
 import re
 from django.db.models import Max
 
-def render_with_redirect(mail_template, redirect_set, email):
+def render_with_redirect(mail_template, redirect_set, email, context_data):
     """
     Renders the provided mail_template, replacing links with redirect URLs.
     Returns a tuple containing the rendered HTML and a set of new Redirect instances created.
     """
-    html_detail = mail_template.render({})
+    html_detail = mail_template.render(context_data)
     redirect_instances = set()
 
     def replace_link(match):
@@ -87,8 +87,6 @@ def email_viewed(request, email_id):
     image_data = open("blank.png", "rb").read()
     return HttpResponse(image_data, content_type="image/png")
 
-
-
 # https://manojadhikari.medium.com/track-email-opened-status-django-rest-framework-5fcd1fbdecfb
 class SendTemplateMailView(APIView):
     def post(self, request, *args, **kwargs):
@@ -106,13 +104,22 @@ class SendTemplateMailView(APIView):
             usermodel=target_user,
         )
 
-        context_data = {
-            "image_url": request.build_absolute_uri("send/render_image2/") + str(email.id),
-            "cid": email.id,
-        }
+        email = OutboundEmail.objects.create(recipient=target_user_email, subject=subject, status=False,
+                                             usermodel=target_user)
+        context_data = dict()
+        context_data["image_url"] = request.build_absolute_uri(("send/render_image2/")) + str(email.id)
+        url_is = context_data["image_url"]
+        context_data["cid"] = email.id
+        context_data["url_is"] = context_data["image_url"]
+
+        #context_data = {
+        #    "image_url": request.build_absolute_uri("send/render_image2/") + str(email.id),
+        #    "cid": email.id,
+        #    "url_is": url_is
+        #}
 
         # render the email body with redirect links
-        html_detail, redirect_instances = render_with_redirect(mail_template, set(), email)
+        html_detail, redirect_instances = render_with_redirect(mail_template, set(), email, context_data)
 
         email.body=html_detail
         email.save()
