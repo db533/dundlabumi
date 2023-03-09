@@ -50,6 +50,7 @@ class WPID(models.Model):
     name = models.CharField(max_length=120, default="", help_text='Name of the record.')
     tags = models.ManyToManyField(Tag, help_text='Tags associated with this WP id.', blank=True)
     link = models.CharField(max_length=255, help_text='The url to the wordpress object.')
+    image_url = models.CharField(max_length=255, help_text='The url to the featured media of a product.', blank=True, null=True)
 
     def __str__(self):
         return self.name
