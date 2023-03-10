@@ -8,6 +8,7 @@ from django.contrib.sessions.models import Session
 class List(models.Model):
     list_id = models.IntegerField(default=0, help_text='The ID from the list in the Newsletter plugin')
     name = models.CharField(max_length=255, help_text='The name of the list in the Newsletter plugin')
+    temp = models.CharField(max_length=255, help_text='Test field')
 
     def __str__(self):
         return self.name
