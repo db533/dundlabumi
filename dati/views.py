@@ -261,7 +261,7 @@ def page(request, id):
     if UserPageview.objects.filter(session=session, wpid=wpid).exists():
         # Already have a relevance score for this page for a specific session, so it has been clicked in the last 2 years from this session_key
         user_page = UserPageview.objects.get(session=session, wpid=wpid)
-        # Increment aged score by 1 as new link click today.
+        # Increment aged score by 1 as new pageview today.
         user_page.aged_score += 1
         if user_page.user_model is None:
             if usermodel is not None:
@@ -411,3 +411,18 @@ def link(request, id):
             UserLink.objects.create(user_model=usermodel, session=session, wpid=clicked_wpid, aged_score=1)
 
     return redirect(target_url, response=response)
+
+#from django.shortcuts import render
+#from django.http import HttpResponseBadRequest
+
+def upload_file(request):
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            uploaded_file = form.cleaned_data['file']
+            file_instance = UploadedFile(file=uploaded_file)
+            file_instance.save()
+            return HttpResponse('File uploaded successfully')
+    else:
+        form = UploadFileForm()
+    return render(request, 'upload_file.html', {'form': form})
