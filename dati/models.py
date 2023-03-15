@@ -127,5 +127,3 @@ class UserLink(models.Model):
                                 verbose_name=('Session ID'))
     aged_score = models.FloatField(help_text='Link relevance score',blank=False, verbose_name=('Atvērtā linka svarīgums'), default=0)
 
-class UploadedFile(models.Model):
-    file = models.FileField(upload_to='uploads/')

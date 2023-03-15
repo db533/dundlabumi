@@ -42,6 +42,3 @@ urlpatterns += [
       path('send', SendTemplateMailView.as_view(), name='send_template'),
 ]
 
-urlpatterns += [
-    path('upload/', upload_file, name='upload_file'),
-]

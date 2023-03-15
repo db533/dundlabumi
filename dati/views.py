@@ -91,12 +91,14 @@ def email_viewed(request, email_id):
 # https://manojadhikari.medium.com/track-email-opened-status-django-rest-framework-5fcd1fbdecfb
 class SendTemplateMailView(APIView):
     def post(self, request, *args, **kwargs):
+        # Get params from API call:
         target_user_email = request.data.get('recipient_email')
+        subject = request.data.get('subject')
+        template_name = request.data.get('template_name')
+
         target_user = UserModel.objects.get(email=target_user_email)
         from_email = 'info@dundlabumi.lv'
         to = [target_user_email]
-        subject = request.data.get('subject')
-        template_name = request.data.get('template_name')
         mail_template = get_template(template_name)
 
         email = OutboundEmail.objects.create(
@@ -413,17 +415,3 @@ def link(request, id):
 
     return redirect(target_url, response=response)
 
-#from django.shortcuts import render
-#from django.http import HttpResponseBadRequest
-
-def upload_file(request):
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            uploaded_file = form.cleaned_data['file']
-            file_instance = UploadedFile(file=uploaded_file)
-            file_instance.save()
-            return HttpResponse('File uploaded successfully')
-    else:
-        form = UploadFileForm()
-    return render(request, 'upload_file.html', {'form': form})
