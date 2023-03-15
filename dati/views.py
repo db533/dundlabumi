@@ -91,12 +91,13 @@ def email_viewed(request, email_id):
 # https://manojadhikari.medium.com/track-email-opened-status-django-rest-framework-5fcd1fbdecfb
 class SendTemplateMailView(APIView):
     def post(self, request, *args, **kwargs):
-        target_user_email = request.data.get('email')
+        target_user_email = request.data.get('recipient_email')
         target_user = UserModel.objects.get(email=target_user_email)
         from_email = 'info@dundlabumi.lv'
         to = [target_user_email]
         subject = request.data.get('subject')
-        mail_template = get_template("mail_template.html")
+        template_name = request.data.get('template_name')
+        mail_template = get_template(template_name)
 
         email = OutboundEmail.objects.create(
             recipient=target_user_email,
