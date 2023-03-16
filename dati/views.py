@@ -61,7 +61,10 @@ def render_with_redirect(mail_template, redirect_set, email, context_data):
         else:
             redirect_code = Redirect.objects.aggregate(Max('redirect_code'))['redirect_code__max'] or 1
             redirect_code += 1
-            target_wpid = WPID.objects.get(link = url)
+            try:
+                target_wpid = WPID.objects.get(link = url)
+            except:
+                target_wpid = WPID.objects.get(link = 'https://dundlabumi.lv/index.php/products/')
             redirect = Redirect.objects.create(redirect_code=redirect_code, target_url=url, wpid=target_wpid)
             if email is not None:
                 redirect.outbound_email = email
