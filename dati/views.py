@@ -97,7 +97,7 @@ class SendTemplateMailView(APIView):
         template_name = request.data.get('template_name')
 
         target_user = UserModel.objects.get(email=target_user_email)
-        from_email = 'info@dundlabumi.lv'
+        from_email = 'jaunumi@dundlabumi.lv'
         to = [target_user_email]
         mail_template = get_template(template_name)
 
