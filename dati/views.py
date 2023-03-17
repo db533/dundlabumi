@@ -104,12 +104,12 @@ class SendTemplateMailView(APIView):
         to = [target_user_email]
         mail_template = get_template(template_name)
 
-        email = OutboundEmail.objects.create(
-            recipient=target_user_email,
-            subject=subject,
-            status=False,
-            usermodel=target_user,
-        )
+        #email = OutboundEmail.objects.create(
+        #    recipient=target_user_email,
+        #    subject=subject,
+        #    status=False,
+        #    usermodel=target_user,
+        #)
 
         email = OutboundEmail.objects.create(recipient=target_user_email, subject=subject, status=False,
                                              usermodel=target_user)
