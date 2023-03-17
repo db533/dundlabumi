@@ -112,7 +112,7 @@ class SendTemplateMailView(APIView):
         #)
 
         email = OutboundEmail.objects.create(recipient=target_user_email, subject=subject, status=False,
-                                             usermodel=target_user)
+                                             usermodel=target_user, template_name=template_name)
         context_data = dict()
         context_data["image_url"] = request.build_absolute_uri(("send/render_image2/")) + str(email.id)
         url_is = context_data["image_url"]

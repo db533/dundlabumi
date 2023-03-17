@@ -30,6 +30,7 @@ class OutboundEmail(models.Model):
                                       verbose_name=('Email subscriber'), default=1)
     subject = models.CharField(max_length=255)
     body = models.TextField(blank=True)
+    template_name = models.CharField(max_length=40)
     status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
