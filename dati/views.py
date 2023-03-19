@@ -113,7 +113,6 @@ class SendTemplateMailView(APIView):
         context_data = dict()
         context_data["image_url"] = request.build_absolute_uri(("send/render_image2/")) + str(email.id)
         LogEntry.objects.create(key='context_data["image_url"]', value=context_data["image_url"])
-        LogEntry.objects.create(key='context_data["image_url"]', value=context_data["image_url"])
         context_data["cid"] = email.id
         LogEntry.objects.create(key='context_data["cid"]', value=context_data["cid"])
         context_data["url_is"] = context_data["image_url"]
@@ -121,7 +120,7 @@ class SendTemplateMailView(APIView):
 
         # render the email body with redirect links
         html_detail, redirect_instances = render_with_redirect(mail_template, set(), email, context_data)
-        LogEntry.objects.create(key='html_detail', value=html_detail)
+        #LogEntry.objects.create(key='html_detail', value=html_detail)
         LogEntry.objects.create(key='redirect_instances', value=redirect_instances)
 
         email.body=html_detail
