@@ -128,3 +128,7 @@ class UserLink(models.Model):
                                 verbose_name=('Session ID'))
     aged_score = models.FloatField(help_text='Link relevance score',blank=False, verbose_name=('Atvērtā linka svarīgums'), default=0)
 
+class LogEntry(models.Model):
+    entry_dt = models.DateTimeField(auto_now=False, auto_now_add=True)
+    key = models.CharField(max_length=255)
+    value = models.CharField(max_length=1000)

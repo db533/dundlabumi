@@ -17,13 +17,6 @@ from django.contrib.sessions.models import Session
 
 # Create your views here.
 def index(request):
-    """View function for home page of site."""
-    #subject, from_email, to = 'Subject of the email', 'info@dundlabumi.lv', 'db5331@gmail.com'
-    #text_content = 'This is an important message.'
-    #html_content = '<p>This is an <strong>important</strong> message.</p>'
-    #msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
-    #msg.attach_alternative(html_content, "text/html")
-    #msg_result=msg.send()
 
     # Generate counts of some of the main objects
     num_email_clicks = Email.objects.all().count()
@@ -94,12 +87,15 @@ def email_viewed(request, email_id):
 # https://manojadhikari.medium.com/track-email-opened-status-django-rest-framework-5fcd1fbdecfb
 class SendTemplateMailView(APIView):
     def post(self, request, *args, **kwargs):
+        code_steps=""
         # Get params from API call:
         target_user_email = request.data.get('recipient_email')
         subject = request.data.get('subject')
         template_name = request.data.get('template_name')
-
         target_user = UserModel.objects.get(email=target_user_email)
+        LogEntry.objects.create(key="target_user_email", value=target_user_email)
+        LogEntry.objects.create(key="subject", value=subject)
+        LogEntry.objects.create(key="target_user", value=target_user)
         from_email = 'jaunumi@dundlabumi.lv'
         to = [target_user_email]
         mail_template = get_template(template_name)
@@ -113,27 +109,29 @@ class SendTemplateMailView(APIView):
 
         email = OutboundEmail.objects.create(recipient=target_user_email, subject=subject, status=False,
                                              usermodel=target_user, template_name=template_name)
+        LogEntry.objects.create(key="email", value=email)
         context_data = dict()
         context_data["image_url"] = request.build_absolute_uri(("send/render_image2/")) + str(email.id)
-        url_is = context_data["image_url"]
+        LogEntry.objects.create(key='context_data["image_url"]', value=context_data["image_url"])
+        LogEntry.objects.create(key='context_data["image_url"]', value=context_data["image_url"])
         context_data["cid"] = email.id
+        LogEntry.objects.create(key='context_data["cid"]', value=context_data["cid"])
         context_data["url_is"] = context_data["image_url"]
-
-        #context_data = {
-        #    "image_url": request.build_absolute_uri("send/render_image2/") + str(email.id),
-        #    "cid": email.id,
-        #    "url_is": url_is
-        #}
+        LogEntry.objects.create(key='context_data["url_is"]', value=context_data["url_is"])
 
         # render the email body with redirect links
         html_detail, redirect_instances = render_with_redirect(mail_template, set(), email, context_data)
+        LogEntry.objects.create(key='html_detail', value=html_detail)
+        LogEntry.objects.create(key='redirect_instances', value=redirect_instances)
 
         email.body=html_detail
         email.save()
 
         msg = EmailMultiAlternatives(subject, html_detail, from_email, to)
         msg.content_subtype = 'html'
+        LogEntry.objects.create(key='msg', value=msg)
         msg_result = msg.send()
+        LogEntry.objects.create(key='msg_result', value=msg_result)
 
         response_dict = {
             'target_user_email': target_user_email,
@@ -141,7 +139,7 @@ class SendTemplateMailView(APIView):
             'msg_result': msg_result,
             'success': True,
         }
-
+        LogEntry.objects.create(key='response_dict', value=response_dict)
         return Response(response_dict)
 
 from django.http import HttpResponse
