@@ -135,6 +135,41 @@ class SendTemplateMailView(APIView):
         LogEntry.objects.create(key='response_dict', value=response_dict)
         return Response(response_dict)
 
+class SendTemplateMailTestView(APIView):
+    def post(self, request, *args, **kwargs):
+        # Get params from API call:
+        target_user_email = request.data.get('recipient_email')
+        subject = request.data.get('subject')
+        LogEntry.objects.create(key="django_view", value="SendTemplateMailTestView")
+        LogEntry.objects.create(key="target_user_email", value=target_user_email)
+        LogEntry.objects.create(key="subject", value=subject)
+
+        from_email = 'jaunumi@dundlabumi.lv'
+        to = [target_user_email]
+        mail_template = get_template('mail_template.html')
+
+        context_data_is = dict()
+        context_data_is["image_url"] = request.build_absolute_uri(("render_image"))
+        url_is = context_data_is["image_url"]
+        context_data_is['url_is'] = url_is
+        html_detail = mail_template.render(context_data_is)
+        from_email = 'jaunumi@dundlabumi.lv'
+        to = [target_user_email]
+
+        msg = EmailMultiAlternatives(subject, html_detail, from_email, to)
+        msg.content_subtype = 'html'
+        msg.send()
+        response_dict = {
+            'target_user_email': target_user_email,
+            'email_id': email.id,
+            'template_name': template_name,
+            'msg_result': msg_result,
+            'success': True,
+        }
+        LogEntry.objects.create(key='response_dict', value=response_dict)
+        return Response(response_dict)
+
+
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
