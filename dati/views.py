@@ -162,7 +162,6 @@ class SendTemplateMailTestView(APIView):
         response_dict = {
             'target_user_email': target_user_email,
             'template_name': template_name,
-            'url_is' : url_is
             'msg_result': msg_result,
             'success': True,
         }
