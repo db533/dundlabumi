@@ -194,3 +194,22 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 #SESSION_COOKIE_SECURE = True
 #SESSION_COOKIE_HTTPONLY = True
 #SESSION_COOKIE_SAMESITE = 'Lax'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/django/django_debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
