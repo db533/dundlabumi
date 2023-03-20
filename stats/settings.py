@@ -202,7 +202,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR+'/logs/django_debug.log',
+            'filename': 'logs/django_debug.log',
         },
     },
     'loggers': {
