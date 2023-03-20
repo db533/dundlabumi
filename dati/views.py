@@ -158,7 +158,7 @@ class SendTemplateMailTestView(APIView):
 
         msg = EmailMultiAlternatives(subject, html_detail, from_email, to)
         msg.content_subtype = 'html'
-        msg.send()
+        msg_result = msg.send()
         response_dict = {
             'target_user_email': target_user_email,
             'msg_result': msg_result,
