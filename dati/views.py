@@ -19,15 +19,11 @@ from django.contrib.sessions.models import Session
 def index(request):
 
     # Generate counts of some of the main objects
-    num_email_clicks = Email.objects.all().count()
+    num_email_clicks = Click.objects.all().count()
+
 
     context = {
         'num_email_clicks': num_email_clicks,
-        'subject' : subject,
-        'from_email': from_email,
-        'to': to,
-        'text_content': text_content,
-        'msg_result': msg_result,
     }
 
     # Render the HTML template index.html with the data in the context variable
