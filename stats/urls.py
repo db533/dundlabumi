@@ -35,7 +35,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
-from dati.views import SendTemplateMailView , render_image2, link, page, SendTemplateMailTestView, login_view
+from dati.views import SendTemplateMailView , render_image2, link, page, SendTemplateMailTestView, login_view, get_auth_token
 
 urlpatterns += [
       path('send/render_image2/<int:id>',render_image2, name='render_image2'),
@@ -45,5 +45,7 @@ urlpatterns += [
       path('sendtest', SendTemplateMailTestView.as_view(), name='send_test_template'),
       path('login', login_view, name='login_view'),
       path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+      path('get-auth-token/', get_auth_token, name='get_auth_token'),
+
 ]
 
