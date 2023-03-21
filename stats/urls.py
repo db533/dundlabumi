@@ -25,6 +25,7 @@ from django.urls import include
 urlpatterns += [
     path('', RedirectView.as_view(url='dati/', permanent=True)),
     path('dati/', include('dati.urls')),
+
 ]
 
 from django.conf import settings
