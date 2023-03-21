@@ -33,6 +33,20 @@ def index(request):
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
 
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+
+def login_view(request):
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return JsonResponse({'success': True})
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid credentials'})
+
+
 from bs4 import BeautifulSoup
 from django.urls import reverse
 import re

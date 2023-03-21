@@ -33,7 +33,7 @@ from django.conf.urls.static import static
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
-from dati.views import SendTemplateMailView , render_image2, link, page, SendTemplateMailTestView
+from dati.views import SendTemplateMailView , render_image2, link, page, SendTemplateMailTestView, login_view
 
 urlpatterns += [
       path('send/render_image2/<int:id>',render_image2, name='render_image2'),
@@ -41,5 +41,6 @@ urlpatterns += [
       path('link/<int:id>',link, name='link'),
       path('send', SendTemplateMailView.as_view(), name='send_template'),
       path('sendtest', SendTemplateMailTestView.as_view(), name='send_test_template'),
+      path('login', login_view, name='login_view'),
 ]
 
