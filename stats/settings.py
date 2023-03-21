@@ -172,3 +172,8 @@ APPEND_SLASH=False
 
 # Set the session engine to use cookies
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    # other authentication backends if any
+]
