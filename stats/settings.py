@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dati.apps.DatiConfig',
     'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -162,6 +163,8 @@ DEFAULT_FROM_EMAIL = env.str('EMAIL_HOST_USER')
 SERVER_EMAIL = env.str('EMAIL_HOST_USER')
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication'],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
 	'DEFAULT_PERMISSION_CLASSES': [
