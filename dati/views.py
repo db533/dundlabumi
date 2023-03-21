@@ -7,6 +7,9 @@ from rest_framework import status
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth.models import User
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 
 from rest_framework.response import Response
 

@@ -30,6 +30,7 @@ urlpatterns += [
 
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
@@ -43,5 +44,6 @@ urlpatterns += [
       path('send', SendTemplateMailView.as_view(), name='send_template'),
       path('sendtest', SendTemplateMailTestView.as_view(), name='send_test_template'),
       path('login', login_view, name='login_view'),
+      path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
 ]
 
