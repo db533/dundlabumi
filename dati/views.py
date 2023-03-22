@@ -71,6 +71,9 @@ import re
 from django.db.models import Max
 
 def render_with_redirect(mail_template, redirect_set, email, context_data):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     """
     Renders the provided mail_template, replacing links with redirect URLs.
     Returns a tuple containing the rendered HTML and a set of new Redirect instances created.
@@ -118,6 +121,9 @@ def email_viewed(request, email_id):
 
 # https://manojadhikari.medium.com/track-email-opened-status-django-rest-framework-5fcd1fbdecfb
 class SendTemplateMailView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, *args, **kwargs):
         # Get params from API call:
         target_user_email = request.data.get('recipient_email')
