@@ -128,6 +128,20 @@ class UserLink(models.Model):
                                 verbose_name=('Session ID'))
     aged_score = models.FloatField(help_text='Link relevance score',blank=False, verbose_name=('Atvērtā linka svarīgums'), default=0)
 
+class UserTag(models.Model):
+    # Model to store the current aged relevance score of a particular link click for a particular user.
+    user_model = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=False,
+                                 help_text='The user for whom this link relevance is being computed',
+                                 verbose_name=('User'))
+    tag = models.ForeignKey(Tag, on_delete=models.SET_NULL, null=True, blank=False,
+                                  help_text='The tag for products this user viewed.',
+                                  verbose_name=('tag id'))
+    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=True,
+                                help_text='The session ID associated with this link click',
+                                verbose_name=('Session ID'))
+    aged_score = models.FloatField(help_text='Link relevance score',blank=False, verbose_name=('Atvērtā linka svarīgums'), default=0)
+
+
 class LogEntry(models.Model):
     entry_dt = models.DateTimeField(auto_now=False, auto_now_add=True)
     key = models.CharField(max_length=255)

@@ -9,3 +9,24 @@
   {% load static %}
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
+<body>
+  <div id="loader" class="center"></div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-2">
+      {% block sidebar %}
+        <ul class="sidebar-nav">
+          <li><a href="{% url 'index' %}">Sākums</a></li>
+          {% if user.is_authenticated %}
+            <li><strong>User: {{ user.get_username }}</strong></li>
+            Vēlamie produkti:
+            <li><a href="{% url 'index' %}">Mani vēlamie produkti</a></li>
+          {% endif %}
+        </ul>
+     {% endblock %}
+      </div>
+      <div class="col-sm-10 ">{% block content %}{% endblock %}</div>
+    </div>
+  </div>
+</body>
+</html>
