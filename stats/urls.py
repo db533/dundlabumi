@@ -46,5 +46,7 @@ urlpatterns += [
       path('login', login_view, name='login_view'),
       path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
       path('get-auth-token/', get_auth_token, name='get_auth_token'),
+      path('user-details/', user_data, name='user_details'),
+
 ]
 
