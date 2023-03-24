@@ -480,3 +480,18 @@ def link(request, id):
 
     return redirect(target_url, response=response)
 
+from django.shortcuts import render
+
+def user_data(request):
+    if request.method == 'POST':
+        form = UserForm(request.POST)
+        if form.is_valid():
+            user_id = form.cleaned_data['user_id']
+            user = UserModel.objects.get(id=user_id)
+            pageviews = user.pageviews.all()  # assuming a related_name of 'pageview_set' for the pageviews
+            tags = UserTag.objects.filter(user=user)
+            tag_scores = [(tag.tag.name, tag.aged_score) for tag in tags]
+            return render(request, 'user_data.html', {'pageviews': pageviews, 'tag_scores': tag_scores})
+    else:
+        form = UserForm()
+    return render(request, 'user_form.html', {'form': form})

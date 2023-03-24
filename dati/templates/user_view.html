@@ -1,0 +1,21 @@
+<!-- user_form.html -->
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Submit</button>
+</form>
+
+<!-- user_data.html -->
+<h1>Pageviews for User {{ user.id }}</h1>
+<ul>
+{% for pageview in pageviews %}
+  <li>{{ pageview.page_name }} - {{ pageview.page_views }}</li>
+{% endfor %}
+</ul>
+
+<h1>Aged Scores for User {{ user.id }}</h1>
+<ul>
+{% for tag, score in tag_scores %}
+  <li>{{ tag }} - {{ score }}</li>
+{% endfor %}
+</ul>

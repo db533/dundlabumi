@@ -106,7 +106,7 @@ class UserPageview(models.Model):
     # Model to store the current aged relevance score of a particular page for a particular user.
     user_model = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=False,
                                  help_text='The user for whom this pageview relevance is being computed',
-                                 verbose_name=('User'))
+                                 verbose_name=('User'), related_name=pageviews)
     wpid = models.ForeignKey(WPID, on_delete=models.SET_NULL, null=True, blank=False,
                                   help_text='The Wordpress ID for the page that was linked to.',
                                   verbose_name=('WP id'))
