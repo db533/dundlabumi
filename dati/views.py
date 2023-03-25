@@ -491,7 +491,7 @@ def user_details(request):
             user = UserModel.objects.get(id=user_id)
             pageviews = UserPageview.objects.filter(user_model=user)
             tags = UserTag.objects.filter(user_model=user)
-            tag_scores = [(tag.tag.name, tag.aged_score) for tag in tags]
+            tag_scores = [(tag.tag.tag_name, tag.aged_score) for tag in tags]
             return render(request, 'user_view.html', {'user': user, 'pageviews': pageviews, 'tag_scores': tag_scores})
         else:
             context = {
