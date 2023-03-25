@@ -14,4 +14,48 @@
 {% for tag, score in tag_scores %}
   <li>{{ tag }} - {{ score }}</li>
 {% endfor %}
+  <canvas id="myChart"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    var data = {{ tag_scores|safe }};
+    var labels = [];
+    var values = [];
+    for (var i = 0; i < data.length; i++) {
+      labels.push(data[i][0]);
+      values.push(data[i][1]);
+    }
+
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+      type: 'horizontalBar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'My Dataset',
+          data: values,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      }
+    });
+  </script>
 </ul>
