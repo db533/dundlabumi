@@ -490,6 +490,7 @@ def user_details(request):
             user = UserModel.objects.get(id=user_id)
             pageviews = UserPageview.objects.filter(user_model=user)
             page_scores = [(pageview.wpid.name, pageview.aged_score) for pageview in pageviews]
+            page_scores = sorted(page_scores, key=lambda x: x[1], reverse=True)
             tags = UserTag.objects.filter(user_model=user)
             tag_scores = [(tag.tag.tag_name, tag.aged_score) for tag in tags]
             tag_scores = sorted(tag_scores, key=lambda x: x[1], reverse=True)
