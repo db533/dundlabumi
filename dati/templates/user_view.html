@@ -31,12 +31,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     var data = {{ tag_scores|safe }};
-    var labels = [];
-    var values = [];
-    for (var i = 0; i < data.length; i++) {
-      labels.push(data[i][0]);
-      values.push(data[i][1]);
-    }
+    var labels = {{ tag_labels|safe }};
+    var values = {{ tag_values|safe }};
 
     var ctx = document.getElementById('myChart').getContext('2d');
 
