@@ -14,6 +14,8 @@
 {% for tag, score in tag_scores %}
   <li>{{ tag }} - {{ score }}</li>
 {% endfor %}
+</ul>
+  <p>Start of bar chart</p>
   <canvas id="myChart"></canvas>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -58,4 +60,4 @@
       }
     });
   </script>
-</ul>
+<p>End of bar chart</p>
