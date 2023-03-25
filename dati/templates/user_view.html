@@ -3,7 +3,7 @@
 <p>Email: {{user.email}}</p>
 <ul>
 {% for pageview in pageviews %}
-  <li>{{ pageview.user_model }} - {{ pageview.wpid }}</li>
+  <li>{{ pageview.user_model.subscriber_id }} - {{ pageview.wpid }}</li>
 {% endfor %}
 </ul>
 
