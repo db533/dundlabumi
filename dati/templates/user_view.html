@@ -1,15 +1,9 @@
-<!-- user_form.html -->
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Submit</button>
-</form>
-
 <!-- user_data.html -->
 <h1>Pageviews for User {{ user.id }}</h1>
+<p>Email: {{user.email}}</p>
 <ul>
 {% for pageview in pageviews %}
-  <li>{{ pageview.page_name }} - {{ pageview.page_views }}</li>
+  <li>{{ pageview.user_model }} - {{ pageview.wpid }}</li>
 {% endfor %}
 </ul>
 
