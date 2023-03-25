@@ -2,8 +2,8 @@
 <h1>Pageviews for User {{ user.id }}</h1>
 <p>Email: {{user.email}}</p>
 <ul>
-{% for pageview in pageviews %}
-  <li>{{ pageview.user_model.subscriber_id }} - {{ pageview.wpid }}</li>
+{% for page_score in page_scores %}
+  <li>{{ name }} - {{ score }}</li>
 {% endfor %}
 </ul>
 

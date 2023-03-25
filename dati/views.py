@@ -489,9 +489,10 @@ def user_details(request):
             user_id = form.cleaned_data['user_id']
             user = UserModel.objects.get(id=user_id)
             pageviews = UserPageview.objects.filter(user_model=user)
+            page_scores = [(pageview.wpid.name, pageview.aged_score) for pageview in pageviews]
             tags = UserTag.objects.filter(user_model=user)
             tag_scores = [(tag.tag.tag_name, tag.aged_score) for tag in tags]
-            return render(request, 'user_view.html', {'user': user, 'pageviews': pageviews, 'tag_scores': tag_scores})
+            return render(request, 'user_view.html', {'user': user, 'page_scores': page_scores, 'tag_scores': tag_scores})
         else:
             context = {
                 'form': form,
