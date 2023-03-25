@@ -219,9 +219,8 @@ def render_image2(request, id):
     email_recipient = UserModel.objects.get(email=email.recipient)
 
     # Check if a session_key is associated with this user.
-    user_session_key = email_recipient.session
-    if user_session_key != None:
-        session_key = user_session_key
+    if email_recipient.sessions.exists():
+        session_key = email_recipient.session
         # Set the current session_key in case it differs.
         request.session['session_key'] = session_key
         request.session.save()
