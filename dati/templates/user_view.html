@@ -1,4 +1,12 @@
 <!-- user_data.html -->
+<title>My Chart</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    #myChart {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+  </style>
 <h1>Pageviews for User {{ user.id }}</h1>
 <p>Email: {{user.email}}</p>
 <p>page_scores: {{page_scores}}</p>
@@ -17,8 +25,6 @@
 </ul>
   <p>Start of bar chart</p>
   <canvas id="myChart"></canvas>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     var data = {{ tag_scores|safe }};
     var labels = [];
