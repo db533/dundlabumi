@@ -24,7 +24,10 @@
 {% endfor %}
 </ul>
   <p>Start of bar chart</p>
+<div>
   <canvas id="myChart"></canvas>
+</div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     var data = {{ tag_scores|safe }};
     var labels = [];
@@ -35,6 +38,7 @@
     }
 
     var ctx = document.getElementById('myChart').getContext('2d');
+
     var myChart = new Chart(ctx, {
       type: 'bar',
       data: {
