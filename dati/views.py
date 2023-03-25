@@ -492,6 +492,7 @@ def user_details(request):
             page_scores = [(pageview.wpid.name, pageview.aged_score) for pageview in pageviews]
             tags = UserTag.objects.filter(user_model=user)
             tag_scores = [(tag.tag.tag_name, tag.aged_score) for tag in tags]
+            tag_scores = sorted(tag_scores, key=lambda x: x[1], reverse=True)
             return render(request, 'user_view.html', {'user': user, 'page_scores': page_scores, 'tag_scores': tag_scores})
         else:
             context = {
