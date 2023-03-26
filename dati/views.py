@@ -9,7 +9,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth.models import User
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-
+from datetime import datetime, timedelta
 
 from rest_framework.response import Response
 
@@ -273,7 +273,8 @@ def page(request, id):
     if Session.objects.filter(session_key=session_key).exists():
         session = Session.objects.get(session_key=session_key)
     else:
-        session = Session.objects.create(session_key=session_key)
+        expire_date = datetime.now() + timedelta(days=30)
+        session = Session.objects.create(session_key=session_key, expire_date=expire_date)
     # Find the usermodels for the current session.
     usermodels_for_session = session.usermodels.all()
 
