@@ -20,12 +20,6 @@
 </ul>
 
 <h1>Aged Scores for User {{ user.id }}</h1>
-<ul>
-{% for tag, score in tag_scores %}
-  <li>{{ tag }} - {{ score }}</li>
-{% endfor %}
-</ul>
-  <p>Start of bar chart</p>
 <div>
   <canvas id="myChart"></canvas>
 </div>
@@ -67,4 +61,3 @@
       }
     );
   </script>
-<p>End of bar chart</p>
