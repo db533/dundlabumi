@@ -317,10 +317,7 @@ def page(request, id):
 
     image = Image.new('RGB', (1, 1), (255, 255, 255))
     response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
-    #response = HttpResponse(status=status.HTTP_200_OK)
     image.save(response, "PNG")
-    #response.set_cookie('s_key', session_key, max_age=365 * 86400, path='/')
-    #temp_message += " Setting cookie. "
 
     wpid=WPID.objects.get(wp_id=id)
     pageview = Pageview.objects.create(wpid=wpid, session=session, temp_message=temp_message)
@@ -330,7 +327,8 @@ def page(request, id):
         # Already have a relevance score for this page for a specific session, so it has been clicked in the last 2 years from this session_key
         user_page = UserPageview.objects.get(session=session, wpid=wpid)
         # Increment aged score by 1 as new pageview today.
-        user_page.aged_score += 1
+        aged_score = user_page.aged_score
+        user_page.aged_score = aged_score + 1
         if user_page.user_model is None:
             if usermodel is not None:
                 # Session known, no username associated with the session, but we know the user.
@@ -338,10 +336,7 @@ def page(request, id):
         user_page.save()
     else:
         # No relevance score for a usermodel or this session_key so link not clicked in last 2 years.
-        #if usermodel is not None:
         UserPageview.objects.create(user_model=usermodel, session=session, wpid=wpid, aged_score=1)
-        #else:
-        #    UserPageview.objects.create(session=session, wpid=wpid, aged_score = 1)
 
     return response
 
