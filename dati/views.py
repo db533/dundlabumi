@@ -480,35 +480,29 @@ def link(request, id):
 from django.shortcuts import render
 from .forms import UserForm
 
-def user_details(request):
-    if request.method == 'POST':
-        form = UserForm(request.POST)
-        if form.is_valid():
-            user_id = form.cleaned_data['user_id']
-            user = UserModel.objects.get(id=user_id)
-            pageviews = UserPageview.objects.filter(user_model=user)
-            page_scores = [(pageview.wpid.name, pageview.aged_score) for pageview in pageviews]
-            page_scores = sorted(page_scores, key=lambda x: x[1], reverse=True)
-            tags = UserTag.objects.filter(user_model=user)
-            tag_labels=[]
-            tag_values=[]
-            tag_scores = [(tag.tag.tag_name, tag.aged_score) for tag in tags]
-            tag_scores = sorted(tag_scores, key=lambda x: x[1], reverse=True)
-            for tag in tag_scores:
-                tag_labels.append(tag[0])
-                tag_values.append(tag[1])
+def user_details(request, user_id):
+    try:
+        user = UserModel.objects.get(id=user_id)
+    except:
+        return HttpResponse("User not found", status=404)
+    pageviews = UserPageview.objects.filter(user_model=user)
+    page_labels = []
+    page_values = []
+    page_scores = [(pageview.wpid.name, pageview.aged_score) for pageview in pageviews]
+    page_scores = sorted(page_scores, key=lambda x: x[1], reverse=True)
+    for page in page_scores:
+        page_labels.append(page[0])
+        page_values.append(page[1])
 
-            return render(request, 'user_view.html', {'user': user, 'page_scores': page_scores, 'tag_scores': tag_scores, 'tag_labels' : tag_labels,
-                                                      'tag_values' : tag_values})
-        else:
-            context = {
-                'form': form,
-                'user': UserModel,
-            }
-    else:
-        form = UserForm()
-        context = {
-            'form': form,
-            'user': UserModel,
-        }
-    return render(request, 'user_form.html', context)
+    tags = UserTag.objects.filter(user_model=user)
+    tag_labels=[]
+    tag_values=[]
+    tag_scores = [(tag.tag.tag_name, tag.aged_score) for tag in tags]
+    tag_scores = sorted(tag_scores, key=lambda x: x[1], reverse=True)
+    for tag in tag_scores:
+        tag_labels.append(tag[0])
+        tag_values.append(tag[1])
+
+    return render(request, 'user_view.html', {'user': user, 'page_scores': page_scores, 'tag_scores': tag_scores,
+                                              'tag_labels' : tag_labels, 'tag_values' : tag_values,
+                                              'page_labels' : page_labels, 'page_values' : page_values})

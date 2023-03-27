@@ -7,7 +7,10 @@
     {{ form.as_p }}
     <button type="submit">Submit</button>
   </form>
-  {%if user %}
+  {%if user > 0 %}
     <p>User known.</p>
+  {% else %}
+    <p>User NOT known.</p>
+
   {% endif %}
 {% endblock %}

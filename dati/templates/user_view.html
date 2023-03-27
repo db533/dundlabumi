@@ -10,15 +10,46 @@
   </style>
 <h1>Pageviews for User {{ user.id }}</h1>
 <p>Email: {{user.email}}</p>
-<p>page_scores: {{page_scores}}</p>
-<p>tag_scores: {{tag_scores}}</p>
-<p>tag_values: {{tag_values}}</p>
-<ul>
-{% for page_score in page_scores %}
-  <li>{{ name }} - {{ score }}</li>
-{% endfor %}
-</ul>
+<div>
+  <canvas id="pageviews"></canvas>
+</div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    var labels = {{ page_labels|safe }};
+    var values = {{ page_values|safe }};
 
+    var ctx = document.getElementById('pageviews').getContext('2d');
+
+    var myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Aged scores for pages',
+          data: values,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          },
+        }
+      }
+    );
+  </script>
 <h1>Aged Scores for User {{ user.id }}</h1>
 <div>
   <canvas id="myChart"></canvas>
