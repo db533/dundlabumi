@@ -19,6 +19,7 @@ class UserModel(models.Model):
     username = models.CharField(max_length=255, help_text='The Wordpress username of a registered user.', null=True, default=None)
     lists = models.ManyToManyField(List, related_name='users')
     sessions = models.ManyToManyField(Session, related_name="usermodels")
+    receive_emails = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.id)
