@@ -8,6 +8,17 @@ from django.contrib.sessions.models import Session
 class List(models.Model):
     list_id = models.IntegerField(default=0, help_text='The ID from the list in the Newsletter plugin')
     name = models.CharField(max_length=255, help_text='The name of the list in the Newsletter plugin')
+
+    GARMENT_TYPES = (
+        ('0', 'Apģerbi'),
+        ('1', 'Apavi'),
+        ('2', 'Bērnu apģerbs'),
+        ('3', 'Bērnu apavi'),
+    )
+    garment_type = models.CharField(max_length=1, choices=GARMENT_TYPES, default='0',
+                               help_text='The garment type in which this List is a member.',
+                               verbose_name=_('Garment type'))
+
     temp = models.CharField(max_length=255, help_text='Test field')
 
     def __str__(self):
