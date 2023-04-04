@@ -489,10 +489,10 @@ def user_details(request, user_id):
         return HttpResponse("User not found", status=404)
 
     pageviews = UserPageview.objects.filter(user_model=user)
-    page_scores_dict = {}
     page_labels = []
     page_values = []
 
+    page_scores_dict = {}
     for pageview in pageviews:
         wpid_name = pageview.wpid.name
         aged_score = pageview.aged_score
@@ -510,7 +510,16 @@ def user_details(request, user_id):
     tags = UserTag.objects.filter(user_model=user)
     tag_labels=[]
     tag_values=[]
-    tag_scores = [(tag.tag.tag_name, tag.aged_score) for tag in tags]
+    tag_scores_dict = {}
+    for tag in tags:
+        tag_name = tag.tag.tag_name
+        aged_score = tag.aged_score
+        if tag_name in tag_scores_dict:
+            tag_scores_dict[tag_name] += aged_score
+        else:
+            tag_scores_dict[tag_name] = aged_score
+
+    tag_scores = [(tag_name, aged_score) for tag_name, aged_score in tag_scores_dict.items()]
     tag_scores = sorted(tag_scores, key=lambda x: x[1], reverse=True)
     for tag in tag_scores:
         tag_labels.append(tag[0])
