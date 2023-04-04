@@ -72,7 +72,7 @@ from django.urls import reverse
 import re
 from django.db.models import Max
 
-def render_with_redirect(mail_template, redirect_set, email, context_data):
+def render_with_redirect(mail_template, redirect_set, email, context_data, target_user):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -95,7 +95,7 @@ def render_with_redirect(mail_template, redirect_set, email, context_data):
                 target_wpid = WPID.objects.get(link = url)
             except:
                 target_wpid = WPID.objects.get(link = 'https://dundlabumi.lv/index.php/products/')
-            redirect = Redirect.objects.create(redirect_code=redirect_code, target_url=url, wpid=target_wpid)
+            redirect = Redirect.objects.create(redirect_code=redirect_code, target_url=url, wpid=target_wpid, usermodel=target_user)
             if email is not None:
                 redirect.outbound_email = email
                 redirect.save()
@@ -135,6 +135,7 @@ class SendTemplateMailView(APIView):
         LogEntry.objects.create(key="target_user_email", value=target_user_email)
         LogEntry.objects.create(key="subject", value=subject)
         LogEntry.objects.create(key="template_name", value=template_name)
+        LogEntry.objects.create(key="target_user.subscriber_id", value=target_user.subscriber_id)
 
         from_email = 'jaunumi@dundlabumi.lv'
         to = [target_user_email]
@@ -152,7 +153,7 @@ class SendTemplateMailView(APIView):
         LogEntry.objects.create(key='context_data["url_is"]', value=context_data["url_is"])
 
         # render the email body with redirect links
-        html_detail, redirect_instances = render_with_redirect(mail_template, set(), email, context_data)
+        html_detail, redirect_instances = render_with_redirect(mail_template, set(), email, context_data, target_user)
         #LogEntry.objects.create(key='html_detail', value=html_detail)
         LogEntry.objects.create(key='redirect_instances', value=redirect_instances)
 
@@ -321,6 +322,7 @@ def page(request, id):
     response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
     image.save(response, "PNG")
 
+
     wpid=WPID.objects.get(wp_id=id)
     pageview = Pageview.objects.create(wpid=wpid, session=session, temp_message=temp_message)
 
@@ -485,10 +487,19 @@ def user_details(request, user_id):
         user = UserModel.objects.get(id=user_id)
     except:
         return HttpResponse("User not found", status=404)
+
     pageviews = UserPageview.objects.filter(user_model=user)
-    page_labels = []
-    page_values = []
-    page_scores = [(pageview.wpid.name, pageview.aged_score) for pageview in pageviews]
+    page_scores_dict = {}
+
+    for pageview in pageviews:
+        wpid_name = pageview.wpid.name
+        aged_score = pageview.aged_score
+        if wpid_name in page_scores_dict:
+            page_scores_dict[wpid_name] += aged_score
+        else:
+            page_scores_dict[wpid_name] = aged_score
+
+    page_scores = [(wpid_name, aged_score) for wpid_name, aged_score in page_scores_dict.items()]
     page_scores = sorted(page_scores, key=lambda x: x[1], reverse=True)
     for page in page_scores:
         page_labels.append(page[0])
