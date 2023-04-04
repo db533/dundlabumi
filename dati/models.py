@@ -17,7 +17,7 @@ class List(models.Model):
     )
     garment_type = models.CharField(max_length=1, choices=GARMENT_TYPES, default='0',
                                help_text='The garment type in which this List is a member.',
-                               verbose_name=_('Garment type'))
+                               verbose_name=('Garment type'))
 
     temp = models.CharField(max_length=255, help_text='Test field')
 
