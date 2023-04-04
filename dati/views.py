@@ -490,6 +490,8 @@ def user_details(request, user_id):
 
     pageviews = UserPageview.objects.filter(user_model=user)
     page_scores_dict = {}
+    page_labels = []
+    page_values = []
 
     for pageview in pageviews:
         wpid_name = pageview.wpid.name
