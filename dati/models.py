@@ -45,6 +45,7 @@ class UserModel(models.Model):
     email = EmailField(max_length=254, blank=True, null=True)
     username = models.CharField(max_length=255, help_text='The Wordpress username of a registered user.', null=True, default=None)
     lists = models.ManyToManyField(List, related_name='users')
+    desiredsizes = models.ManyToManyField(DesiredSize, related_name='desiredsizes')
     sessions = models.ManyToManyField(Session, related_name="usermodels")
     receive_emails = models.BooleanField(default=False)
 
