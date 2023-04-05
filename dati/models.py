@@ -24,6 +24,22 @@ class List(models.Model):
     def __str__(self):
         return self.name
 
+class DesiredSize(models.Model):
+    name = models.CharField(max_length=255, help_text='The name of the desired size')
+
+    GARMENT_TYPES = (
+        ('0', 'Apģerbi'),
+        ('1', 'Apavi'),
+        ('2', 'Bērnu apģerbs'),
+        ('3', 'Bērnu apavi'),
+    )
+    garment_type = models.CharField(max_length=1, choices=GARMENT_TYPES, default='0',
+                               help_text='The garment type in which this List is a member.',
+                               verbose_name=('Garment type'))
+
+    def __str__(self):
+        return self.name
+
 class UserModel(models.Model):
     subscriber_id = models.IntegerField(default=None, blank=True, null=True, help_text='The subscriber ID from the Newsletter plugin')
     email = EmailField(max_length=254, blank=True, null=True)
