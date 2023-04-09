@@ -133,7 +133,7 @@ class Click(models.Model):
 
 class UserPageview(models.Model):
     # Model to store the current aged relevance score of a particular page for a particular user.
-    id = models.IntegerField(help_text='Primary key.', primary_key=True, auto_increment=True)
+    id = models.IntegerField(help_text='Primary key.', primary_key=True, auto_created=True)
     user_model = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=False,
                                  help_text='The user for whom this pageview relevance is being computed',
                                  verbose_name=('User'), related_name='pageviews')
