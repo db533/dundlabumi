@@ -45,7 +45,7 @@ class UserModel(models.Model):
     email = EmailField(max_length=254, blank=True, null=True)
     username = models.CharField(max_length=255, help_text='The Wordpress username of a registered user.', null=True, default=None)
     lists = models.ManyToManyField(List, related_name='users')
-    desiredsizes = models.ManyToManyField(DesiredSize, related_name='desiredsizes')
+    #desiredsizes = models.ManyToManyField(DesiredSize, related_name='desiredsizes')
     sessions = models.ManyToManyField(Session, related_name="usermodels")
     receive_emails = models.BooleanField(default=False)
 
@@ -133,7 +133,6 @@ class Click(models.Model):
 
 class UserPageview(models.Model):
     # Model to store the current aged relevance score of a particular page for a particular user.
-    #id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     user_model = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=False,
                                  help_text='The user for whom this pageview relevance is being computed',
                                  verbose_name=('User'), related_name='pageviews')
