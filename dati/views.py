@@ -223,7 +223,10 @@ def render_image2(request, id):
 
     # Check if a session_key is associated with this user.
     if email_recipient.sessions.exists():
-        session_key = email_recipient.session
+        session_values = email_recipient.sessions.all()
+        # Now get the last session_key and use that.
+        for session in session_values:
+            session_key = session.session_key
         # Set the current session_key in case it differs.
         request.session['session_key'] = session_key
         request.session.save()
@@ -481,6 +484,43 @@ def link(request, id):
 
 from django.shortcuts import render
 from .forms import UserForm
+
+# View to show list of users that have read emails
+def email_readers(request):
+    # Filter the outbound emails with status = 1 meaning the email has been read.
+    # Get the list of usermodel values that are in the list of read outbound emails.
+    # Sort the list of readers in decending order by number of emails read.
+    # Retrieve clicks for each user.
+    read_emails = OutboundEmail.objects.filter(status=1)
+    # Create a list of users that have read emails
+    readers = {}
+    reader_usermodels = {}
+    reader_clicks_dict = {}
+    for email in read_emails:
+        reader = email.recipient
+        reader_usermodel = email.usermodel
+        if reader not in readers.keys():
+            readers[reader]={}
+            user_instance = UserModel.objects.get(email=reader)
+            readers[reader]['UserModel_instance'] = user_instance
+            readers[reader]['UserModel_id'] = user_instance.id
+            sessions_list = user_instance.sessions.values_list('session_key', flat=True)
+            # Retrieve the values of the sessions
+            sessions_values = Session.objects.filter(session_key__in=sessions_list).values_list('session_key', flat=True)
+            readers[reader]['session_list'] = sessions_values
+            #reader_usermodels[reader_usermodel] = sessions_values
+        reader_clicks = Click.objects.filter(session__in=sessions_values)
+        readers[reader]['clicks'] = reader_clicks
+        my_dict={}
+        my_dict['key']='value'
+
+
+    context = {'readers' : readers,
+               'my_dict' : my_dict,
+    }
+    return render(request, 'readers.html', context=context)
+
+
 
 def user_details(request, user_id):
     try:

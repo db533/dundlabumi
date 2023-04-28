@@ -14,6 +14,7 @@ class List(models.Model):
         ('1', 'Apavi'),
         ('2', 'Bērnu apģerbs'),
         ('3', 'Bērnu apavi'),
+        ('4', 'Apģerbi pēc burtiem'),
     )
     garment_type = models.CharField(max_length=1, choices=GARMENT_TYPES, default='0',
                                help_text='The garment type in which this List is a member.',
@@ -32,6 +33,7 @@ class DesiredSize(models.Model):
         ('1', 'Apavi'),
         ('2', 'Bērnu apģerbs'),
         ('3', 'Bērnu apavi'),
+        ('4', 'Apģerbi pēc burtiem'),
     )
     garment_type = models.CharField(max_length=1, choices=GARMENT_TYPES, default='0',
                                help_text='The garment type in which this List is a member.',

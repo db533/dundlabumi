@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>D un D labumi - epastu lasītāji</h1>
+    <p>{{readers}}</p>
+    <p>{{ my_dict }}</p>
+    <p>{{ my_dict.key }}</p>
+    {% if readers %}
+      <ul>
+        {% for reader in readers %}
+          <p>{{ reader}}
+          {% with user_id=readers[reader] %}
+            {{ user_id }}</p>
+          {% endwith %}
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Nav nevienas epastu lasītājs.</p>
+    {% endif %}
+
+{% endblock %}
