@@ -85,6 +85,8 @@ def render_with_redirect(mail_template, redirect_set, email, context_data, targe
 
     def replace_link(match):
         url = match.group(1)
+        print("Matched URL:", url)
+        LogEntry.objects.create(key='Matched URL', value=url)
         existing_redirect = next((r for r in redirect_set if r.target_url == url), None)
         if existing_redirect:
             redirect_code = existing_redirect.redirect_code
