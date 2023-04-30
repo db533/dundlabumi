@@ -85,7 +85,7 @@ def render_with_redirect(mail_template, redirect_set, email, context_data, targe
 
     def replace_link(match):
         url = match.group(1)
-        print("Matched URL:", url)
+        #print("Matched URL:", url)
         LogEntry.objects.create(key='Matched URL', value=url)
         existing_redirect = next((r for r in redirect_set if r.target_url == url), None)
         if existing_redirect:
@@ -287,7 +287,7 @@ def page(request, id):
     # Find the usermodels for the current session.
     usermodels_for_session = session.usermodels.all()
 
-
+    print('session_key:',session_key)
     # Check for a logged in user.
     session_data = session.get_decoded()
     uid = session_data.get('_auth_user_id')
@@ -324,6 +324,7 @@ def page(request, id):
             usermodel.save()
             temp_message += " created usermodel "
 
+    print('usermodel.id:', usermodel.id)
     image = Image.new('RGB', (1, 1), (255, 255, 255))
     response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
     image.save(response, "PNG")
