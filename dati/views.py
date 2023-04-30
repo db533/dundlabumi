@@ -330,9 +330,12 @@ def page(request, id):
     pageview = Pageview.objects.create(wpid=wpid, session=session, temp_message=temp_message)
 
     # Now increment the User / Pageview relevance score.
-    if UserPageview.objects.filter(session=session, wpid=wpid).exists():
+    existing_userpageviews = UserPageview.objects.filter(session=session, wpid=wpid)
+    if existing_userpageviews.exists():
         # Already have a relevance score for this page for a specific session, so it has been clicked in the last 2 years from this session_key
-        user_page = UserPageview.objects.get(session=session, wpid=wpid)
+        existing_userpageviews_count = existing_userpageviews.count()
+        user_page = existing_userpageviews.first()
+        #user_page = UserPageview.objects.get(session=session, wpid=wpid)
         # Increment aged score by 1 as new pageview today.
         aged_score = user_page.aged_score
         user_page.aged_score = aged_score + 1
