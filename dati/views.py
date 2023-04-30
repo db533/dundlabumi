@@ -73,8 +73,8 @@ import re
 from django.db.models import Max
 
 def render_with_redirect(mail_template, redirect_set, email, context_data, target_user):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    #authentication_classes = [TokenAuthentication]
+    #permission_classes = [IsAuthenticated]
 
     """
     Renders the provided mail_template, replacing links with redirect URLs.
