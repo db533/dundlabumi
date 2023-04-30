@@ -105,6 +105,7 @@ def render_with_redirect(mail_template, redirect_set, email, context_data, targe
             redirect_set.add(redirect)
 
         redirect_url = reverse('link', args=[redirect_code])
+        LogEntry.objects.create(key='redirect_url', value=redirect_url)
         return f'<a href="https://statsdev.dundlabumi.lv{redirect_url}" rel="nofollow noreferrer"'
 
     pattern = r'<a href="(https?://[^"]+)"'
