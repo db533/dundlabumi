@@ -112,7 +112,6 @@ def render_with_redirect(mail_template, redirect_set, email, context_data, targe
 
     pattern = r'<a href="(https?://[^"]+)"'
     html_detail = re.sub(pattern, replace_link, html_detail)
-    LogEntry.objects.create(key='Amended html_detail', value=html_detail)
 
     return html_detail, redirect_instances
 
