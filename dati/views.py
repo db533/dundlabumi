@@ -72,6 +72,8 @@ from django.urls import reverse
 import re
 from django.db.models import Max
 
+#html_detail, redirect_instances = render_with_redirect(mail_template, set(), email, context_data, target_user)
+
 def render_with_redirect(mail_template, redirect_set, email, context_data, target_user):
     #authentication_classes = [TokenAuthentication]
     #permission_classes = [IsAuthenticated]
@@ -110,6 +112,7 @@ def render_with_redirect(mail_template, redirect_set, email, context_data, targe
 
     pattern = r'<a href="(https?://[^"]+)"'
     html_detail = re.sub(pattern, replace_link, html_detail)
+    LogEntry.objects.create(key='Amended html_detail', value=html_detail)
 
     return html_detail, redirect_instances
 
@@ -175,6 +178,7 @@ class SendTemplateMailView(APIView):
             'template_name': template_name,
             'msg_result': msg_result,
             'success': True,
+            'html_detail' : email.body,
         }
         LogEntry.objects.create(key='response_dict', value=response_dict)
         return Response(response_dict)
