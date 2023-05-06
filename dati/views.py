@@ -506,19 +506,19 @@ def email_readers(request):
     reader_clicks_dict = {}
     for email in read_emails:
         reader = email.recipient
-        reader_usermodel = email.usermodel
+        #reader_usermodel = email.usermodel
         if reader not in readers.keys():
             readers[reader]={}
             user_instance = UserModel.objects.get(email=reader)
             readers[reader]['UserModel_instance'] = user_instance
             readers[reader]['UserModel_id'] = user_instance.id
-            sessions_list = user_instance.sessions.values_list('session_key', flat=True)
+            #sessions_list = user_instance.sessions.values_list('session_key', flat=True)
             # Retrieve the values of the sessions
-            sessions_values = Session.objects.filter(session_key__in=sessions_list).values_list('session_key', flat=True)
-            readers[reader]['session_list'] = sessions_values
+            #sessions_values = Session.objects.filter(session_key__in=sessions_list).values_list('session_key', flat=True)
+            #readers[reader]['session_list'] = sessions_values
             #reader_usermodels[reader_usermodel] = sessions_values
-        reader_clicks = Click.objects.filter(session__in=sessions_values)
-        readers[reader]['clicks'] = reader_clicks
+        #reader_clicks = Click.objects.filter(session__in=sessions_values)
+        #readers[reader]['clicks'] = reader_clicks
         my_dict={}
         my_dict['key']='value'
 
