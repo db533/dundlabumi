@@ -9,9 +9,6 @@
       <ul>
         {% for reader in readers %}
           <p>{{ reader}}
-          {% with user_id=readers[reader] %}
-            {{ user_id }}</p>
-          {% endwith %}
         {% endfor %}
       </ul>
     {% else %}
