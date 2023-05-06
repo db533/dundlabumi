@@ -88,7 +88,7 @@ def render_with_redirect(mail_template, redirect_set, email, context_data, targe
     def replace_link(match):
         url = match.group(1)
         #print("Matched URL:", url)
-        LogEntry.objects.create(key='Matched URL', value=url)
+        #LogEntry.objects.create(key='Matched URL', value=url)
         existing_redirect = next((r for r in redirect_set if r.target_url == url), None)
         if existing_redirect:
             redirect_code = existing_redirect.redirect_code
@@ -107,7 +107,7 @@ def render_with_redirect(mail_template, redirect_set, email, context_data, targe
             redirect_set.add(redirect)
 
         redirect_url = reverse('link', args=[redirect_code])
-        LogEntry.objects.create(key='redirect_url', value=redirect_url)
+        #LogEntry.objects.create(key='redirect_url', value=redirect_url)
         return f'<a href="https://statsdev.dundlabumi.lv{redirect_url}" rel="nofollow noreferrer"'
 
     pattern = r'<a href="(https?://[^"]+)"'
@@ -140,7 +140,6 @@ class SendTemplateMailView(APIView):
         LogEntry.objects.create(key="target_user_email", value=target_user_email)
         LogEntry.objects.create(key="subject", value=subject)
         LogEntry.objects.create(key="template_name", value=template_name)
-        LogEntry.objects.create(key="target_user.subscriber_id", value=target_user.subscriber_id)
 
         from_email = 'jaunumi@dundlabumi.lv'
         to = [target_user_email]
