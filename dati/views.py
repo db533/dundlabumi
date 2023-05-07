@@ -330,7 +330,10 @@ def get_session_and_usermodel(request):
 
     cookie = request.COOKIES.get('wordpress_logged_in_')
     user_id = get_user_id_from_wordpress_cookie(cookie)
-    LogEntry.objects.create(key='user_id', value=user_id)
+    if user_id is not None:
+        LogEntry.objects.create(key='user_id', value=user_id)
+    else:
+        LogEntry.objects.create(key='user_id', value="")
 
     # Check for a logged in user.
     session_data = session.get_decoded()
