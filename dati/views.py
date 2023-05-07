@@ -302,31 +302,27 @@ def get_user_id_from_wordpress_cookie(cookie):
 
 def get_session_and_usermodel(request):
     temp_message = ""
-    if False:
-        if not 's_key' in request.session:
-            temp_message += "s_key missing or None. "
-            request.session.create()
-            request.session.save()
-            session_key = request.session.session_key
-            # Save the session to s_key
-            request.session['s_key'] = session_key
-            request.session.save()
-        else:
-            session_key = request.session['s_key']
-        if Session.objects.filter(session_key=session_key).exists():
-            session = Session.objects.get(session_key=session_key)
-        else:
-            expire_date = timezone.now() + timezone.timedelta(days=30)
-            session = Session.objects.create(session_key=session_key, expire_date=expire_date)
-        # Find the usermodels for the current session.
-        usermodels_for_session = session.usermodels.all()
+    if not 's_key' in request.session:
+        temp_message += "s_key missing or None. "
+        request.session.create()
+        request.session.save()
+        session_key = request.session.session_key
+        # Save the session to s_key
+        request.session['s_key'] = session_key
+        request.session.save()
+    else:
+        session_key = request.session['s_key']
+    if Session.objects.filter(session_key=session_key).exists():
+        session = Session.objects.get(session_key=session_key)
+    else:
+        expire_date = timezone.now() + timezone.timedelta(days=30)
+        session = Session.objects.create(session_key=session_key, expire_date=expire_date)
+    # Find the usermodels for the current session.
+    usermodels_for_session = session.usermodels.all()
 
-
-
-    session_key = request.session.session_key
     print('session_key:', session_key)
     LogEntry.objects.create(key='session_key', value=session_key)
-    session = Session.objects.get(session_key=session_key)
+    #session = Session.objects.get(session_key=session_key)
 
     #LogEntry.objects.create(key='request.COOKIES', value=request.COOKIES)
     #cookie = request.COOKIES.get('wordpress_logged_in_')
