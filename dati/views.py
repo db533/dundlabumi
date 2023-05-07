@@ -262,16 +262,7 @@ def render_image2(request, id):
 
     return response
 
-def page(request, id):
-    # Get the session from the received request
-    temp_message=""
-    # Get the session from the received request
-    #temp_message += "request.COOKIES: "+str(request.COOKIES)+" "
-    if 's_key' in request.session:
-        # A session key is stored in s_key.
-        session_key = request.session['s_key']
-        temp_message += "s_key present in request.session. "
-        # Change the session key to the store value from the cookie.
+def get_session_and_usermodel(request):
     if not 's_key' in request.session or session_key == None:
         temp_message += "s_key missing or None. "
         request.session.create()
@@ -324,12 +315,17 @@ def page(request, id):
             usermodel.sessions.add(session)
             usermodel.save()
             temp_message += " created usermodel "
+    return session_key, usermodel
 
+def page(request, id):
+    # Get the session from the received request
+    temp_message=""
+    session_key, usermodel = get_session_and_usermodel(request)
     print('usermodel.id:', usermodel.id)
+
     image = Image.new('RGB', (1, 1), (255, 255, 255))
     response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
     image.save(response, "PNG")
-
 
     wpid=WPID.objects.get(wp_id=id)
     pageview = Pageview.objects.create(wpid=wpid, session=session, temp_message=temp_message)
@@ -338,9 +334,7 @@ def page(request, id):
     existing_userpageviews = UserPageview.objects.filter(session=session, wpid=wpid)
     if existing_userpageviews.exists():
         # Already have a relevance score for this page for a specific session, so it has been clicked in the last 2 years from this session_key
-        existing_userpageviews_count = existing_userpageviews.count()
         user_page = existing_userpageviews.first()
-        #user_page = UserPageview.objects.get(session=session, wpid=wpid)
         # Increment aged score by 1 as new pageview today.
         aged_score = user_page.aged_score
         user_page.aged_score = aged_score + 1
