@@ -283,11 +283,12 @@ def get_session_and_usermodel(request):
         # Find the usermodels for the current session.
         usermodels_for_session = session.usermodels.all()
 
-        LogEntry.objects.create(key='session_key', value=session_key)
+
 
     session_key = request.session.session_key
-    session = Session.objects.get(session_key=session_key)
     print('session_key:', session_key)
+    LogEntry.objects.create(key='session_key', value=session_key)
+    session = Session.objects.get(session_key=session_key)
 
     # Check for a logged in user.
     session_data = session.get_decoded()
