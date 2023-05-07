@@ -280,6 +280,7 @@ def get_session_and_usermodel(request):
     usermodels_for_session = session.usermodels.all()
 
     print('session_key:',session_key)
+    LogEntry.objects.create(key='session_key', value=session_key)
     # Check for a logged in user.
     session_data = session.get_decoded()
     uid = session_data.get('_auth_user_id')
@@ -315,10 +316,12 @@ def get_session_and_usermodel(request):
             usermodel.sessions.add(session)
             usermodel.save()
             temp_message += " created usermodel "
+    LogEntry.objects.create(key='usermodel.id', value=usermodel.id)
     return session_key, usermodel
 
 def page(request, id):
     # Get the session from the received request
+    LogEntry.objects.create(key='Page view occured. WPID:', value=id)
     temp_message=""
     session_key, usermodel = get_session_and_usermodel(request)
     print('usermodel.id:', usermodel.id)
