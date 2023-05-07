@@ -328,9 +328,9 @@ def get_session_and_usermodel(request):
     LogEntry.objects.create(key='session_key', value=session_key)
     session = Session.objects.get(session_key=session_key)
 
-    LogEntry.objects.create(key='request.COOKIES', value=request.COOKIES)
-    cookie = request.COOKIES.get('wordpress_logged_in_')
-    user_id = get_user_id_from_wordpress_cookie(cookie)
+    #LogEntry.objects.create(key='request.COOKIES', value=request.COOKIES)
+    #cookie = request.COOKIES.get('wordpress_logged_in_')
+    user_id = request.session.get('user_id')
     if user_id is not None:
         LogEntry.objects.create(key='user_id', value=user_id)
     else:
@@ -355,10 +355,10 @@ def get_session_and_usermodel(request):
             usermodel = UserModel.objects.get(username=logged_in_username)
             temp_message += " retrieved existing usermodel."
 
-        if usermodel not in usermodels_for_session:
+        #if usermodel not in usermodels_for_session:
             # This usermodel needs to be conencted to this session.
-            usermodel.sessions.add(session)
-            usermodel.save()
+        #    usermodel.sessions.add(session)
+        #    usermodel.save()
     else:
         # No logged in user, so username not known.
         # Get the usermodel for this session. Create if it is not associated.
