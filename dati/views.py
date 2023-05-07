@@ -263,7 +263,8 @@ def render_image2(request, id):
     return response
 
 def get_session_and_usermodel(request):
-    if not 's_key' in request.session or session_key == None:
+    temp_message = ""
+    if not 's_key' in request.session:
         temp_message += "s_key missing or None. "
         request.session.create()
         request.session.save()
