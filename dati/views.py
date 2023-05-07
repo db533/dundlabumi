@@ -264,26 +264,31 @@ def render_image2(request, id):
 
 def get_session_and_usermodel(request):
     temp_message = ""
-    if not 's_key' in request.session:
-        temp_message += "s_key missing or None. "
-        request.session.create()
-        request.session.save()
-        session_key = request.session.session_key
-        # Save the session to s_key
-        request.session['s_key'] = session_key
-        request.session.save()
-    else:
-        session_key = request.session['s_key']
-    if Session.objects.filter(session_key=session_key).exists():
-        session = Session.objects.get(session_key=session_key)
-    else:
-        expire_date = timezone.now() + timezone.timedelta(days=30)
-        session = Session.objects.create(session_key=session_key, expire_date=expire_date)
-    # Find the usermodels for the current session.
-    usermodels_for_session = session.usermodels.all()
+    if False:
+        if not 's_key' in request.session:
+            temp_message += "s_key missing or None. "
+            request.session.create()
+            request.session.save()
+            session_key = request.session.session_key
+            # Save the session to s_key
+            request.session['s_key'] = session_key
+            request.session.save()
+        else:
+            session_key = request.session['s_key']
+        if Session.objects.filter(session_key=session_key).exists():
+            session = Session.objects.get(session_key=session_key)
+        else:
+            expire_date = timezone.now() + timezone.timedelta(days=30)
+            session = Session.objects.create(session_key=session_key, expire_date=expire_date)
+        # Find the usermodels for the current session.
+        usermodels_for_session = session.usermodels.all()
 
-    print('session_key:',session_key)
-    LogEntry.objects.create(key='session_key', value=session_key)
+        LogEntry.objects.create(key='session_key', value=session_key)
+
+    session_key = request.session.session_key
+    session = Session.objects.get(session_key=session_key)
+    print('session_key:', session_key)
+
     # Check for a logged in user.
     session_data = session.get_decoded()
     uid = session_data.get('_auth_user_id')
@@ -293,6 +298,7 @@ def get_session_and_usermodel(request):
         temp_message += " username = " + str(logged_in_username)
         logged_in_user_email = user.email
         temp_message += " user_email = " + str(logged_in_user_email)
+        LogEntry.objects.create(key='logged_in_user_email', value=logged_in_user_email)
 
         # Check if this usermodel already exists, if not create:
         if not UserModel.objects.filter(username=logged_in_username).exists():
