@@ -272,6 +272,8 @@ def get_session_and_usermodel(request):
         # Save the session to s_key
         request.session['s_key'] = session_key
         request.session.save()
+    else:
+        session_key = request.session['s_key']
     if Session.objects.filter(session_key=session_key).exists():
         session = Session.objects.get(session_key=session_key)
     else:
