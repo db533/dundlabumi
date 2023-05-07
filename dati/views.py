@@ -326,6 +326,8 @@ def get_session_and_usermodel(request):
     session_key = request.session.session_key
     print('session_key:', session_key)
     LogEntry.objects.create(key='session_key', value=session_key)
+    LogEntry.objects.create(key='session.keys()', value=request.session.keys())
+    LogEntry.objects.create(key='session.values()', value=request.session.values())
     session = Session.objects.get(session_key=session_key)
 
     #LogEntry.objects.create(key='request.COOKIES', value=request.COOKIES)
