@@ -262,6 +262,44 @@ def render_image2(request, id):
 
     return response
 
+import base64
+import hashlib
+
+def get_user_id_from_wordpress_cookie(cookie):
+    if not cookie:
+        return None
+
+    cookie_name = 'wordpress_logged_in_'
+    start_index = cookie.find(cookie_name)
+    if start_index == -1:
+        return None
+
+    end_index = cookie.find(';', start_index)
+    if end_index == -1:
+        end_index = len(cookie)
+
+    cookie_value = cookie[start_index:end_index]
+    cookie_parts = cookie_value.split('|')
+    if len(cookie_parts) != 3:
+        return None
+
+    user_data = cookie_parts[1]
+    user_data_decoded = base64.b64decode(user_data + '==')
+    md5_hash = hashlib.md5(cookie_value.encode('utf-8') + 'salt'.encode('utf-8')).hexdigest()
+    sha_hash = hashlib.sha256(cookie_value.encode('utf-8') + md5_hash.encode('utf-8')).hexdigest()
+
+    if sha_hash != cookie_parts[2]:
+        return None
+
+    user_data_parts = user_data_decoded.decode('utf-8').split(':')
+    if len(user_data_parts) != 2:
+        return None
+
+    user_id = int(user_data_parts[0])
+
+    return user_id
+
+
 def get_session_and_usermodel(request):
     temp_message = ""
     if False:
@@ -289,6 +327,10 @@ def get_session_and_usermodel(request):
     print('session_key:', session_key)
     LogEntry.objects.create(key='session_key', value=session_key)
     session = Session.objects.get(session_key=session_key)
+
+    cookie = request.COOKIES.get('wordpress_logged_in_')
+    user_id = get_user_id_from_wordpress_cookie(cookie)
+    LogEntry.objects.create(key='user_id', value=user_id)
 
     # Check for a logged in user.
     session_data = session.get_decoded()

@@ -49,6 +49,9 @@ class UserModel(models.Model):
     lists = models.ManyToManyField(List, related_name='users')
     desiredsizes = models.ManyToManyField(DesiredSize, related_name='desiredsizes')
     sessions = models.ManyToManyField(Session, related_name="usermodels")
+    session_unique = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=False,
+                                      help_text='The session_key that refers to this user',
+                                      verbose_name=('Unique session_key'))
     receive_emails = models.BooleanField(default=False)
 
     def __str__(self):
