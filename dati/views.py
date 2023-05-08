@@ -336,7 +336,7 @@ def get_session_and_usermodel(request):
     #else:
     #    LogEntry.objects.create(key='uid', value="")
 
-    if username is not None:
+    if logged_in_username is not None:
         #user = UserModel.objects.get(id=uid)
         #logged_in_username = user.username
         #temp_message += " username = " + str(logged_in_username)
