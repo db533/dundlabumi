@@ -283,16 +283,11 @@ def get_session_and_usermodel(request):
         # Find the usermodels for the current session.
         usermodels_for_session = session.usermodels.all()
 
-
+        LogEntry.objects.create(key='session_key', value=session_key)
 
     session_key = request.session.session_key
-    print('session_key:', session_key)
-    LogEntry.objects.create(key='session_key', value=session_key)
     session = Session.objects.get(session_key=session_key)
-
-    cookie = request.COOKIES.get('wordpress_logged_in_')
-    user_id = get_user_id_from_wordpress_cookie(cookie)
-    LogEntry.objects.create(key='user_id', value=user_id)
+    print('session_key:', session_key)
 
     # Check for a logged in user.
     session_data = session.get_decoded()
