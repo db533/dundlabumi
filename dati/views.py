@@ -318,57 +318,59 @@ def get_session_and_usermodel(request):
         expire_date = timezone.now() + timezone.timedelta(days=30)
         session = Session.objects.create(session_key=session_key, expire_date=expire_date)
     # Find the usermodels for the current session.
-    usermodels_for_session = session.usermodels.all()
+    #usermodels_for_session = session.usermodels.all()
 
     print('session_key:', session_key)
     LogEntry.objects.create(key='session_key', value=session_key)
     #session = Session.objects.get(session_key=session_key)
-
-    #LogEntry.objects.create(key='request.COOKIES', value=request.COOKIES)
-    #cookie = request.COOKIES.get('wordpress_logged_in_')
+    # LogEntry.objects.create(key='request.COOKIES', value=request.COOKIES)
+    # cookie = request.COOKIES.get('wordpress_logged_in_')
     user_id = request.GET.get('user_id')
     if user_id is not None:
         LogEntry.objects.create(key='user_id', value=user_id)
     else:
         LogEntry.objects.create(key='user_id', value="")
 
-    # Check for a logged in user.
-    session_data = session.get_decoded()
-    uid = session_data.get('_auth_user_id')
-    if uid is not None:
-        user = User.objects.get(id=uid)
-        logged_in_username = user.username
-        temp_message += " username = " + str(logged_in_username)
-        logged_in_user_email = user.email
-        temp_message += " user_email = " + str(logged_in_user_email)
-        LogEntry.objects.create(key='logged_in_user_email', value=logged_in_user_email)
+    if False:
 
-        # Check if this usermodel already exists, if not create:
-        if not UserModel.objects.filter(username=logged_in_username).exists():
-            usermodel = UserModel.objects.create(username=logged_in_username, email=logged_in_user_email)
-            temp_message += " created usermodel as did not exist."
-        else:
-            usermodel = UserModel.objects.get(username=logged_in_username)
-            temp_message += " retrieved existing usermodel."
 
-        #if usermodel not in usermodels_for_session:
-            # This usermodel needs to be conencted to this session.
-        #    usermodel.sessions.add(session)
-        #    usermodel.save()
-    else:
-        # No logged in user, so username not known.
-        # Get the usermodel for this session. Create if it is not associated.
-        if len(usermodels_for_session) > 0:
-            # A usermodel instance was found for the current session key.
-            usermodel = UserModel.objects.get(sessions=session)
-            temp_message += " retrieved usermodel. "
+        # Check for a logged in user.
+        session_data = session.get_decoded()
+        uid = session_data.get('_auth_user_id')
+        if uid is not None:
+            user = User.objects.get(id=uid)
+            logged_in_username = user.username
+            temp_message += " username = " + str(logged_in_username)
+            logged_in_user_email = user.email
+            temp_message += " user_email = " + str(logged_in_user_email)
+            LogEntry.objects.create(key='logged_in_user_email', value=logged_in_user_email)
+
+            # Check if this usermodel already exists, if not create:
+            if not UserModel.objects.filter(username=logged_in_username).exists():
+                usermodel = UserModel.objects.create(username=logged_in_username, email=logged_in_user_email)
+                temp_message += " created usermodel as did not exist."
+            else:
+                usermodel = UserModel.objects.get(username=logged_in_username)
+                temp_message += " retrieved existing usermodel."
+
+            #if usermodel not in usermodels_for_session:
+                # This usermodel needs to be conencted to this session.
+            #    usermodel.sessions.add(session)
+            #    usermodel.save()
         else:
-            # No usermodel exists for this session key. Create one and add the current session.
-            usermodel = UserModel.objects.create()
-            usermodel.sessions.add(session)
-            usermodel.save()
-            temp_message += " created usermodel "
-    LogEntry.objects.create(key='usermodel.id', value=usermodel.id)
+            # No logged in user, so username not known.
+            # Get the usermodel for this session. Create if it is not associated.
+            if len(usermodels_for_session) > 0:
+                # A usermodel instance was found for the current session key.
+                usermodel = UserModel.objects.get(sessions=session)
+                temp_message += " retrieved usermodel. "
+            else:
+                # No usermodel exists for this session key. Create one and add the current session.
+                usermodel = UserModel.objects.create()
+                usermodel.sessions.add(session)
+                usermodel.save()
+                temp_message += " created usermodel "
+        LogEntry.objects.create(key='usermodel.id', value=usermodel.id)
     return session_key, usermodel
 
 def page(request, id):
