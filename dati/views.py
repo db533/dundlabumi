@@ -262,32 +262,75 @@ def render_image2(request, id):
 
     return response
 
+import base64
+import hashlib
+
+def get_user_id_from_wordpress_cookie(cookie):
+    if not cookie:
+        return None
+
+    cookie_name = 'wordpress_logged_in_'
+    start_index = cookie.find(cookie_name)
+    if start_index == -1:
+        return None
+
+    end_index = cookie.find(';', start_index)
+    if end_index == -1:
+        end_index = len(cookie)
+
+    cookie_value = cookie[start_index:end_index]
+    cookie_parts = cookie_value.split('|')
+    if len(cookie_parts) != 3:
+        return None
+
+    user_data = cookie_parts[1]
+    user_data_decoded = base64.b64decode(user_data + '==')
+    md5_hash = hashlib.md5(cookie_value.encode('utf-8') + 'salt'.encode('utf-8')).hexdigest()
+    sha_hash = hashlib.sha256(cookie_value.encode('utf-8') + md5_hash.encode('utf-8')).hexdigest()
+
+    if sha_hash != cookie_parts[2]:
+        return None
+
+    user_data_parts = user_data_decoded.decode('utf-8').split(':')
+    if len(user_data_parts) != 2:
+        return None
+
+    user_id = int(user_data_parts[0])
+
+    return user_id
+
+
 def get_session_and_usermodel(request):
     temp_message = ""
-    if False:
-        if not 's_key' in request.session:
-            temp_message += "s_key missing or None. "
-            request.session.create()
-            request.session.save()
-            session_key = request.session.session_key
-            # Save the session to s_key
-            request.session['s_key'] = session_key
-            request.session.save()
-        else:
-            session_key = request.session['s_key']
-        if Session.objects.filter(session_key=session_key).exists():
-            session = Session.objects.get(session_key=session_key)
-        else:
-            expire_date = timezone.now() + timezone.timedelta(days=30)
-            session = Session.objects.create(session_key=session_key, expire_date=expire_date)
-        # Find the usermodels for the current session.
-        usermodels_for_session = session.usermodels.all()
+    if not 's_key' in request.session:
+        temp_message += "s_key missing or None. "
+        request.session.create()
+        request.session.save()
+        session_key = request.session.session_key
+        # Save the session to s_key
+        request.session['s_key'] = session_key
+        request.session.save()
+    else:
+        session_key = request.session['s_key']
+    if Session.objects.filter(session_key=session_key).exists():
+        session = Session.objects.get(session_key=session_key)
+    else:
+        expire_date = timezone.now() + timezone.timedelta(days=30)
+        session = Session.objects.create(session_key=session_key, expire_date=expire_date)
+    # Find the usermodels for the current session.
+    usermodels_for_session = session.usermodels.all()
 
-        LogEntry.objects.create(key='session_key', value=session_key)
-
-    session_key = request.session.session_key
-    session = Session.objects.get(session_key=session_key)
     print('session_key:', session_key)
+    LogEntry.objects.create(key='session_key', value=session_key)
+    #session = Session.objects.get(session_key=session_key)
+
+    #LogEntry.objects.create(key='request.COOKIES', value=request.COOKIES)
+    #cookie = request.COOKIES.get('wordpress_logged_in_')
+    user_id = request.GET.get('user_id')
+    if user_id is not None:
+        LogEntry.objects.create(key='user_id', value=user_id)
+    else:
+        LogEntry.objects.create(key='user_id', value="")
 
     # Check for a logged in user.
     session_data = session.get_decoded()
@@ -308,10 +351,10 @@ def get_session_and_usermodel(request):
             usermodel = UserModel.objects.get(username=logged_in_username)
             temp_message += " retrieved existing usermodel."
 
-        if usermodel not in usermodels_for_session:
+        #if usermodel not in usermodels_for_session:
             # This usermodel needs to be conencted to this session.
-            usermodel.sessions.add(session)
-            usermodel.save()
+        #    usermodel.sessions.add(session)
+        #    usermodel.save()
     else:
         # No logged in user, so username not known.
         # Get the usermodel for this session. Create if it is not associated.
