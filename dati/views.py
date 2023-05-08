@@ -324,19 +324,21 @@ def get_session_and_usermodel(request):
     LogEntry.objects.create(key='session_key', value=session_key)
 
     # Check for a logged in user.
-    logged_in_username = request.GET.get('username')
-    if logged_in_username is not None and logged_in_username != 0:
-        LogEntry.objects.create(key='logged_in_username', value=logged_in_username)
-    else:
-        LogEntry.objects.create(key='logged_in_username', value="")
-
-    #uid = request.GET.get('user_id')
-    #if uid is not None and uid != 0:
-    #    LogEntry.objects.create(key='uid', value=uid)
+    #logged_in_username = request.GET.get('username')
+    #if logged_in_username is not None and logged_in_username != 0:
+    #    LogEntry.objects.create(key='logged_in_username', value=logged_in_username)
     #else:
-    #    LogEntry.objects.create(key='uid', value="")
+    #    LogEntry.objects.create(key='logged_in_username', value="")
 
-    if logged_in_username is not None:
+    uid = request.GET.get('user_id')
+    if uid is not None and uid != 0:
+        LogEntry.objects.create(key='uid', value=uid)
+    else:
+        LogEntry.objects.create(key='uid', value="")
+
+    if uid is not None:
+        # A Wordpress user_id is known for this usermodel.
+
         #user = UserModel.objects.get(id=uid)
         #logged_in_username = user.username
         #temp_message += " username = " + str(logged_in_username)

@@ -44,14 +44,13 @@ class DesiredSize(models.Model):
 
 class UserModel(models.Model):
     subscriber_id = models.IntegerField(default=None, blank=True, null=True, help_text='The subscriber ID from the Newsletter plugin')
+    wp_user_id = models.IntegerField(default=None, blank=True, null=True,
+                                        help_text='The Wordpress user ID for this user')
     email = EmailField(max_length=254, blank=True, null=True)
     username = models.CharField(max_length=255, help_text='The Wordpress username of a registered user.', null=True, default=None)
-    lists = models.ManyToManyField(List, related_name='users')
+    #lists = models.ManyToManyField(List, related_name='users')
     desiredsizes = models.ManyToManyField(DesiredSize, related_name='desiredsizes')
     sessions = models.ManyToManyField(Session, related_name="usermodels")
-    session_unique = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=False,
-                                      help_text='The session_key that refers to this user',
-                                      verbose_name=('Unique session_key'))
     receive_emails = models.BooleanField(default=False)
 
     def __str__(self):
