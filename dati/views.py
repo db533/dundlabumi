@@ -318,32 +318,31 @@ def get_session_and_usermodel(request):
         expire_date = timezone.now() + timezone.timedelta(days=30)
         session = Session.objects.create(session_key=session_key, expire_date=expire_date)
     # Find the usermodels for the current session.
-    usermodels_for_session = session.usermodels.all()
+    #usermodels_for_session = session.usermodels.all()
 
     print('session_key:', session_key)
     LogEntry.objects.create(key='session_key', value=session_key)
-    #session = Session.objects.get(session_key=session_key)
-
-    #LogEntry.objects.create(key='request.COOKIES', value=request.COOKIES)
-    #cookie = request.COOKIES.get('wordpress_logged_in_')
-    user_id = request.GET.get('user_id')
-    if user_id is not None and user_id != 0:
-        LogEntry.objects.create(key='user_id', value=user_id)
-    else:
-        LogEntry.objects.create(key='user_id', value="")
 
     # Check for a logged in user.
-    session_data = session.get_decoded()
-    uid = session_data.get('_auth_user_id')
-    LogEntry.objects.create(key='uid', value=uid)
+    logged_in_username = request.GET.get('username')
+    if logged_in_username is not None and logged_in_username != 0:
+        LogEntry.objects.create(key='logged_in_username', value=logged_in_username)
+    else:
+        LogEntry.objects.create(key='logged_in_username', value="")
 
-    if uid is not None:
-        user = User.objects.get(id=uid)
-        logged_in_username = user.username
-        temp_message += " username = " + str(logged_in_username)
-        logged_in_user_email = user.email
-        temp_message += " user_email = " + str(logged_in_user_email)
-        LogEntry.objects.create(key='logged_in_user_email', value=logged_in_user_email)
+    #uid = request.GET.get('user_id')
+    #if uid is not None and uid != 0:
+    #    LogEntry.objects.create(key='uid', value=uid)
+    #else:
+    #    LogEntry.objects.create(key='uid', value="")
+
+    if username is not None:
+        #user = UserModel.objects.get(id=uid)
+        #logged_in_username = user.username
+        #temp_message += " username = " + str(logged_in_username)
+        #logged_in_user_email = user.email
+        #temp_message += " user_email = " + str(logged_in_user_email)
+        #LogEntry.objects.create(key='logged_in_user_email', value=logged_in_user_email)
 
         # Check if this usermodel already exists, if not create:
         if not UserModel.objects.filter(username=logged_in_username).exists():
