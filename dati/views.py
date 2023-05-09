@@ -317,61 +317,51 @@ def get_session_and_usermodel(request):
     else:
         expire_date = timezone.now() + timezone.timedelta(days=30)
         session = Session.objects.create(session_key=session_key, expire_date=expire_date)
-    # Find the usermodels for the current session.
-    #usermodels_for_session = session.usermodels.all()
 
     print('session_key:', session_key)
     LogEntry.objects.create(key='session_key', value=session_key)
 
-    # Check for a logged in user.
-    #logged_in_username = request.GET.get('username')
-    #if logged_in_username is not None and logged_in_username != 0:
-    #    LogEntry.objects.create(key='logged_in_username', value=logged_in_username)
-    #else:
-    #    LogEntry.objects.create(key='logged_in_username', value="")
+    # Find the usermodels for the current session.
+    #usermodels_for_session = session.usermodels.all()
 
+    # Get the user_id if it was passed from Wordpress.
     uid = request.GET.get('user_id')
     if uid is not None and uid != 0:
         LogEntry.objects.create(key='uid', value=uid)
     else:
         LogEntry.objects.create(key='uid', value="")
 
+    # Check if the session points to an existing user. If not, need to create and associate a usermodel
+    usermodel_for_current_session = session.usermodel_set.all()
+    if not usermodel_for_current_session:
+        # No usermodel is associated with this session. Create one.
+        usermodel = UserModel.objects.create()
+        usermodel.sessions.add(session)
+        usermodel.save()
+        usermodel_for_current_session = usermodel
+    LogEntry.objects.create(key='usermodel', value=usermodel.id)
+
+    # We now have a session with session_key and a linked usermodel instance.
+
     if uid is not None:
         # A Wordpress user_id is known for this usermodel.
-
-        #user = UserModel.objects.get(id=uid)
-        #logged_in_username = user.username
-        #temp_message += " username = " + str(logged_in_username)
-        #logged_in_user_email = user.email
-        #temp_message += " user_email = " + str(logged_in_user_email)
-        #LogEntry.objects.create(key='logged_in_user_email', value=logged_in_user_email)
-
-        # Check if this usermodel already exists, if not create:
-        if not UserModel.objects.filter(username=logged_in_username).exists():
-            usermodel = UserModel.objects.create(username=logged_in_username, email=logged_in_user_email)
-            temp_message += " created usermodel as did not exist."
-        else:
-            usermodel = UserModel.objects.get(username=logged_in_username)
+        # Check if this usermodel already associated with a wp_user_id:
+        if UserModel.objects.filter(wp_user_id=uid).exists():
+            usermodel = UserModel.objects.get(wp_user_id=uid)
             temp_message += " retrieved existing usermodel."
-
-        #if usermodel not in usermodels_for_session:
-            # This usermodel needs to be conencted to this session.
-        #    usermodel.sessions.add(session)
-        #    usermodel.save()
-    else:
-        # No logged in user, so username not known.
-        # Get the usermodel for this session. Create if it is not associated.
-        if len(usermodels_for_session) > 0:
-            # A usermodel instance was found for the current session key.
-            usermodel = UserModel.objects.get(sessions=session)
-            temp_message += " retrieved usermodel. "
+            LogEntry.objects.create(key='usermodel.wp_user_id', value=usermodel.wp_user_id)
         else:
-            # No usermodel exists for this session key. Create one and add the current session.
-            usermodel = UserModel.objects.create()
-            usermodel.sessions.add(session)
+            # usermodel is not yet associated with the wp_user_id
+            # Retrieve values to update UserModel record
+            user = User.objects.get(id=uid)
+            logged_in_username = user.username
+            logged_in_user_email = user.email
+            LogEntry.objects.create(key='logged_in_user_email', value=logged_in_user_email)
+            usermodel.wp_user_id = uid
+            usermodel.email = logged_in_user_email
+            usermodel.username = logged_in_username
             usermodel.save()
-            temp_message += " created usermodel "
-    LogEntry.objects.create(key='usermodel.id', value=usermodel.id)
+            LogEntry.objects.create(key='usermodel.wp_user_id', value=usermodel.wp_user_id)
     return session_key, usermodel
 
 def page(request, id):
