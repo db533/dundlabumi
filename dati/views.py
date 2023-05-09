@@ -352,6 +352,15 @@ def get_session_and_usermodel(request):
             usermodel = UserModel.objects.get(wp_user_id=uid)
             temp_message += " retrieved existing usermodel."
             LogEntry.objects.create(key='usermodel.wp_user_id', value=usermodel.wp_user_id)
+
+            # Check that the session points to the usermodel that is associated with the wp_user_id.
+            if usermodels_for_current_session.id != usermodel.id:
+                # The session is pointing to a different usermodel record.
+                # Delete this record and associate the session with the existing usermodel that
+                LogEntry.objects.create(key='Deleting usermodel record as wp_user is saved in different record. Deleting usermodel.id:', value=usermodels_for_current_session.id)
+                usermodels_for_current_session.delete()
+                usermodel.sessions.add(session)
+                usermodel.save()
         else:
             # usermodel is not yet associated with the wp_user_id
             # Retrieve values to update UserModel record
