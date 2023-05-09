@@ -332,13 +332,15 @@ def get_session_and_usermodel(request):
         LogEntry.objects.create(key='uid', value="")
 
     # Check if the session points to an existing user. If not, need to create and associate a usermodel
-    usermodel_for_current_session = session.usermodel_set.all()
-    if not usermodel_for_current_session:
+    usermodels_for_current_session = session.usermodels.all()
+    if not usermodels_for_current_session:
         # No usermodel is associated with this session. Create one.
         usermodel = UserModel.objects.create()
         usermodel.sessions.add(session)
         usermodel.save()
-        usermodel_for_current_session = usermodel
+        usermodels_for_current_session = [usermodel]
+    else:
+        usermodel = usermodels_for_current_session[0]
     LogEntry.objects.create(key='usermodel', value=usermodel.id)
 
     # We now have a session with session_key and a linked usermodel instance.
