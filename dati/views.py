@@ -373,13 +373,13 @@ def get_session_and_usermodel(request):
             usermodel.username = logged_in_username
             usermodel.save()
             LogEntry.objects.create(key='usermodel.wp_user_id', value=usermodel.wp_user_id)
-    return session_key, usermodel
+    return session, usermodel
 
 def page(request, id):
     # Get the session from the received request
     LogEntry.objects.create(key='Page view occured. WPID:', value=id)
     temp_message=""
-    session_key, usermodel = get_session_and_usermodel(request)
+    session, usermodel = get_session_and_usermodel(request)
     print('usermodel.id:', usermodel.id)
 
     image = Image.new('RGB', (1, 1), (255, 255, 255))
