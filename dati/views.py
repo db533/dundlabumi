@@ -326,7 +326,7 @@ def get_session_and_usermodel(request):
 
     # Get the user_id if it was passed from Wordpress.
     uid = request.GET.get('user_id')
-    if uid is not None and uid != 0:
+    if uid is not None or uid > 0:
         LogEntry.objects.create(key='uid', value=uid)
     else:
         LogEntry.objects.create(key='uid', value="")
@@ -345,7 +345,7 @@ def get_session_and_usermodel(request):
 
     # We now have a session with session_key and a linked usermodel instance.
 
-    if uid is not None:
+    if uid is not None or uid > 0:
         # A Wordpress user_id is known for this usermodel.
         # Check if this usermodel already associated with a wp_user_id:
         if UserModel.objects.filter(wp_user_id=uid).exists():
