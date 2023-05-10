@@ -106,9 +106,10 @@ def render_with_redirect(mail_template, redirect_set, email, context_data, targe
             redirect_instances.add(redirect)
             redirect_set.add(redirect)
             LogEntry.objects.create(key='target_wpid.wp_id', value=target_wpid.wp_id)
-        LogEntry.objects.create(key='redirect_url', value=redirect_url)
+
 
         redirect_url = reverse('link', args=[redirect_code])
+        LogEntry.objects.create(key='redirect_url', value=redirect_url)
         return f'<a href="https://statsdev.dundlabumi.lv{redirect_url}" rel="nofollow noreferrer"'
 
     pattern = r'<a href="(https?://[^"]+)"'
