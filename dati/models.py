@@ -143,9 +143,9 @@ class UserPageview(models.Model):
     wpid = models.ForeignKey(WPID, on_delete=models.SET_NULL, null=True, blank=False,
                                   help_text='The Wordpress ID for the page that was linked to.',
                                   verbose_name=('WP id'))
-    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=True,
-                                help_text='The session ID associated with this pageview',
-                                verbose_name=('Session ID'))
+    #session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=True,
+    #                            help_text='The session ID associated with this pageview',
+    #                            verbose_name=('Session ID'))
     aged_score = models.FloatField(help_text='Pageview relevance score',blank=False, verbose_name=('Skatīto lapu svarīgums'), default=0)
 
     def __str__(self):
@@ -159,9 +159,9 @@ class UserLink(models.Model):
     wpid = models.ForeignKey(WPID, on_delete=models.SET_NULL, null=True, blank=False,
                                   help_text='The Wordpress ID for the page that was linked to.',
                                   verbose_name=('WP id'))
-    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=True,
-                                help_text='The session ID associated with this link click',
-                                verbose_name=('Session ID'))
+    #session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=True,
+    #                            help_text='The session ID associated with this link click',
+    #                            verbose_name=('Session ID'))
     aged_score = models.FloatField(help_text='Link relevance score',blank=False, verbose_name=('Atvērtā linka svarīgums'), default=0)
 
 class UserTag(models.Model):
@@ -172,9 +172,9 @@ class UserTag(models.Model):
     tag = models.ForeignKey(Tag, on_delete=models.SET_NULL, null=True, blank=False,
                                   help_text='The tag for products this user viewed.',
                                   verbose_name=('tag id'))
-    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=True,
-                                help_text='The session ID associated with this link click',
-                                verbose_name=('Session ID'))
+    #session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True, blank=True,
+    #                            help_text='The session ID associated with this link click',
+    #                            verbose_name=('Session ID'))
     aged_score = models.FloatField(help_text='Link relevance score',blank=False, verbose_name=('Atvērtā linka svarīgums'), default=0)
 
 
