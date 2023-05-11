@@ -392,7 +392,7 @@ def page(request, id):
     pageview = Pageview.objects.create(wpid=wpid, session=session, temp_message=temp_message)
 
     # Now increment the User / Pageview relevance score.
-    existing_userpageviews = UserPageview.objects.filter(session=session, wpid=wpid)
+    existing_userpageviews = UserPageview.objects.filter(user_model=usermodel, wpid=wpid)
     if existing_userpageviews.exists():
         # Already have a relevance score for this page for a specific session, so it has been clicked in the last 2 years from this session_key
         user_page = existing_userpageviews.first()
@@ -406,7 +406,7 @@ def page(request, id):
         user_page.save()
     else:
         # No relevance score for a usermodel or this session_key so link not clicked in last 2 years.
-        UserPageview.objects.create(user_model=usermodel, session=session, wpid=wpid, aged_score=1)
+        UserPageview.objects.create(user_model=usermodel,wpid=wpid, aged_score=1)
 
     return response
 
@@ -440,9 +440,9 @@ def link(request, id):
 
         # Now increment the User / Link relevance score.
         clicked_wpid = WPID.objects.get(wp_id=wpid_of_linked_page)
-        if UserLink.objects.filter(session=session, wpid=clicked_wpid).exists():
+        if UserLink.objects.filter(user_model=usermodel, wpid=clicked_wpid).exists():
             # Already have a relevance score for this link for a specific session, so it has been clicked in the last 2 years from this session_key
-            user_link = UserLink.objects.filter(session=session, wpid=clicked_wpid)[0]
+            user_link = UserLink.objects.filter(user_model=usermodel, wpid=clicked_wpid)[0]
             # Increment aged score by 1 as new link click today.
             user_link.aged_score += 1
             if user_link.user_model is None:
@@ -451,7 +451,7 @@ def link(request, id):
             user_link.save()
         else:
             # No relevance score for a usermodel or this session_key so link not clicked in last 2 years.
-            UserLink.objects.create(user_model=usermodel, session=session, wpid=clicked_wpid, aged_score=1)
+            UserLink.objects.create(user_model=usermodel, wpid=clicked_wpid, aged_score=1)
 
     return redirect(target_url, response=response)
 
