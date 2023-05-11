@@ -430,6 +430,16 @@ def link(request, id):
         session, usermodel = get_session_and_usermodel(request)
         print('usermodel.id:', usermodel.id)
 
+        # If the session usermodel is not the same as the redirect link usermodel, change the usermodel to that of the redirect link.
+        if redirect_usermodel is not None:
+            if usermodel.id != redirect_usermodel.id:
+                # Users not the same. Change the session to point to the redirect user.
+                # Delete the current usermodel
+                usermodel.delete()
+                redirect_usermodel.sessions.add(session)
+                redirect_usermodel.save()
+                usermodel = redirect_usermodel
+
         # Create the response to return to the user.
         response = redirect(target_url)
         #if session_key is not None:
