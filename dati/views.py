@@ -371,7 +371,7 @@ def get_session_and_usermodel(request):
                         remaining_userpageview.aged_score += old_pageview.aged_score
                         LogEntry.objects.create(key="Adding aged_score to usermodel's userpageview aged_score. remaining_userpageview:",value=remaining_userpageview.id)
                         remaining_userpageview.save()
-                        old_userpageview.delete()
+                        old_pageview.delete()
                     else:
                         old_pageview.user_model=usermodel
                         old_pageview.save()
