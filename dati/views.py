@@ -409,6 +409,19 @@ def page(request, id):
         # No relevance score for a usermodel or this session_key so link not clicked in last 2 years.
         UserPageview.objects.create(user_model=usermodel,wpid=wpid, aged_score=1)
 
+    # Retrieve all the tags associated with the given WPID instance
+    wpid_tags = wpid.tag_set.all()
+
+    # Iterate over each tag instance
+    for tag in wpid_tags:
+        # Check if an instance of UserTag exists for this tag and UserModel
+        user_tag, created = UserTag.objects.get_or_create(tag=tag, user_model=usermodel, wpid=wpid, defaults={'aged_score': 1})
+
+        # Increment the aged_score if the instance already exists
+        if not created:
+            user_tag.aged_score += 1
+            user_tag.save()
+
     return response
 
 from django.shortcuts import redirect
@@ -450,6 +463,7 @@ def link(request, id):
                 redirect_usermodel.sessions.add(session)
                 redirect_usermodel.save()
                 usermodel = redirect_usermodel
+                LogEntry.objects.create(key='Usermodel changed to usermodel of redirect link:', value=usermodel.id)
 
         # Create the response to return to the user.
         response = redirect(target_url)
