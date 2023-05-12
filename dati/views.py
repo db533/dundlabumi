@@ -360,9 +360,10 @@ def get_session_and_usermodel(request):
                 # The session is pointing to a different usermodel record.
                 # Delete this record and associate the session with the existing usermodel that
                 LogEntry.objects.create(key='Deleting usermodel record as wp_user is saved in different record. Deleting usermodel.id:', value=usermodels_for_current_session[0].id)
-                usermodels_for_current_session[0].delete()
                 usermodel.sessions.add(session)
                 usermodel.save()
+                usermodels_for_current_session[0].delete()
+
         else:
             # usermodel is not yet associated with the wp_user_id
             # Retrieve values to update UserModel record
