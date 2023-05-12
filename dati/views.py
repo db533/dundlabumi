@@ -361,9 +361,8 @@ def get_session_and_usermodel(request):
                 # Delete this record and associate the session with the existing usermodel that
                 LogEntry.objects.create(key='Deleting usermodel record as wp_user is saved in different record. Deleting usermodel.id:', value=usermodels_for_current_session[0].id)
                 usermodel.sessions.add(session)
-                usermodel.save()
                 usermodels_for_current_session[0].delete()
-
+                usermodel.save()
         else:
             # usermodel is not yet associated with the wp_user_id
             # Retrieve values to update UserModel record
@@ -435,6 +434,16 @@ def link(request, id):
         if redirect_usermodel is not None:
             if usermodel.id != redirect_usermodel.id:
                 # Users not the same. Change the session to point to the redirect user.
+
+                # Update UserPageView instances where user_model = usermodel
+                UserPageview.objects.filter(user_model=usermodel).update(user_model=redirect_usermodel)
+
+                # Update UserLink instances where user_model = usermodel
+                UserLink.objects.filter(user_model=usermodel).update(user_model=redirect_usermodel)
+
+                # Update UserTag instances where user_model = usermodel
+                UserTag.objects.filter(user_model=usermodel).update(user_model=redirect_usermodel)
+
                 # Delete the current usermodel
                 usermodel.delete()
                 redirect_usermodel.sessions.add(session)
