@@ -381,9 +381,9 @@ def get_session_and_usermodel(request):
                     old_usertags = UserTag.objects.filter(user_model=old_usermodel)
                     for old_tag in old_usertags:
                         LogEntry.objects.create(key="Evaluating user's tag for tag_id:", value=old_tag.tag_id)
-                        if UserTag.objects.filter(user_model=usermodel, wpid=old_tag.tag_id).exists():
+                        if UserTag.objects.filter(user_model=usermodel, tag=old_tag.tag_id).exists():
                             remaining_usertag = UserTag.objects.get(user_model=usermodel,
-                                                                              wpid=old_tag.tag_id)
+                                                                              tag=old_tag.tag_id)
                             remaining_usertag.aged_score += old_tag.aged_score
                             LogEntry.objects.create(
                                 key="Adding aged_score to usermodel's usertag aged_score. remaining_usertag:",
