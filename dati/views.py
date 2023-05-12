@@ -390,6 +390,7 @@ def page(request, id):
 
     wpid=WPID.objects.get(wp_id=id)
     pageview = Pageview.objects.create(wpid=wpid, session=session, temp_message=temp_message)
+    LogEntry.objects.create(key='Page view registered. ID:', value=pageview.id)
 
     # Now increment the User / Pageview relevance score.
     existing_userpageviews = UserPageview.objects.filter(user_model=usermodel, wpid=wpid)
@@ -456,7 +457,8 @@ def link(request, id):
         #    response.set_cookie('s_key', session_key)
         #    temp_message += "Setting cookie. "
         #Click.objects.create(redirect_code_id=id, session=session, temp_message = temp_message)
-        Click.objects.create(redirect_code=redirect_record, session=session, temp_message=temp_message)
+        link_click = Click.objects.create(redirect_code=redirect_record, session=session, temp_message=temp_message)
+        LogEntry.objects.create(key='Link click registered. ID:', value=link_click.id)
 
         # Now increment the User / Link relevance score.
         clicked_wpid = WPID.objects.get(wp_id=wpid_of_linked_page)
