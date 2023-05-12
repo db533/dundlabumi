@@ -365,23 +365,17 @@ def get_session_and_usermodel(request):
                 # Get UserPageviews for old_usermodel and usermodel.
                 old_userpageviews = UserPageview.objects.filter(user_model=old_usermodel)
                 for old_pageview in old_userpageviews:
-                    LogEntry.objects.create(
-                        key="Evaluating user's pageview for wpid:',
-                    value = old_pageview.wpid)
-                    if UserPageview.objects.filter(user_model=usermodel, wpid=old_pageview.wpid).exists()
+                    LogEntry.objects.create(key="Evaluating user's pageview for wpid:",value = old_pageview.wpid)
+                    if UserPageview.objects.filter(user_model=usermodel, wpid=old_pageview.wpid).exists():
                         remaining_userpageview = UserPageview.objects.get(user_model=usermodel, wpid=old_pageview.wpid)
                         remaining_userpageview.aged_score += old_userpageviews.aged_score
-                        LogEntry.objects.create(
-                            key="Adding aged_score to usermodel's userpageview aged_score. remaining_userpageview:',
-                            value=remaining_userpageview.id)
+                        LogEntry.objects.create(key="Adding aged_score to usermodel's userpageview aged_score. remaining_userpageview:",value=remaining_userpageview.id)
                         remaining_userpageview.save()
                         old_userpageview.delete()
                     else:
                         old_userpageview.user_model=usermodel
                         old_userpageview.save()
-                        LogEntry.objects.create(
-                            key="Changed userpageview to logged in usermodel. old_userpageview:',
-                        value = old_userpageview.id)
+                        LogEntry.objects.create(key="Changed userpageview to logged in usermodel. old_userpageview:",value = old_userpageview.id)
 
                 usermodel.sessions.add(session)
                 old_usermodel.delete()
