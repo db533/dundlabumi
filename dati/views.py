@@ -421,6 +421,10 @@ def page(request, id):
         if not created:
             user_tag.aged_score += 1
             user_tag.save()
+            LogEntry.objects.create(key='Existing UserTag incremented. tag_id:', value=user_tag.tag_id)
+            LogEntry.objects.create(key='New aged_score:', value=user_tag.aged_score)
+        else:
+            LogEntry.objects.create(key='New UserTag registered. ID:', value=user_tag.id)
 
     return response
 
