@@ -410,7 +410,7 @@ def page(request, id):
         UserPageview.objects.create(user_model=usermodel,wpid=wpid, aged_score=1)
 
     # Retrieve all the tags associated with the given WPID instance
-    wpid_tags = wpid.tag_set.all()
+    wpid_tags = wpid.tags.all()
 
     # Iterate over each tag instance
     for tag in wpid_tags:
