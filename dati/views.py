@@ -415,7 +415,7 @@ def page(request, id):
     # Iterate over each tag instance
     for tag in wpid_tags:
         # Check if an instance of UserTag exists for this tag and UserModel
-        user_tag, created = UserTag.objects.get_or_create(tag=tag, user_model=usermodel, wpid=wpid, defaults={'aged_score': 1})
+        user_tag, created = UserTag.objects.get_or_create(tag=tag, user_model=usermodel, defaults={'aged_score': 1})
 
         # Increment the aged_score if the instance already exists
         if not created:
