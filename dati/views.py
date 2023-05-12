@@ -377,6 +377,26 @@ def get_session_and_usermodel(request):
                         old_pageview.save()
                         LogEntry.objects.create(key="Changed userpageview to logged in usermodel. old_userpageview:",value = old_pageview.id)
 
+                    # Get UserTags for old_usermodel and usermodel.
+                    old_usertags = UserTag.objects.filter(user_model=old_usermodel)
+                    for old_tag in old_usertags:
+                        LogEntry.objects.create(key="Evaluating user's tag for tag_id:", value=old_tag.tag_id)
+                        if UserTag.objects.filter(user_model=usermodel, wpid=old_tag.tag_id).exists():
+                            remaining_usertag = UserTag.objects.get(user_model=usermodel,
+                                                                              wpid=old_tag.tag_id)
+                            remaining_usertag.aged_score += old_tag.aged_score
+                            LogEntry.objects.create(
+                                key="Adding aged_score to usermodel's usertag aged_score. remaining_usertag:",
+                                value=remaining_usertag.id)
+                            remaining_usertag.save()
+                            old_tag.delete()
+                        else:
+                            old_tag.user_model = usermodel
+                            old_tag.save()
+                            LogEntry.objects.create(
+                                key="Changed userlink to logged in usermodel. old_tag:",
+                                value=old_tag.id)
+
                 usermodel.sessions.add(session)
                 old_usermodel.delete()
                 usermodel.save()
