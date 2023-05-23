@@ -305,6 +305,7 @@ def get_user_id_from_wordpress_cookie(cookie):
 def get_session_and_usermodel(request):
     temp_message = ""
     if not 's_key' in request.session:
+        LogEntry.objects.create(key='s_key cookie not found in request', value="")
         temp_message += "s_key missing or None. "
         request.session.create()
         request.session.save()
@@ -313,6 +314,7 @@ def get_session_and_usermodel(request):
         request.session['s_key'] = session_key
         request.session.save()
     else:
+        LogEntry.objects.create(key='s_key cookie present in request', value="")
         session_key = request.session['s_key']
     if Session.objects.filter(session_key=session_key).exists():
         session = Session.objects.get(session_key=session_key)
@@ -350,6 +352,7 @@ def get_session_and_usermodel(request):
     if uid is not None and str(uid) != '0':
         # A Wordpress user_id is known for this usermodel.
         # Check if this usermodel already associated with a wp_user_id:
+        LogEntry.objects.create(key='uid exists', value="")
         if UserModel.objects.filter(wp_user_id=uid).exists():
             usermodel = UserModel.objects.get(wp_user_id=uid)
             temp_message += " retrieved existing usermodel."
