@@ -175,6 +175,7 @@ APPEND_SLASH=False
 
 # Set the session engine to use cookies
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_DOMAIN = '.dundlabumi.lv'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
