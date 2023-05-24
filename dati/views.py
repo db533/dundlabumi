@@ -311,7 +311,7 @@ def get_user_id_from_wordpress_cookie(cookie):
 def get_session_and_usermodel(request):
     temp_message = ""
     LogEntry.objects.create(key='BASE_DIR', value=BASE_DIR)
-    if 'media' in BASE_DIR:
+    if 'media' in str(BASE_DIR):
         session_cookie_name = 's_key_prod'
     else:
         session_cookie_name = 's_key'
