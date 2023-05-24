@@ -1,5 +1,7 @@
 import logging
 logging.basicConfig(level=logging.INFO)
+from pathlib import Path
+
 
 from django.shortcuts import render
 from .models import *
@@ -19,6 +21,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from PIL import Image
 from django.contrib.sessions.models import Session
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+print('BASE_DIR:',BASE_DIR)
+
 
 # Create your views here.
 def index(request):
@@ -304,18 +310,24 @@ def get_user_id_from_wordpress_cookie(cookie):
 
 def get_session_and_usermodel(request):
     temp_message = ""
-    if not 's_key' in request.session:
-        LogEntry.objects.create(key='s_key cookie not found in request', value="")
-        temp_message += "s_key missing or None. "
+    LogEntry.objects.create(key='BASE_DIR', value=BASE_DIR)
+    if BASE_DIR == '/home/saknesar/dundlabumi.lv/media':
+        session_cookie_name = 's_key_prod'
+    else:
+        session_cookie_name = 's_key'
+    LogEntry.objects.create(key='session_cookie', value=session_cookie_name)
+    if not session_cookie_name in request.session:
+        LogEntry.objects.create(key='session_cookie_name cookie not found in request', value="")
+        temp_message += "session_cookie_name cookie missing or None. "
         request.session.create()
         request.session.save()
         session_key = request.session.session_key
         # Save the session to s_key
-        request.session['s_key'] = session_key
+        request.session[session_cookie_name] = session_key
         request.session.save()
     else:
-        LogEntry.objects.create(key='s_key cookie present in request', value="")
-        session_key = request.session['s_key']
+        LogEntry.objects.create(key='session_cookie_name cookie present in request', value="")
+        session_key = request.session[session_cookie_name]
     if Session.objects.filter(session_key=session_key).exists():
         session = Session.objects.get(session_key=session_key)
     else:
