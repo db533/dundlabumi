@@ -1,5 +1,7 @@
 import logging
 logging.basicConfig(level=logging.INFO)
+import socket
+hostname = socket.gethostname()
 
 from django.shortcuts import render
 from .models import *
@@ -304,6 +306,8 @@ def get_user_id_from_wordpress_cookie(cookie):
 
 def get_session_and_usermodel(request):
     temp_message = ""
+    LogEntry.objects.create(key='hostname', value=hostname)
+    STAGE = 'develop'
     if STAGE == 'prod':
         session_cookie_name = 's_key_prod'
     else:
