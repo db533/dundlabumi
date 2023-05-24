@@ -304,18 +304,23 @@ def get_user_id_from_wordpress_cookie(cookie):
 
 def get_session_and_usermodel(request):
     temp_message = ""
-    if not 's_key' in request.session:
-        LogEntry.objects.create(key='s_key cookie not found in request', value="")
-        temp_message += "s_key missing or None. "
+    if STAGE == 'prod':
+        session_cookie_name = 's_key_prod'
+    else:
+        session_cookie_name = 's_key'
+    LogEntry.objects.create(key='session_cookie', value=session_cookie_name)
+    if not session_cookie_name in request.session:
+        LogEntry.objects.create(key='session_cookie_name cookie not found in request', value="")
+        temp_message += "session_cookie_name cookie missing or None. "
         request.session.create()
         request.session.save()
         session_key = request.session.session_key
         # Save the session to s_key
-        request.session['s_key'] = session_key
+        request.session[session_cookie_name] = session_key
         request.session.save()
     else:
-        LogEntry.objects.create(key='s_key cookie present in request', value="")
-        session_key = request.session['s_key']
+        LogEntry.objects.create(key='session_cookie_name cookie present in request', value="")
+        session_key = request.session[session_cookie_name]
     if Session.objects.filter(session_key=session_key).exists():
         session = Session.objects.get(session_key=session_key)
     else:

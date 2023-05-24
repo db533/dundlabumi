@@ -29,6 +29,9 @@ DEBUG = env.bool('debug', default=False)
 TEMPLATE_DEBUG = DEBUG
 print('debug:',DEBUG)
 
+STAGE = env.bool('stage', default='develop')
+print('STAGE:',STAGE)
+
 ALLOWED_HOSTS = env('allowed_hosts', cast=[str])
 print('ALLOWED_HOSTS:',ALLOWED_HOSTS)
 
