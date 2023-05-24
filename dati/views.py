@@ -1,7 +1,7 @@
 import logging
 logging.basicConfig(level=logging.INFO)
-import socket
-hostname = socket.gethostname()
+from pathlib import Path
+
 
 from django.shortcuts import render
 from .models import *
@@ -21,6 +21,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from PIL import Image
 from django.contrib.sessions.models import Session
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+print('BASE_DIR:',BASE_DIR)
+
 
 # Create your views here.
 def index(request):
@@ -306,7 +310,7 @@ def get_user_id_from_wordpress_cookie(cookie):
 
 def get_session_and_usermodel(request):
     temp_message = ""
-    LogEntry.objects.create(key='hostname', value=hostname)
+    LogEntry.objects.create(key='BASE_DIR', value=BASE_DIR)
     STAGE = 'develop'
     if STAGE == 'prod':
         session_cookie_name = 's_key_prod'
