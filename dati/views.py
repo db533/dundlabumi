@@ -26,6 +26,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 print('BASE_DIR:',BASE_DIR)
 
 
+def get_cookie_name():
+    LogEntry.objects.create(key='BASE_DIR', value=BASE_DIR)
+    if 'media' in str(BASE_DIR):
+        session_cookie_name = 's_key_prod'
+    else:
+        session_cookie_name = 's_key'
+    return session_cookie_name
+
 # Create your views here.
 def index(request):
 
@@ -265,8 +273,9 @@ def render_image2(request, id):
     response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
     image.save(response, "PNG")
 
-    response.set_cookie('s_key', session_key)
-    response.set_cookie('s_id', email_recipient.subscriber_id)
+    session_cookie_name = get_cookie_name()
+
+    response.set_cookie(session_cookie_name, session_key)
 
     return response
 
@@ -310,11 +319,7 @@ def get_user_id_from_wordpress_cookie(cookie):
 
 def get_session_and_usermodel(request):
     temp_message = ""
-    LogEntry.objects.create(key='BASE_DIR', value=BASE_DIR)
-    if 'media' in str(BASE_DIR):
-        session_cookie_name = 's_key_prod'
-    else:
-        session_cookie_name = 's_key'
+    session_cookie_name = get_cookie_name()
     LogEntry.objects.create(key='session_cookie', value=session_cookie_name)
     if not session_cookie_name in request.session:
         LogEntry.objects.create(key='session_cookie_name cookie not found in request', value="")
@@ -431,11 +436,7 @@ def get_session_and_usermodel(request):
 
 def get_session_and_usermodel2(request):
     temp_message = ""
-    LogEntry.objects.create(key='BASE_DIR', value=BASE_DIR)
-    if 'media' in str(BASE_DIR):
-        session_cookie_name = 's_key_prod'
-    else:
-        session_cookie_name = 's_key'
+    session_cookie_name = get_cookie_name()
     LogEntry.objects.create(key='session_cookie', value=session_cookie_name)
     if not session_cookie_name in request.session:
         LogEntry.objects.create(key='session_cookie_name cookie not found in request', value="")
