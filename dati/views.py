@@ -481,6 +481,8 @@ def page(request, id):
             user_tag = UserTag.objects.create(tag=tag, user_model=usermodel, defaults={'aged_score': 1})
             created = True
             user_tag.save()
+        else:
+            user_tag = user_tag[0]
         #user_tag, created = UserTag.objects.get_or_create(tag=tag, user_model=usermodel, defaults={'aged_score': 1})
 
         # Increment the aged_score if the instance already exists
