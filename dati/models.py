@@ -154,7 +154,7 @@ class UserPageview(models.Model):
 class UserLink(models.Model):
     # Model to store the current aged relevance score of a particular link click for a particular user.
     #old_id = models.AutoField(db_column='id')
-    id = models.AutoField(primary_key=True)
+    #id = models.AutoField(primary_key=True)
     user_model = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=False,
                                  help_text='The user for whom this link relevance is being computed',
                                  verbose_name=('User'))
@@ -165,6 +165,7 @@ class UserLink(models.Model):
 
 #class UserTag(models.Model):
     # Model to store the current aged relevance score of a particular link click for a particular user.
+#    id = models.AutoField(primary_key=True)
 #    user_model = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=False,
 #                                 help_text='The user for whom this link relevance is being computed',
 #                                 verbose_name=('User'))
@@ -178,4 +179,3 @@ class LogEntry(models.Model):
     entry_dt = models.DateTimeField(auto_now=False, auto_now_add=True)
     key = models.CharField(max_length=255)
     value = models.CharField(max_length=1000)
-
