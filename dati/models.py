@@ -153,6 +153,7 @@ class UserPageview(models.Model):
 
 class UserLink(models.Model):
     # Model to store the current aged relevance score of a particular link click for a particular user.
+    id = models.AutoField(primary_key=True)
     user_model = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=False,
                                  help_text='The user for whom this link relevance is being computed',
                                  verbose_name=('User'))
