@@ -478,10 +478,12 @@ def page(request, id):
         user_tag = UserTag.objects.filter(tag=tag, user_model=usermodel)
         created = False
         if len(user_tag) == 0:
+            LogEntry.objects.create(key='len(user_tag) == 0', value='')
             user_tag = UserTag.objects.create(tag=tag, user_model=usermodel, aged_score=1)
             created = True
             user_tag.save()
         else:
+            LogEntry.objects.create(key='len(user_tag) != 0', value='')
             user_tag = user_tag[0]
         #user_tag, created = UserTag.objects.get_or_create(tag=tag, user_model=usermodel, defaults={'aged_score': 1})
 
