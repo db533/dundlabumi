@@ -35,7 +35,7 @@ def get_env_variable(env_name):
         subdomain = 'statsdev'
     if env_name == 'cookie name':
         returned_param = session_cookie_name
-    elif env_name == 'subdomain'
+    elif env_name == 'subdomain':
         returned_param = subdomain
     else:
         returned_param = 'Error. env_name not matching.'
