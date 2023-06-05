@@ -474,8 +474,10 @@ def page(request, id):
     # Iterate over each tag instance
     for tag in wpid_tags:
         # Check if an instance of UserTag exists for this tag and UserModel
+        LogEntry.objects.create(key='User tag gt-create. tag:', value=tag)
+        LogEntry.objects.create(key='User tag gt-create. usermodel:', value=usermodel)
         user_tag, created = UserTag.objects.get_or_create(tag=tag, user_model=usermodel, defaults={'aged_score': 1})
-        user_tag.save()
+
         # Increment the aged_score if the instance already exists
         if not created:
             user_tag.aged_score += 1
