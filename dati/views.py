@@ -25,18 +25,30 @@ from django.contrib.sessions.models import Session
 BASE_DIR = Path(__file__).resolve().parent.parent
 print('BASE_DIR:',BASE_DIR)
 
+def get_env_variable(env_name):
+    LogEntry.objects.create(key='BASE_DIR', value=BASE_DIR)
+    if 'media' in str(BASE_DIR):
+        session_cookie_name = 's_key_prod'
+        subdomain = 'media'
+    else:
+        session_cookie_name = 's_key'
+        subdomain = 'statsdev'
+    if env_name == 'cookie name':
+        returned_param = session_cookie_name
+    elif env_name == 'subdomain':
+        returned_param = subdomain
+    else:
+        returned_param = 'Error. env_name not matching.'
+    return returned_param
+
 
 # Create your views here.
 def index(request):
-
     # Generate counts of some of the main objects
     num_email_clicks = Click.objects.all().count()
-
-
     context = {
         'num_email_clicks': num_email_clicks,
     }
-
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
 
@@ -72,8 +84,6 @@ def login_view(request):
     else:
         return JsonResponse({'success': False, 'error': 'Invalid credentials'})
 
-
-from bs4 import BeautifulSoup
 from django.urls import reverse
 import re
 from django.db.models import Max
@@ -113,16 +123,15 @@ def render_with_redirect(mail_template, redirect_set, email, context_data, targe
             redirect_set.add(redirect)
             LogEntry.objects.create(key='target_wpid.wp_id', value=target_wpid.wp_id)
 
-
+        subdomain = get_env_variable('subdomain')
         redirect_url = reverse('link', args=[redirect_code])
         LogEntry.objects.create(key='redirect_url', value=redirect_url)
-        return f'<a href="https://statsdev.dundlabumi.lv{redirect_url}" rel="nofollow noreferrer"'
+        return f'<a href="https://'+subdomain+'.dundlabumi.lv{redirect_url}" rel="nofollow noreferrer"'
 
     pattern = r'<a href="(https?://[^"]+)"'
     html_detail = re.sub(pattern, replace_link, html_detail)
 
     return html_detail, redirect_instances
-
 
 def email_viewed(request, email_id):
     # update the email record to indicate that it was viewed
@@ -265,8 +274,9 @@ def render_image2(request, id):
     response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
     image.save(response, "PNG")
 
-    response.set_cookie('s_key', session_key)
-    response.set_cookie('s_id', email_recipient.subscriber_id)
+    session_cookie_name = get_env_variable('cookie name')
+
+    response.set_cookie(session_cookie_name, session_key)
 
     return response
 
@@ -307,135 +317,9 @@ def get_user_id_from_wordpress_cookie(cookie):
 
     return user_id
 
-
-def get_session_and_usermodel(request):
-    temp_message = ""
-    LogEntry.objects.create(key='BASE_DIR', value=BASE_DIR)
-    if 'media' in str(BASE_DIR):
-        session_cookie_name = 's_key_prod'
-    else:
-        session_cookie_name = 's_key'
-    LogEntry.objects.create(key='session_cookie', value=session_cookie_name)
-    if not session_cookie_name in request.session:
-        LogEntry.objects.create(key='session_cookie_name cookie not found in request', value="")
-        temp_message += "session_cookie_name cookie missing or None. "
-        request.session.create()
-        request.session.save()
-        session_key = request.session.session_key
-        # Save the session to s_key
-        request.session[session_cookie_name] = session_key
-        request.session.save()
-    else:
-        LogEntry.objects.create(key='session_cookie_name cookie present in request', value="")
-        session_key = request.session[session_cookie_name]
-    if Session.objects.filter(session_key=session_key).exists():
-        session = Session.objects.get(session_key=session_key)
-    else:
-        expire_date = timezone.now() + timezone.timedelta(days=30)
-        session = Session.objects.create(session_key=session_key, expire_date=expire_date)
-
-    print('session_key:', session_key)
-    LogEntry.objects.create(key='session_key', value=session_key)
-
-    # Find the usermodels for the current session.
-    #usermodels_for_session = session.usermodels.all()
-
-    # Get the user_id if it was passed from Wordpress.
-    uid = request.GET.get('user_id')
-    if uid is not None and str(uid) != '0':
-        LogEntry.objects.create(key='uid', value=uid)
-    else:
-        LogEntry.objects.create(key='uid', value="")
-
-    # Check if the session points to an existing user. If not, need to create and associate a usermodel
-    usermodels_for_current_session = session.usermodels.all()
-    if not usermodels_for_current_session:
-        # No usermodel is associated with this session. Create one.
-        usermodel = UserModel.objects.create()
-        usermodel.sessions.add(session)
-        usermodel.save()
-        usermodels_for_current_session = [usermodel]
-    else:
-        usermodel = usermodels_for_current_session[0]
-    LogEntry.objects.create(key='usermodel', value=usermodel.id)
-
-    # We now have a session with session_key and a linked usermodel instance.
-
-    if uid is not None and str(uid) != '0':
-        # A Wordpress user_id is known for this usermodel.
-        # Check if this usermodel already associated with a wp_user_id:
-        LogEntry.objects.create(key='uid exists', value="")
-        if UserModel.objects.filter(wp_user_id=uid).exists():
-            usermodel = UserModel.objects.get(wp_user_id=uid)
-            temp_message += " retrieved existing usermodel."
-            LogEntry.objects.create(key='usermodel.wp_user_id', value=usermodel.wp_user_id)
-
-            # Check that the session points to the usermodel that is associated with the wp_user_id.
-            if usermodels_for_current_session[0].id != usermodel.id:
-                # The session is pointing to a different usermodel record.
-                old_usermodel = usermodels_for_current_session[0]
-                # Delete this record and associate the session with the existing usermodel that
-                LogEntry.objects.create(key='Deleting usermodel record as wp_user is saved in different record. Deleting usermodel.id:', value=usermodels_for_current_session[0].id)
-
-                # Get UserPageviews for old_usermodel and usermodel.
-                old_userpageviews = UserPageview.objects.filter(user_model=old_usermodel)
-                for old_pageview in old_userpageviews:
-                    LogEntry.objects.create(key="Evaluating user's pageview for wpid:",value = old_pageview.wpid)
-                    if UserPageview.objects.filter(user_model=usermodel, wpid=old_pageview.wpid).exists():
-                        remaining_userpageview = UserPageview.objects.get(user_model=usermodel, wpid=old_pageview.wpid)
-                        remaining_userpageview.aged_score += old_pageview.aged_score
-                        LogEntry.objects.create(key="Adding aged_score to usermodel's userpageview aged_score. remaining_userpageview:",value=remaining_userpageview.id)
-                        remaining_userpageview.save()
-                        old_pageview.delete()
-                    else:
-                        old_pageview.user_model=usermodel
-                        old_pageview.save()
-                        LogEntry.objects.create(key="Changed userpageview to logged in usermodel. old_userpageview:",value = old_pageview.id)
-
-                    # Get UserTags for old_usermodel and usermodel.
-                    old_usertags = UserTag.objects.filter(user_model=old_usermodel)
-                    for old_tag in old_usertags:
-                        LogEntry.objects.create(key="Evaluating user's tag for tag_id:", value=old_tag.tag_id)
-                        if UserTag.objects.filter(user_model=usermodel, tag=old_tag.tag_id).exists():
-                            remaining_usertag = UserTag.objects.get(user_model=usermodel,
-                                                                              tag=old_tag.tag_id)
-                            remaining_usertag.aged_score += old_tag.aged_score
-                            LogEntry.objects.create(
-                                key="Adding aged_score to usermodel's usertag aged_score. remaining_usertag:",
-                                value=remaining_usertag.id)
-                            remaining_usertag.save()
-                            old_tag.delete()
-                        else:
-                            old_tag.user_model = usermodel
-                            old_tag.save()
-                            LogEntry.objects.create(
-                                key="Changed userlink to logged in usermodel. old_tag:",
-                                value=old_tag.id)
-
-                usermodel.sessions.add(session)
-                old_usermodel.delete()
-                usermodel.save()
-        else:
-            # usermodel is not yet associated with the wp_user_id
-            # Retrieve values to update UserModel record
-            user = User.objects.get(id=uid)
-            logged_in_username = user.username
-            logged_in_user_email = user.email
-            LogEntry.objects.create(key='logged_in_user_email', value=logged_in_user_email)
-            usermodel.wp_user_id = uid
-            usermodel.email = logged_in_user_email
-            usermodel.username = logged_in_username
-            usermodel.save()
-            LogEntry.objects.create(key='usermodel.wp_user_id', value=usermodel.wp_user_id)
-    return session, usermodel
-
 def get_session_and_usermodel2(request):
     temp_message = ""
-    LogEntry.objects.create(key='BASE_DIR', value=BASE_DIR)
-    if 'media' in str(BASE_DIR):
-        session_cookie_name = 's_key_prod'
-    else:
-        session_cookie_name = 's_key'
+    session_cookie_name = get_env_variable('cookie name')
     LogEntry.objects.create(key='session_cookie', value=session_cookie_name)
     if not session_cookie_name in request.session:
         LogEntry.objects.create(key='session_cookie_name cookie not found in request', value="")
@@ -590,7 +474,16 @@ def page(request, id):
     # Iterate over each tag instance
     for tag in wpid_tags:
         # Check if an instance of UserTag exists for this tag and UserModel
-        user_tag, created = UserTag.objects.get_or_create(tag=tag, user_model=usermodel, defaults={'aged_score': 1})
+        LogEntry.objects.create(key='User tag gt-create. tag:', value=tag)
+        user_tag = UserTag.objects.filter(tag=tag, user_model=usermodel)
+        created = False
+        if len(user_tag) == 0:
+            user_tag = UserTag.objects.create(tag=tag, user_model=usermodel, aged_score=1)
+            created = True
+            user_tag.save()
+        else:
+            user_tag = user_tag[0]
+        #user_tag, created = UserTag.objects.get_or_create(tag=tag, user_model=usermodel, defaults={'aged_score': 1})
 
         # Increment the aged_score if the instance already exists
         if not created:
