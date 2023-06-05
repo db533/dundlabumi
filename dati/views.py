@@ -478,7 +478,7 @@ def page(request, id):
         user_tag = UserTag.objects.filter(tag=tag, user_model=usermodel)
         created = False
         if len(user_tag) == 0:
-            user_tag = UserTag.objects.create(tag=tag, user_model=usermodel, defaults={'aged_score': 1})
+            user_tag = UserTag.objects.create(tag=tag, user_model=usermodel, aged_score=1)
             created = True
             user_tag.save()
         else:
