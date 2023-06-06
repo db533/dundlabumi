@@ -476,6 +476,7 @@ def page(request, id):
         # Check if an instance of UserTag exists for this tag and UserModel
         LogEntry.objects.create(key='User tag gt-create. tag:', value=tag)
         user_tag = UserTag.objects.filter(tag=tag, user_model=usermodel)
+        LogEntry.objects.create(key='len(user_tag):', value=len(user_tag))
         created = False
         if len(user_tag) == 0:
             LogEntry.objects.create(key='len(user_tag) == 0', value='')
