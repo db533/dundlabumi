@@ -39,7 +39,7 @@ from dati.views import SendTemplateMailView , render_image2, link, page, SendTem
 
 urlpatterns += [
       path('send/render_image2/<int:id>',render_image2, name='render_image2'),
-      path('page/<int:id>',page, name='pageview'),
+      path('/page/<int:id>',page, name='pageview'),
       path('link/<int:id>',link, name='link'),
       path('send', SendTemplateMailView.as_view(), name='send_template'),
       path('sendtest', SendTemplateMailTestView.as_view(), name='send_test_template'),
