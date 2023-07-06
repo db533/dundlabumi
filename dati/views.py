@@ -126,7 +126,7 @@ def render_with_redirect(mail_template, redirect_set, email, context_data, targe
         subdomain = get_env_variable('subdomain')
         redirect_url = reverse('link', args=[redirect_code])
         LogEntry.objects.create(key='redirect_url', value=redirect_url)
-        return f'<a href="https://'+subdomain+'.dundlabumi.lv'+redirect_url+" rel="nofollow noreferrer"'
+        return f'<a href="https://'+subdomain+'.dundlabumi.lv'+redirect_url+'" rel="nofollow noreferrer"'
 
     pattern = r'<a href="(https?://[^"]+)"'
     html_detail = re.sub(pattern, replace_link, html_detail)
