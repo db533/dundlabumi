@@ -450,6 +450,7 @@ def page(request, id):
     wpid=WPID.objects.get(wp_id=id)
     pageview = Pageview.objects.create(wpid=wpid, session=session, temp_message=temp_message)
     LogEntry.objects.create(key='Page view registered. ID:', value=pageview.id)
+    LogEntry.objects.create(key='Viewed page title:', value=wpid.name)
 
     # Now increment the User / Pageview relevance score.
     existing_userpageviews = UserPageview.objects.filter(user_model=usermodel, wpid=wpid)
@@ -474,9 +475,9 @@ def page(request, id):
     # Iterate over each tag instance
     for tag in wpid_tags:
         # Check if an instance of UserTag exists for this tag and UserModel
-        LogEntry.objects.create(key='User tag gt-create. tag:', value=tag)
+        LogEntry.objects.create(key='Tag name:', value=tag)
         user_tag = UserTag.objects.filter(tag=tag, user_model=usermodel)
-        LogEntry.objects.create(key='len(user_tag):', value=len(user_tag))
+        #LogEntry.objects.create(key='len(user_tag):', value=len(user_tag))
         created = False
         if len(user_tag) == 0:
             #LogEntry.objects.create(key='len(user_tag) == 0', value='')
