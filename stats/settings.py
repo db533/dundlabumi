@@ -9,11 +9,11 @@ import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-print('BASE_DIR:',BASE_DIR)
+#print('BASE_DIR:',BASE_DIR)
 
 root = environ.Path(__file__) - 3  # get root of the project
 SITE_ROOT = root()
-print('SITE_ROOT:',SITE_ROOT)
+#print('SITE_ROOT:',SITE_ROOT)
 
 env = environ.Env()
 environ.Env.read_env(overwrite=True)  # reading .env file
@@ -27,23 +27,23 @@ SECRET_KEY = env.str('django_secret_key', default='django-insecure-edp-tk4w825ya
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('debug', default=False)
 TEMPLATE_DEBUG = DEBUG
-print('debug:',DEBUG)
+#print('debug:',DEBUG)
 
 ALLOWED_HOSTS = env('allowed_hosts', cast=[str])
-print('ALLOWED_HOSTS:',ALLOWED_HOSTS)
+#print('ALLOWED_HOSTS:',ALLOWED_HOSTS)
 
 # Get the IP address of this host
 import socket
 hostname = socket.gethostname()
 IP = socket.gethostbyname(hostname)
 HOSTED = env.bool('HOSTED', default=False)
-print('HOSTED:',HOSTED)
+#print('HOSTED:',HOSTED)
 if HOSTED:
     # .env file states this environment is hosted, so use the retrieved IP address.
     host_ip=IP
 else:
     host_ip='127.0.0.1'
-print('host_ip:',host_ip)
+#print('host_ip:',host_ip)
 
 # Application definition
 

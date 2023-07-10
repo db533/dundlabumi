@@ -438,7 +438,6 @@ def get_session_and_usermodel2(request):
 
 def page(request, id):
     # Get the session from the received request
-    LogEntry.objects.create(key='Page view occured. WPID:', value=id)
     temp_message=""
     session, usermodel = get_session_and_usermodel2(request)
     print('usermodel.id:', usermodel.id)
@@ -451,7 +450,7 @@ def page(request, id):
     pageview = Pageview.objects.create(wpid=wpid, session=session, temp_message=temp_message)
     LogEntry.objects.create(key='Page view registered. ID:', value=pageview.id)
     LogEntry.objects.create(key='Viewed page title:', value=wpid.name)
-
+    LogEntry.objects.create(key='Page view occured. WPID:', value=id)
     # Now increment the User / Pageview relevance score.
     existing_userpageviews = UserPageview.objects.filter(user_model=usermodel, wpid=wpid)
     if existing_userpageviews.exists():
