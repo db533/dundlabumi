@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 print('BASE_DIR:',BASE_DIR)
 
 def get_env_variable(env_name):
-    LogEntry.objects.create(key='BASE_DIR', value=BASE_DIR)
+    #LogEntry.objects.create(key='BASE_DIR', value=BASE_DIR)
     if 'media' in str(BASE_DIR):
         session_cookie_name = 's_key_prod'
         subdomain = 'media'
@@ -320,7 +320,7 @@ def get_user_id_from_wordpress_cookie(cookie):
 def get_session_and_usermodel2(request):
     temp_message = ""
     session_cookie_name = get_env_variable('cookie name')
-    LogEntry.objects.create(key='session_cookie', value=session_cookie_name)
+    #LogEntry.objects.create(key='session_cookie', value=session_cookie_name)
     if not session_cookie_name in request.session:
         LogEntry.objects.create(key='session_cookie_name cookie not found in request', value="")
         request.session.create()
@@ -365,7 +365,7 @@ def get_session_and_usermodel2(request):
     if uid is not None and str(uid) != '0':
         # A Wordpress user_id is known for this usermodel.
         # Check if this usermodel already associated with a wp_user_id:
-        LogEntry.objects.create(key='uid exists', value="")
+        #LogEntry.objects.create(key='uid exists', value="")
 
         # Check if a UserModel is associated with this uid.
         if UserModel.objects.filter(wp_user_id=uid).exists():
@@ -479,12 +479,12 @@ def page(request, id):
         LogEntry.objects.create(key='len(user_tag):', value=len(user_tag))
         created = False
         if len(user_tag) == 0:
-            LogEntry.objects.create(key='len(user_tag) == 0', value='')
+            #LogEntry.objects.create(key='len(user_tag) == 0', value='')
             user_tag = UserTag.objects.create(tag=tag, user_model=usermodel, aged_score=1)
             created = True
             user_tag.save()
         else:
-            LogEntry.objects.create(key='len(user_tag) != 0', value='')
+            #LogEntry.objects.create(key='len(user_tag) != 0', value='')
             user_tag = user_tag[0]
         #user_tag, created = UserTag.objects.get_or_create(tag=tag, user_model=usermodel, defaults={'aged_score': 1})
 
