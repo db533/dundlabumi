@@ -149,16 +149,16 @@ class UserPageview(models.Model):
     def __str__(self):
         return self.user_model
 
-class UserLink(models.Model):
+#class UserLink(models.Model):
     # Model to store the current aged relevance score of a particular link click for a particular user.
-    id = models.AutoField(primary_key=True)
-    user_model = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=False,
-                                 help_text='The user for whom this link relevance is being computed',
-                                 verbose_name=('User'))
-    wpid = models.ForeignKey(WPID, on_delete=models.SET_NULL, null=True, blank=False,
-                                  help_text='The Wordpress ID for the page that was linked to.',
-                                  verbose_name=('WP id'))
-    aged_score = models.FloatField(help_text='Link relevance score',blank=False, verbose_name=('Atvērtā linka svarīgums'), default=0)
+#    id = models.AutoField(primary_key=True)
+#    user_model = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=False,
+#                                 help_text='The user for whom this link relevance is being computed',
+#                                 verbose_name=('User'))
+#    wpid = models.ForeignKey(WPID, on_delete=models.SET_NULL, null=True, blank=False,
+#                                  help_text='The Wordpress ID for the page that was linked to.',
+#                                  verbose_name=('WP id'))
+#    aged_score = models.FloatField(help_text='Link relevance score',blank=False, verbose_name=('Atvērtā linka svarīgums'), default=0)
 
 class UserTag(models.Model):
     # Model to store the current aged relevance score of a particular link click for a particular user.

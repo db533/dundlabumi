@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import OutboundEmail, Tag, WPID, Redirect, Click, List, UserModel , LogEntry, Pageview, DesiredSize # UserPageview, UserTag, UserLink ,
+from .models import *
 
 admin.site.register(UserModel)
 admin.site.register(OutboundEmail)
