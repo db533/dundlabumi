@@ -9,6 +9,7 @@ from rest_framework import status
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth.models import User
+from django.db.models import Max
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime, timedelta
@@ -555,7 +556,9 @@ def link(request, id):
             user_link = UserLink.objects.get(user_model=usermodel, wpid=clicked_wpid)
         except UserLink.DoesNotExist:
             # No relevance score for a usermodel or this session_key so link not clicked in last 2 years.
-            user_link = UserLink.objects.create(user_model=usermodel, wpid=clicked_wpid, aged_score=1)
+            max_id = UserLink.objects.aggregate(max_id=Max('id'))['max_id']
+            new_id = max_id + 1
+            user_link = UserLink.objects.create(user_model=usermodel, wpid=clicked_wpid, aged_score=1, id=new_id)
             LogEntry.objects.create(key='New UserLink record created in dati_userlink. New aged_score:', value=1)
         else:
             # Already have a relevance score for this link for a specific usermodel, so it has been clicked in the last 2 years from this session_key
