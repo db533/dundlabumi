@@ -556,8 +556,11 @@ def link(request, id):
             user_link = UserLink.objects.get(user_model=usermodel, wpid=clicked_wpid)
         except UserLink.DoesNotExist:
             # No relevance score for a usermodel or this session_key so link not clicked in last 2 years.
-            max_id = UserLink.objects.aggregate(max_id=Max('id'))['max_id']
-            new_id = max_id + 1
+            if UserLink.objects.exists():
+                max_id = UserLink.objects.aggregate(max_id=Max('id'))['max_id']
+                new_id = max_id + 1
+            else:
+                new_id = 1
             user_link = UserLink.objects.create(user_model=usermodel, wpid=clicked_wpid, aged_score=1, id=new_id)
             LogEntry.objects.create(key='New UserLink record created in dati_userlink. New aged_score:', value=1)
         else:
