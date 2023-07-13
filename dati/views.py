@@ -23,7 +23,7 @@ from PIL import Image
 from django.contrib.sessions.models import Session
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-print('BASE_DIR:',BASE_DIR)
+#print('BASE_DIR:',BASE_DIR)
 
 def get_env_variable(env_name):
     #LogEntry.objects.create(key='BASE_DIR', value=BASE_DIR)
@@ -547,7 +547,7 @@ def link(request, id):
         #    temp_message += "Setting cookie. "
         #Click.objects.create(redirect_code_id=id, session=session, temp_message = temp_message)
         link_click = Click.objects.create(redirect_code=redirect_record, session=session, temp_message=temp_message)
-        LogEntry.objects.create(key='Link click registered. ID:', value=link_click.id)
+        LogEntry.objects.create(key='Link click registered in dati_click. ID:', value=link_click.id)
 
         # Now increment the User / Link relevance score.
         clicked_wpid = WPID.objects.get(wp_id=wpid_of_linked_page)
@@ -556,12 +556,12 @@ def link(request, id):
         except UserLink.DoesNotExist:
             # No relevance score for a usermodel or this session_key so link not clicked in last 2 years.
             user_link = UserLink.objects.create(user_model=usermodel, wpid=clicked_wpid, aged_score=1)
-            LogEntry.objects.create(key='New UserLink record created. New aged_score:', value=1)
+            LogEntry.objects.create(key='New UserLink record created in dati_userlink. New aged_score:', value=1)
         else:
             # Already have a relevance score for this link for a specific usermodel, so it has been clicked in the last 2 years from this session_key
             user_link.aged_score += 1
             user_link.save()
-            LogEntry.objects.create(key='UserLink exists. New aged_score:', value=user_link.aged_score)
+            LogEntry.objects.create(key='UserLink exists in dati_userlink. New aged_score:', value=user_link.aged_score)
 
     return redirect(target_url, response=response)
 
