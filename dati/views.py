@@ -522,9 +522,10 @@ def link(request, id):
     else:
         # A valid redirect code was received.
         redirect_record = Redirect.objects.get(redirect_code=id)
-        redirect_usermodel = redirect_record.usermodel
+
         target_url = redirect_record.target_url
         wpid_of_linked_page = redirect_record.wpid_id
+        #redirect_usermodel = redirect_record.usermodel
 
         LogEntry.objects.create(key='Link click occured. Redirect code:', value=id)
         session, usermodel = get_session_and_usermodel2(request)
