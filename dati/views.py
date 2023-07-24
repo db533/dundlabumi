@@ -561,23 +561,27 @@ def link(request, id):
         LogEntry.objects.create(key='Link click registered in dati_click. ID:', value=link_click.id)
 
         # Now increment the User / Link relevance score.
-        clicked_wpid = WPID.objects.get(wp_id=wpid_of_linked_page)
         try:
-            user_link = UserLink.objects.get(user_model=usermodel, wpid=clicked_wpid)
-        except UserLink.DoesNotExist:
-            # No relevance score for a usermodel or this session_key so link not clicked in last 2 years.
-            if UserLink.objects.exists():
-                max_id = UserLink.objects.aggregate(max_id=Max('id'))['max_id']
-                new_id = max_id + 1
+            clicked_wpid = WPID.objects.get(wp_id=wpid_of_linked_page)
+            try:
+                user_link = UserLink.objects.get(user_model=usermodel, wpid=clicked_wpid)
+            except UserLink.DoesNotExist:
+                # No relevance score for a usermodel or this session_key so link not clicked in last 2 years.
+                if UserLink.objects.exists():
+                    max_id = UserLink.objects.aggregate(max_id=Max('id'))['max_id']
+                    new_id = max_id + 1
+                else:
+                    new_id = 1
+                user_link = UserLink.objects.create(user_model=usermodel, wpid=clicked_wpid, aged_score=1, id=new_id)
+                LogEntry.objects.create(key='New UserLink record created in dati_userlink. New aged_score:', value=1)
             else:
-                new_id = 1
-            user_link = UserLink.objects.create(user_model=usermodel, wpid=clicked_wpid, aged_score=1, id=new_id)
-            LogEntry.objects.create(key='New UserLink record created in dati_userlink. New aged_score:', value=1)
-        else:
-            # Already have a relevance score for this link for a specific usermodel, so it has been clicked in the last 2 years from this session_key
-            user_link.aged_score += 1
-            user_link.save()
-            LogEntry.objects.create(key='UserLink exists in dati_userlink. New aged_score:', value=user_link.aged_score)
+                # Already have a relevance score for this link for a specific usermodel, so it has been clicked in the last 2 years from this session_key
+                user_link.aged_score += 1
+                user_link.save()
+                LogEntry.objects.create(key='UserLink exists in dati_userlink. New aged_score:',
+                                        value=user_link.aged_score)
+        except:
+            None
 
     return redirect(target_url, response=response)
 
