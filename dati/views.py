@@ -526,7 +526,7 @@ def link(request, id):
 
         target_url = redirect_record.target_url
         wpid_of_linked_page = redirect_record.wpid_id
-        #redirect_usermodel = redirect_record.usermodel
+        redirect_usermodel = redirect_record.usermodel
 
         LogEntry.objects.create(key='Link click occured. Redirect code:', value=id)
         session, usermodel = get_session_and_usermodel2(request)
@@ -563,7 +563,7 @@ def link(request, id):
         LogEntry.objects.create(key='Link click registered in dati_click. ID:', value=link_click.id)
 
         # Now increment the User / Link relevance score.
-        try:
+        if WPID.objects.filter(wp_id=wpid_of_linked_page).exists():
             clicked_wpid = WPID.objects.get(wp_id=wpid_of_linked_page)
             try:
                 user_link = UserLink.objects.get(user_model=usermodel, wpid=clicked_wpid)
@@ -582,9 +582,6 @@ def link(request, id):
                 user_link.save()
                 LogEntry.objects.create(key='UserLink exists in dati_userlink. New aged_score:',
                                         value=user_link.aged_score)
-        except:
-            None
-
     return redirect(target_url, response=response)
 
 from django.shortcuts import render
