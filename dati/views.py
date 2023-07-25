@@ -514,6 +514,7 @@ from django.shortcuts import redirect
 
 def link(request, id):
     temp_message = ""
+    redirect_usermodel = None
     # Read data about the link that brought the user to the site.
     if not Redirect.objects.filter(redirect_code=id).exists():
         # The redirect code does not exist in the database. Push user to the shop page instead.
