@@ -525,8 +525,11 @@ def link(request, id):
         redirect_record = Redirect.objects.get(redirect_code=id)
 
         target_url = redirect_record.target_url
+        LogEntry.objects.create(key='target_url for redirect:', value=target_url)
         wpid_of_linked_page = redirect_record.wpid_id
+        LogEntry.objects.create(key='wpid_of_linked_page for redirect:', value=wpid_of_linked_page)
         redirect_usermodel = redirect_record.usermodel
+        LogEntry.objects.create(key='redirect_usermodel for redirect:', value=redirect_usermodel)
 
         LogEntry.objects.create(key='Link click occured. Redirect code:', value=id)
         session, usermodel = get_session_and_usermodel2(request)
