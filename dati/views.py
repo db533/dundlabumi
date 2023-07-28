@@ -529,10 +529,11 @@ def link(request, id):
         redirect_usermodel = redirect_record.usermodel
 
         LogEntry.objects.create(key='Link click occured. Redirect code:', value=id)
-        LogEntry.objects.create(key='redirect_usermodel:'+redirect_usermodel, value='')
         session, usermodel = get_session_and_usermodel2(request)
         print('usermodel.id:', usermodel.id)
 
+        link_click = Click.objects.create(redirect_code=redirect_record, session=session, temp_message=temp_message)
+        LogEntry.objects.create(key='Link click registered in dati_click. ID:', value=link_click.id)
         # If the session usermodel is not the same as the redirect link usermodel, change the usermodel to that of the redirect link.
         if redirect_usermodel is not None:
             if usermodel.id != redirect_usermodel.id:
@@ -556,13 +557,6 @@ def link(request, id):
 
         # Create the response to return to the user.
         response = redirect(target_url)
-        #if session_key is not None:
-        #    response.set_cookie('s_key', session_key)
-        #    temp_message += "Setting cookie. "
-        #Click.objects.create(redirect_code_id=id, session=session, temp_message = temp_message)
-        link_click = Click.objects.create(redirect_code=redirect_record, session=session, temp_message=temp_message)
-        LogEntry.objects.create(key='Link click registered in dati_click. ID:', value=link_click.id)
-
         # Now increment the User / Link relevance score.
         if WPID.objects.filter(wp_id=wpid_of_linked_page).exists():
             clicked_wpid = WPID.objects.get(wp_id=wpid_of_linked_page)
