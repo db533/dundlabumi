@@ -469,10 +469,11 @@ def page(request, id):
         # No relevance score for a usermodel or this session_key so link not clicked in last 2 years.
         if UserPageview.objects.exists():
             max_id = UserPageview.objects.aggregate(max_id=Max('id'))['max_id']
-            new_id = max_id + 1
+            #new_id = max_id + 1
         else:
-            new_id = 1
-        UserPageview.objects.create(user_model=usermodel,wpid=wpid, aged_score=1, id=new_id)
+            #new_id = 1
+        #UserPageview.objects.create(user_model=usermodel,wpid=wpid, aged_score=1, id=new_id)
+        UserPageview.objects.create(user_model=usermodel, wpid=wpid, aged_score=1)
 
     # Retrieve all the tags associated with the given WPID instance
     wpid_tags = wpid.tags.all()
