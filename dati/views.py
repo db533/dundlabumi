@@ -467,10 +467,10 @@ def page(request, id):
         user_page.save()
     else:
         # No relevance score for a usermodel or this session_key so link not clicked in last 2 years.
-        if UserPageview.objects.exists():
-            max_id = UserPageview.objects.aggregate(max_id=Max('id'))['max_id']
+        #if UserPageview.objects.exists():
+        #    max_id = UserPageview.objects.aggregate(max_id=Max('id'))['max_id']
             #new_id = max_id + 1
-        else:
+        #else:
             #new_id = 1
         #UserPageview.objects.create(user_model=usermodel,wpid=wpid, aged_score=1, id=new_id)
         UserPageview.objects.create(user_model=usermodel, wpid=wpid, aged_score=1)
