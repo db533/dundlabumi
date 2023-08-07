@@ -31,6 +31,7 @@ TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = env('allowed_hosts', cast=[str])
 ALLOWED_HOSTS.append("www."+ALLOWED_HOSTS[0])
+ALLOWED_HOSTS.append("dundlabumi.lv")
 print('ALLOWED_HOSTS:',ALLOWED_HOSTS)
 
 # Get the IP address of this host
