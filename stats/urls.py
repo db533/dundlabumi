@@ -15,39 +15,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-]
-
 from django.views.generic import RedirectView
 from django.urls import include
-urlpatterns += [
-#    path('', RedirectView.as_view(url='dati/', permanent=True)),
-    path('dati/', include('dati.urls')),
-#    path('', RedirectView.as_view(url='http://www.media.dundlabumi.lv/', permanent=True)),
-    path('', RedirectView.as_view(url='http://dundlabumi.lv/', permanent=True)),
-]
-
+from dati.views import SendTemplateMailView , render_image2, link, page, SendTemplateMailTestView, login_view, get_auth_token, user_details
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.authtoken.views import obtain_auth_token
 
+urlpatterns = [
+    path('', RedirectView.as_view(url='http://dundlabumi.lv/', permanent=True)),
+    path('admin/', admin.site.urls),
+    path('dati/', include('dati.urls')),
+    path('send/render_image2/<int:id>',render_image2, name='render_image2'),
+    path('page/<int:id>',page, name='pageview'),
+    path('link/<int:id>',link, name='link'),
+    path('send', SendTemplateMailView.as_view(), name='send_template'),
+    path('sendtest', SendTemplateMailTestView.as_view(), name='send_test_template'),
+    path('login', login_view, name='login_view'),
+    path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+    path('get-auth-token/', get_auth_token, name='get_auth_token'),
+]
+
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-
-from dati.views import SendTemplateMailView , render_image2, link, page, SendTemplateMailTestView, login_view, get_auth_token, user_details
-
-urlpatterns += [
-      path('send/render_image2/<int:id>',render_image2, name='render_image2'),
-      path('page/<int:id>',page, name='pageview'),
-      path('link/<int:id>',link, name='link'),
-      path('send', SendTemplateMailView.as_view(), name='send_template'),
-      path('sendtest', SendTemplateMailTestView.as_view(), name='send_test_template'),
-      path('login', login_view, name='login_view'),
-      path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
-      path('get-auth-token/', get_auth_token, name='get_auth_token'),
-      path('user-details/<int:user_id>', user_details, name='user_details'),
-
-]
 
