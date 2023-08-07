@@ -23,9 +23,9 @@ urlpatterns = [
 from django.views.generic import RedirectView
 from django.urls import include
 urlpatterns += [
-    path('', RedirectView.as_view(url='dati/', permanent=True)),
+#    path('', RedirectView.as_view(url='dati/', permanent=True)),
     path('dati/', include('dati.urls')),
-    path('', RedirectView.as_view(url='http://www.media.dundlabumi.lv/', permanent=True)),
+#    path('', RedirectView.as_view(url='http://www.media.dundlabumi.lv/', permanent=True)),
     path('', RedirectView.as_view(url='http://dundlabumi.lv/', permanent=True)),
 ]
 
