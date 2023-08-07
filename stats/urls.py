@@ -25,7 +25,8 @@ from django.urls import include
 urlpatterns += [
     path('', RedirectView.as_view(url='dati/', permanent=True)),
     path('dati/', include('dati.urls')),
-
+    path('', RedirectView.as_view(url='http://www.media.dundlabumi.lv/', permanent=True)),
+    path('', RedirectView.as_view(url='http://www.statsdev.dundlabumi.lv/', permanent=True)),
 ]
 
 from django.conf import settings

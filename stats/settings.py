@@ -30,7 +30,8 @@ TEMPLATE_DEBUG = DEBUG
 #print('debug:',DEBUG)
 
 ALLOWED_HOSTS = env('allowed_hosts', cast=[str])
-#print('ALLOWED_HOSTS:',ALLOWED_HOSTS)
+ALLOWED_HOSTS.append("www."+ALLOWED_HOSTS[0])
+print('ALLOWED_HOSTS:',ALLOWED_HOSTS)
 
 # Get the IP address of this host
 import socket
