@@ -13,7 +13,6 @@
             <h2>User ID: {{ user.id }}</h2>
             <p>Total Aged Score: {{ user.total_aged_score }}</p>
             <ul>
-                {{ user.pageviews.all }}
                 {% for pageview in user.pageviews.all %}
                 <li>
                     <p>Page Name: {{ pageview.wpid.name }}</p>
