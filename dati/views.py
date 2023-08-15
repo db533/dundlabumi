@@ -582,7 +582,6 @@ def link(request, id):
                                         value=user_link.aged_score)
     return redirect(target_url, response=response)
 
-from django.shortcuts import render
 from .forms import UserForm
 
 # View to show list of users that have read emails
