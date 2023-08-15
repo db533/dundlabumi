@@ -15,8 +15,7 @@
             <ul>
                 {% for pageview in user.pageviews.all %}
                 <li>
-                    <p>Page Name: {{ pageview.wpid.name }}</p>
-                    <p>Aged Score: {{ pageview.aged_score }}</p>
+                    <a href="{{ pageview.wpid.link }}">{{ pageview.wpid.name }}</a> - Aged Score: {{ pageview.aged_score }}
                 </li>
                 {% endfor %}
             </ul>
