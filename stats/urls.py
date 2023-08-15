@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.views.generic import RedirectView
 from django.urls import include
-from dati.views import SendTemplateMailView , render_image2, link, page, SendTemplateMailTestView, login_view, get_auth_token, user_details
+from dati.views import SendTemplateMailView , render_image2, link, page, SendTemplateMailTestView, login_view, get_auth_token, user_details, user_list
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.authtoken.views import obtain_auth_token
@@ -35,7 +35,7 @@ urlpatterns = [
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
     path('get-auth-token/', get_auth_token, name='get_auth_token'),
     path('user/<int:user_id>', user_details, name='user_details'),
-
+    path('user-list/', user_list, name='user_list'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
