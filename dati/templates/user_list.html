@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User List</title>
+</head>
+<body>
+    <h1>User List, sorted by total PageView aged_score</h1>
+    <ul>
+        {% for user in user_list %}
+        <li>
+            <h2>User ID: {{ user.id }}</h2>
+            <p>Total Aged Score: {{ user.total_aged_score }}</p>
+            <ul>
+                {% for pageview in user.pageviews.all|dictsort:'-aged_score' %}
+                <li>
+                    <p>Page Name: {{ pageview.wpid.name }}</p>
+                    <p>Aged Score: {{ pageview.aged_score }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
