@@ -9,7 +9,7 @@
       <li>
         <strong>{{ user.username }}</strong> - Total Aged Score: {{ user.total_aged_score|floatformat:1 }}
         <ul>
-          {% for pageview in user.pageviews.all|dictsort:"-aged_score" %}
+          {% for pageview in user.pageviews %}
             <li>
               <a href="{{ pageview.wpid.link }}">{{ pageview.wpid.name }}</a> - Aged Score: {{ pageview.aged_score|floatformat:1 }}
             </li>
