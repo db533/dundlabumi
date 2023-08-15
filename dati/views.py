@@ -676,4 +676,4 @@ def user_list(request):
     ).order_by('-total_aged_score')
 
     context = {'user_list': user_list}
-    return render(request, 'templates/user_list.html', context)
+    return render(request, 'dati/templates/user_list.html', context)
