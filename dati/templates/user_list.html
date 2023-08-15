@@ -1,26 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User List</title>
-</head>
-<body>
-    <h1>User List</h1>
-    <ul>
-        {% for user in user_list %}
-        <li>
-            <h2>User ID: {{ user.id }}</h2>
-            <p>Total Aged Score: {{ user.total_aged_score }}</p>
-            <ul>
-                {% for pageview in user.pageviews.all %}
-                <li>
-                    <a href="{{ pageview.wpid.link }}">{{ pageview.wpid.name }}</a> - Aged Score: {{ pageview.aged_score }}
-                </li>
-                {% endfor %}
-            </ul>
-        </li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>User List</h1>
+  <ul>
+    {% for user in user_list %}
+      <li>
+        <strong>{{ user.username }}</strong> - Total Aged Score: {{ user.total_aged_score|floatformat:1 }}
+        <ul>
+          {% for pageview in user.pageviews.all|dictsort:"-aged_score" %}
+            <li>
+              <a href="{{ pageview.wpid.link }}">{{ pageview.wpid.name }}</a> - Aged Score: {{ pageview.aged_score|floatformat:1 }}
+            </li>
+          {% endfor %}
+        </ul>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
