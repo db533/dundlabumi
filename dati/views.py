@@ -9,7 +9,7 @@ from rest_framework import status
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth.models import User
-from django.db.models import Max
+from django.db.models import Sum, Max
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime, timedelta
