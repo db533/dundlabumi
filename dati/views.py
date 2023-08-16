@@ -681,3 +681,15 @@ def user_list(request):
 
     context = {'page_obj': page_obj}
     return render(request, 'user_list.html', context)
+
+def named_user_list(request):
+    user_list = UserModel.objects.filter(email__isnull=False, email__gt='').annotate(total_aged_score=Sum('pageviews__aged_score')).order_by('-total_aged_score')
+
+    paginator = Paginator(user_list, 20)  # Display 20 users per page
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {'page_obj': page_obj}
+    return render(request, 'named_user_list.html', context)
+

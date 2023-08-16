@@ -21,6 +21,7 @@
             <li><strong>User: {{ user.get_username }}</strong></li>
             Vēlamie produkti:
             <li><a href="{% url 'index' %}">Mani vēlamie produkti</a></li>
+            <li><a href="{% url 'user_list' ">User list</a></li>
           {% endif %}
         </ul>
      {% endblock %}
