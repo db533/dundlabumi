@@ -673,7 +673,8 @@ def user_list(request):
     user_list = UserModel.objects.annotate(total_aged_score=Sum('pageviews__aged_score')).order_by('-total_aged_score')
 
     for user in user_list:
-        user.pageviews = user.pageviews.all().order_by('-aged_score')
+        sorted_pageviews = user.pageviews.all().order_by('-aged_score')
+        setattr(user, 'sorted_pageviews', sorted_pageviews)
 
     context = {'user_list': user_list}
     return render(request, 'user_list.html', context)
