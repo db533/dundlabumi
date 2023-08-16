@@ -677,4 +677,4 @@ def user_list(request):
         user.total_aged_score = total_aged_score or 0  # Set default value to 0 if total_aged_score is None
 
     context = {'user_list': user_list}
-    return render(request, 'user-list.html', context)
+    return render(request, 'user_list.html', context)
