@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.views.generic import RedirectView
 from django.urls import include
-from dati.views import SendTemplateMailView , render_image2, link, page, SendTemplateMailTestView, login_view, get_auth_token, user_details, user_list
+from dati.views import *
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.authtoken.views import obtain_auth_token
