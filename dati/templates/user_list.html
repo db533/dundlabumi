@@ -5,11 +5,11 @@
 {% block content %}
   <h1>User List</h1>
   <ul>
-    {% for user in user_list %}
+    {% for user in page_obj %}
       <li>
         <strong>{{ user.id }}</strong> - {{ user.email }} - Total Aged Score: {{ user.total_aged_score|default:"0"|floatformat:1 }}
         <ul>
-          {% for pageview in user.sorted_pageviews %}
+          {% for pageview in user.pageviews.all %}
             <li>
               <a href="{{ pageview.wpid.link }}">{{ pageview.wpid.name }}</a> - Aged Score: {{ pageview.aged_score|floatformat:1 }}
             </li>
@@ -18,4 +18,20 @@
       </li>
     {% endfor %}
   </ul>
+
+  <div class="pagination">
+    <span class="step-links">
+      {% if page_obj.has_previous %}
+        <a href="?page=1">&laquo; first</a>
+        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+      {% endif %}
+
+      <span class="current-page">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</span>
+
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+      {% endif %}
+    </span>
+  </div>
 {% endblock %}

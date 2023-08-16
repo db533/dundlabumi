@@ -669,12 +669,15 @@ def user_details(request, user_id):
                                               'page_labels' : page_labels, 'page_values' : page_values})
 
 # List of users sorted by total aged_score, and showing items viewed.
+from django.core.paginator import Paginator
+
 def user_list(request):
     user_list = UserModel.objects.annotate(total_aged_score=Sum('pageviews__aged_score')).order_by('-total_aged_score')
 
-    for user in user_list:
-        sorted_pageviews = user.pageviews.all().order_by('-aged_score')
-        setattr(user, 'sorted_pageviews', sorted_pageviews)
+    paginator = Paginator(user_list, 20)  # Display 20 users per page
 
-    context = {'user_list': user_list}
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {'page_obj': page_obj}
     return render(request, 'user_list.html', context)
