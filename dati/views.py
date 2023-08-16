@@ -670,11 +670,7 @@ def user_details(request, user_id):
 
 # List of users sorted by total aged_score, and showing items viewed.
 def user_list(request):
-    user_list = UserModel.objects.all()
-
-    for user in user_list:
-        total_aged_score = user.pageviews.aggregate(total=Sum('aged_score'))['total']
-        user.total_aged_score = total_aged_score or 0  # Set default value to 0 if total_aged_score is None
+    user_list = UserModel.objects.annotate(total_aged_score=Sum('pageviews__aged_score')).order_by('-total_aged_score')
 
     context = {'user_list': user_list}
     return render(request, 'user_list.html', context)
