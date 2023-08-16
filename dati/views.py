@@ -669,8 +669,15 @@ def user_details(request, user_id):
                                               'page_labels' : page_labels, 'page_values' : page_values})
 
 # List of users sorted by total aged_score, and showing items viewed.
+from django.db.models import Sum
+
 def user_list(request):
     user_list = UserModel.objects.all()
 
+    # Calculate total aged score for each user
+    for user in user_list:
+        total_aged_score = user.pageviews.aggregate(total=Sum('aged_score'))['total']
+        user.total_aged_score = total_aged_score or 0  # Set default value to 0 if total_aged_score is None
+
     context = {'user_list': user_list}
-    return render(request, 'user_list.html', context)
+    return render(request, 'user-list.html', context)
