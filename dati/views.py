@@ -672,8 +672,5 @@ def user_details(request, user_id):
 def user_list(request):
     user_list = UserModel.objects.all()
 
-    for user in user_list:
-        user.pageviews = user.pageviews.all().order_by('-aged_score')
-
     context = {'user_list': user_list}
     return render(request, 'user-list.html', context)
