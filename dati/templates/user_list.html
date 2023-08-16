@@ -9,13 +9,10 @@
       <li>
         <strong>{{ user.username }}</strong> - Total Aged Score: {{ user.total_aged_score|floatformat:1 }}
         <ul>
-          {% regroup user.pageviews.all by wpid as pageview_list %}
-          {% for pageview_group in pageview_list %}
-            {% for pageview in pageview_group.list|dictsort:"-aged_score" %}
-              <li>
-                <a href="{{ pageview.wpid.link }}">{{ pageview.wpid.name }}</a> - Aged Score: {{ pageview.aged_score|floatformat:1 }}
-              </li>
-            {% endfor %}
+          {% for pageview in user.pageviews %}
+            <li>
+              <a href="{{ pageview.wpid.link }}">{{ pageview.wpid.name }}</a> - Aged Score: {{ pageview.aged_score|floatformat:1 }}
+            </li>
           {% endfor %}
         </ul>
       </li>

@@ -671,5 +671,10 @@ def user_details(request, user_id):
 # List of users sorted by total aged_score, and showing items viewed.
 def user_list(request):
     user_list = UserModel.objects.all()
+
+    # Sort pageviews for each user in descending order
+    for user in user_list:
+        user.pageviews = user.pageviews.all().order_by('-aged_score')
+
     context = {'user_list': user_list}
-    return render(request, 'user_list.html', context)
+    return render(request, 'user-list.html', context)
