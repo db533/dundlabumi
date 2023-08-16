@@ -7,7 +7,7 @@
   <ul>
     {% for user in user_list %}
       <li>
-        <strong>{{ user.id }}</strong> - {{ user.email }} - Total Aged Score: {{ user.total_aged_score|floatformat:1 }}
+        <strong>{{ user.id }}</strong> - {{ user.email }} - Total Aged Score: {{ user.total_aged_score|default:"0"|floatformat:1 }}
         <ul>
           {% for pageview in user.pageviews.all %}
             <li>
