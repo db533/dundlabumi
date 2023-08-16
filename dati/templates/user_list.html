@@ -7,7 +7,7 @@
   <ul>
     {% for user in user_list %}
       <li>
-        <strong>{{ user.id }}</strong> - {{ user.email }} - Total Aged Score: {{ user.pageviews.aggregate(Sum('aged_score'))|dictsortreversed:"aged_score__sum"|first.1|floatformat:1 }}
+        <strong>{{ user.id }}</strong> - {{ user.email }} - Total Aged Score: {% with user.pageviews.aggregate(Sum('aged_score')) as total_score %}{{ total_score.aged_score__sum|floatformat:1 }}{% endwith %}
         <ul>
           {% for pageview in user.pageviews.all %}
             <li>
