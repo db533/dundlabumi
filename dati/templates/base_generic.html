@@ -18,14 +18,12 @@
         <ul class="sidebar-nav">
           <li><a href="{% url 'index' %}">Sākums</a></li>
           {% if user.is_authenticated %}
-            <li><strong>User: {{ user.get_username }}</strong></li>
-            Vēlamie produkti:
             <li><a href="{% url 'index' %}">Mani vēlamie produkti</a></li>
-            <li><a href="{% url 'user_list' ">User list</a></li>
-            <li><a href="{% url 'named_user_list' ">Named user list</a></li>
-          <p><li><strong><a href="{% url 'logout'%}?next={{request.path}}">Atslēgties</a></strong></li></p>
+            <li><a href="{% url 'user_list' %}">User list</a></li>
+            <li><a href="{% url 'named_user_list' %}">Named user list</a></li>
+            <p><li><strong><a href="{% url 'logout' %}?next={{ request.path }}">Atslēgties</a></strong></li></p>
           {% else %}
-            <li><a href="{% url 'login'%}?next={{request.path}}">Pieslēgties</a></li>
+            <li><a href="{% url 'login' %}?next={{ request.path }}">Pieslēgties</a></li>
           {% endif %}
         </ul>
      {% endblock %}
