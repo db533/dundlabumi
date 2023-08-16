@@ -673,4 +673,4 @@ def user_list(request):
     user_list = UserModel.objects.all()
 
     context = {'user_list': user_list}
-    return render(request, 'user-list.html', context)
+    return render(request, 'user_list.html', context)
