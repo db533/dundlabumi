@@ -21,6 +21,8 @@ from dati.views import *
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.authtoken.views import obtain_auth_token
+from django.contrib.auth import views as auth_views
+
 
 urlpatterns = [
     path('', RedirectView.as_view(url='http://dundlabumi.lv/', permanent=True)),
