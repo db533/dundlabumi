@@ -32,6 +32,7 @@ urlpatterns = [
     path('send', SendTemplateMailView.as_view(), name='send_template'),
     path('sendtest', SendTemplateMailTestView.as_view(), name='send_test_template'),
     path('login', login_view, name='login_view'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),  # Add logout view
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
     path('get-auth-token/', get_auth_token, name='get_auth_token'),
     path('user/<int:user_id>', user_details, name='user_details'),
