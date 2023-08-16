@@ -672,7 +672,6 @@ def user_details(request, user_id):
 def user_list(request):
     user_list = UserModel.objects.all()
 
-    # Sort pageviews for each user in descending order
     for user in user_list:
         user.pageviews = user.pageviews.all().order_by('-aged_score')
 
