@@ -16,7 +16,7 @@
         <p>Click_id_list: {{ click_id_list }}</p>
         <p>earliest_click_dt: {{ earliest_click_dt }}</p>
         {% for user_pageview_data in user_pageview_dict %}
-            <h2>User: {{ user_pageview_data.user }}</h2>
+            <h2>User: {{ user_pageview_data.user }}. Email: {{ user_pageview_data.user.email }}</h2>
             <ul>
                 {% for pageview in user_pageview_data.pageviews %}
                     <li>{{ pageview.view_dt }} - {{ pageview.wpid.name }}</li>
