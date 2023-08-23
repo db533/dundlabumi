@@ -718,7 +718,7 @@ def redirect_details(request):
                             'user': pageview.user_model,
                             'pageviews': []
                         }
-                    if pageview.wpid.view_dt > earliest_click_dt:  # Filter based on WPID's view_dt
+                    if pageview.view_dt > earliest_click_dt:  # Filter based on WPID's view_dt
                         user_pageview_dict[user_id]['pageviews'].append(pageview)
 
                 context = {
