@@ -735,4 +735,4 @@ def redirect_details(request):
         'form': form,
         'error_message': error_message,
     }
-    return render(request, 'your_template.html', context)
+    return render(request, 'redirects_to_pageviews.html', context)
