@@ -706,20 +706,20 @@ def redirect_details(request):
 
                 earliest_click_dt = clicks.earliest('click_dt').click_dt
 
-                user_pageviews = UserPageview.objects.filter(
-                    user_model__in=clicks.values_list('session__usermodels', flat=True),
-                ).select_related('user_model', 'wpid')
+                user_pageviews = Pageview.objects.filter(
+                    session__usermodels__in=clicks.values_list('session__usermodels', flat=True),
+                    view_dt__gt=earliest_click_dt
+                ).select_related('wpid')
 
                 user_pageview_dict = {}
                 for pageview in user_pageviews:
-                    user_id = pageview.user_model.id
+                    user_id = pageview.session.usermodels.id
                     if user_id not in user_pageview_dict:
                         user_pageview_dict[user_id] = {
-                            'user': pageview.user_model,
+                            'user': pageview.session.usermodels,
                             'pageviews': []
                         }
-                    if pageview.view_dt > earliest_click_dt:  # Filter based on WPID's view_dt
-                        user_pageview_dict[user_id]['pageviews'].append(pageview)
+                    user_pageview_dict[user_id]['pageviews'].append(pageview)
 
                 context = {
                     'redirect_code': redirect_code,
