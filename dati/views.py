@@ -5,6 +5,7 @@ from pathlib import Path
 
 from django.shortcuts import render
 from .models import *
+from .forms import *
 from rest_framework import status
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
