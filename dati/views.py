@@ -702,6 +702,7 @@ def redirect_details(request):
             try:
                 redirect = Redirect.objects.get(redirect_code=redirect_code)
                 clicks = Click.objects.filter(redirect_code=redirect)
+                click_id_list = list(clicks.values_list('id', flat=True))  # Debug code
 
                 user_pageviews = UserPageview.objects.filter(
                     user_model__in=clicks.values_list('session__usermodels', flat=True),
@@ -719,6 +720,8 @@ def redirect_details(request):
                     user_pageview_dict[user_id]['pageviews'].append(pageview)
 
                 context = {
+                    'redirect_code' : redirect_code,
+                    'click_id_list' : click_id_list
                     'redirect': redirect,
                     'user_pageview_dict': user_pageview_dict.values(),
                 }
