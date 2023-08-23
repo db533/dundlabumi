@@ -721,7 +721,7 @@ def redirect_details(request):
 
                 context = {
                     'redirect_code' : redirect_code,
-                    'click_id_list' : click_id_list
+                    'click_id_list' : click_id_list,
                     'redirect': redirect,
                     'user_pageview_dict': user_pageview_dict.values(),
                 }
