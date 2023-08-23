@@ -693,3 +693,45 @@ def named_user_list(request):
     context = {'page_obj': page_obj}
     return render(request, 'named_user_list.html', context)
 
+def redirect_details(request):
+    if request.method == 'POST':
+        form = RedirectCodeForm(request.POST)
+        if form.is_valid():
+            redirect_code = form.cleaned_data['redirect_code']
+            try:
+                redirect = Redirect.objects.get(redirect_code=redirect_code)
+                clicks = Click.objects.filter(redirect_code=redirect)
+
+                user_pageviews = UserPageview.objects.filter(
+                    user_model__in=clicks.values_list('session__usermodels', flat=True),
+                    wpid=redirect.wpid
+                ).select_related('user_model', 'wpid')
+
+                user_pageview_dict = {}
+                for pageview in user_pageviews:
+                    user_id = pageview.user_model.id
+                    if user_id not in user_pageview_dict:
+                        user_pageview_dict[user_id] = {
+                            'user': pageview.user_model,
+                            'pageviews': []
+                        }
+                    user_pageview_dict[user_id]['pageviews'].append(pageview)
+
+                context = {
+                    'redirect': redirect,
+                    'user_pageview_dict': user_pageview_dict.values(),
+                }
+                return render(request, 'your_template.html', context)
+            except Redirect.DoesNotExist:
+                error_message = 'Redirect code not found.'
+        else:
+            error_message = 'Invalid form input.'
+    else:
+        form = RedirectCodeForm()
+        error_message = None
+
+    context = {
+        'form': form,
+        'error_message': error_message,
+    }
+    return render(request, 'your_template.html', context)

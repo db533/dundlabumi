@@ -1,0 +1,24 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}<title>User List</title>{% endblock %}
+
+{% block content %}
+    <h1>Redirect Details</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Search</button>
+    </form>
+    {% if error_message %}
+        <p>{{ error_message }}</p>
+    {% else %}
+        {% for user_pageview_data in user_pageview_dict %}
+            <h2>User: {{ user_pageview_data.user }}</h2>
+            <ul>
+                {% for pageview in user_pageview_data.pageviews %}
+                    <li>{{ pageview.view_dt }} - {{ pageview.wpid.name }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

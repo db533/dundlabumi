@@ -41,6 +41,8 @@ urlpatterns = [
     path('user-list/', user_list, name='user_list'),
     path('named-user-list/', named_user_list, name='named_user_list'),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('redirect-details/', redirect_details, name='redirect_details'),
+
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
