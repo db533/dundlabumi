@@ -694,6 +694,7 @@ def named_user_list(request):
     context = {'page_obj': page_obj}
     return render(request, 'named_user_list.html', context)
 
+
 def redirect_details(request):
     if request.method == 'POST':
         form = RedirectCodeForm(request.POST)
@@ -702,11 +703,13 @@ def redirect_details(request):
             try:
                 redirect = Redirect.objects.get(redirect_code=redirect_code)
                 clicks = Click.objects.filter(redirect_code=redirect)
-                click_id_list = list(clicks.values_list('id', flat=True))  # Debug code
+                click_id_list = list(clicks.values_list('id', flat=True))
+
+                earliest_click_dt = clicks.earliest('click_dt').click_dt  # Get the earliest click_dt
 
                 user_pageviews = UserPageview.objects.filter(
                     user_model__in=clicks.values_list('session__usermodels', flat=True),
-                    wpid=redirect.wpid
+                    view_dt__gt=earliest_click_dt
                 ).select_related('user_model', 'wpid')
 
                 user_pageview_dict = {}
@@ -720,8 +723,9 @@ def redirect_details(request):
                     user_pageview_dict[user_id]['pageviews'].append(pageview)
 
                 context = {
-                    'redirect_code' : redirect_code,
-                    'click_id_list' : click_id_list,
+                    'redirect_code': redirect_code,
+                    'click_id_list': click_id_list,
+                    'earliest_click_dt' : earliest_click_dt,
                     'redirect': redirect,
                     'user_pageview_dict': user_pageview_dict.values(),
                 }
