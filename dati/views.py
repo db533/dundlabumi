@@ -713,13 +713,14 @@ def redirect_details(request):
 
                 user_pageview_dict = {}
                 for pageview in user_pageviews:
-                    user_id = pageview.session.usermodels.id
-                    if user_id not in user_pageview_dict:
-                        user_pageview_dict[user_id] = {
-                            'user': pageview.session.usermodels,
-                            'pageviews': []
-                        }
-                    user_pageview_dict[user_id]['pageviews'].append(pageview)
+                    for user_model in pageview.session.usermodels.all():  # Iterate over related usermodels
+                        user_id = user_model.id
+                        if user_id not in user_pageview_dict:
+                            user_pageview_dict[user_id] = {
+                                'user': user_model,
+                                'pageviews': []
+                            }
+                        user_pageview_dict[user_id]['pageviews'].append(pageview)
 
                 context = {
                     'redirect_code': redirect_code,
