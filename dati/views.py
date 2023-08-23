@@ -722,7 +722,7 @@ def redirect_details(request):
                     'redirect': redirect,
                     'user_pageview_dict': user_pageview_dict.values(),
                 }
-                return render(request, 'your_template.html', context)
+                return render(request, 'redirects_to_pageviews.html', context)
             except Redirect.DoesNotExist:
                 error_message = 'Redirect code not found.'
         else:
