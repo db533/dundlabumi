@@ -709,8 +709,8 @@ def redirect_details(request):
 
                 user_pageviews = UserPageview.objects.filter(
                     user_model__in=clicks.values_list('session__usermodels', flat=True),
-                    view_dt__gt=earliest_click_dt
-                ).select_related('user_model', 'wpid')
+                    page__view_dt__gt=earliest_click_dt  # Use page__view_dt instead of view_dt
+                ).select_related('user_model', 'wpid__name')  # Include the name of WPID
 
                 user_pageview_dict = {}
                 for pageview in user_pageviews:
