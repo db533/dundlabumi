@@ -705,12 +705,13 @@ def redirect_details(request):
                 clicks = Click.objects.filter(redirect_code=redirect)
                 click_id_list = list(clicks.values_list('id', flat=True))
 
-                earliest_click_dt = clicks.earliest('click_dt').click_dt  # Get the earliest click_dt
+                earliest_click_dt = clicks.earliest('click_dt').click_dt
 
                 user_pageviews = UserPageview.objects.filter(
                     user_model__in=clicks.values_list('session__usermodels', flat=True),
-                    page__view_dt__gt=earliest_click_dt  # Use page__view_dt instead of view_dt
-                ).select_related('user_model', 'wpid__name')  # Include the name of WPID
+                    wpid__name=redirect.wpid.name,  # Filter based on WPID name
+                    aged_score__gt=earliest_click_dt  # Filter based on aged_score (assuming it's the view_dt)
+                ).select_related('user_model', 'wpid__name')
 
                 user_pageview_dict = {}
                 for pageview in user_pageviews:
@@ -725,7 +726,7 @@ def redirect_details(request):
                 context = {
                     'redirect_code': redirect_code,
                     'click_id_list': click_id_list,
-                    'earliest_click_dt' : earliest_click_dt,
+                    'earliest_click_dt': earliest_click_dt,
                     'redirect': redirect,
                     'user_pageview_dict': user_pageview_dict.values(),
                 }
