@@ -707,12 +707,14 @@ def redirect_details(request):
                 earliest_click_dt = clicks.earliest('click_dt').click_dt
 
                 user_pageviews = Pageview.objects.filter(
-                    session__usermodels__in=clicks.values_list('session__usermodels', flat=True),
+                    session_id__in=clicks.values_list('session_id', flat=True),  # Filter based on session_id
                     view_dt__gt=earliest_click_dt
                 ).select_related('wpid')
 
                 user_pageview_dict = {}
+                pageview_id_list=[]
                 for pageview in user_pageviews:
+                    pageview_id_list.append(pageview.id)
                     for user_model in pageview.session.usermodels.all():  # Iterate over related usermodels
                         user_id = user_model.id
                         if user_id not in user_pageview_dict:
@@ -727,6 +729,7 @@ def redirect_details(request):
                     'click_id_list': click_id_list,
                     'earliest_click_dt': earliest_click_dt,
                     'redirect': redirect,
+                    'pageview_id_list' : pageview_id_list,
                     'user_pageview_dict': user_pageview_dict.values(),
                 }
                 return render(request, 'redirects_to_pageviews.html', context)
