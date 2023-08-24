@@ -30,7 +30,7 @@ urlpatterns = [
     path('dati/', include('dati.urls')),
     path('send/render_image2/<int:id>',render_image2, name='render_image2'),
     path('page/<int:id>',page, name='pageview'),
-    path('page2/<int:id>',page2, name='pageview2'),
+    path('non_product_page/<int:id>',non_product_page, name='non_product_pageview'),
     path('link/<int:id>',link, name='link'),
     path('send', SendTemplateMailView.as_view(), name='send_template'),
     path('sendtest', SendTemplateMailTestView.as_view(), name='send_test_template'),
