@@ -788,3 +788,55 @@ def redirect_details(request):
         'error_message': error_message,
     }
     return render(request, 'redirects_to_pageviews.html', context)
+
+def redirect_product_details(request):
+    if request.method == 'POST':
+        form = RedirectCodeForm(request.POST)
+        if form.is_valid():
+            redirect_code = form.cleaned_data['redirect_code']
+            try:
+                redirect = Redirect.objects.get(redirect_code=redirect_code)
+                clicks = Click.objects.filter(redirect_code=redirect)
+                click_id_list = list(clicks.values_list('id', flat=True))
+
+                earliest_click_dt = clicks.earliest('click_dt').click_dt
+
+                pageviews = Pageview.objects.filter(
+                    session_id__in=clicks.values_list('session_id', flat=True),  # Filter based on session_id
+                    view_dt__gt=earliest_click_dt
+                ).select_related('wpid')
+
+                wpid_pageview_dict = {}
+                pageview_id_list = []
+                for pageview in pageviews:
+                    pageview_id_list.append(pageview.id)
+                    wpid = pageview.wpid_id
+                    if wpid not in wpid_pageview_dict:
+                        wpid_pageview_dict[wpid] = {
+                            'wpid': pageview.wpid,
+                            'pageviews': []
+                        }
+                    wpid_pageview_dict[wpid]['pageviews'].append(pageview)
+
+                context = {
+                    'redirect_code': redirect_code,
+                    'click_id_list': click_id_list,
+                    'earliest_click_dt': earliest_click_dt,
+                    'redirect': redirect,
+                    'pageview_id_list': pageview_id_list,
+                    'wpid_pageview_dict': wpid_pageview_dict.values(),
+                }
+                return render(request, 'redirects_to_pageviews.html', context)
+            except Redirect.DoesNotExist:
+                error_message = 'Redirect code not found.'
+        else:
+            error_message = 'Invalid form input.'
+    else:
+        form = RedirectCodeForm()
+        error_message = None
+
+    context = {
+        'form': form,
+        'error_message': error_message,
+    }
+    return render(request, 'redirects_to_pageviews_by_product.html', context)

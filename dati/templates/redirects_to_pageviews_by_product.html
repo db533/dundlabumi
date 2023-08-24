@@ -1,0 +1,28 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}<title>Redirect Details</title>{% endblock %}
+
+{% block content %}
+    <h1>Redirect Details</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Search</button>
+    </form>
+    {% if error_message %}
+        <p>{{ error_message }}</p>
+    {% else %}
+        <p>Redirect code: {{ redirect_code }}. Target_url: {{ redirect.target_url }}</p>
+        <p>Click_id_list: {{ click_id_list }}</p>
+        <p>Pageview_id_list: {{ pageview_id_list }}</p>
+        <p>Earliest click datetime: {{ earliest_click_dt }}</p>
+        {% for wpid_pageview_data in wpid_pageview_dict %}
+            <h2>Wpid: {{ wpid_pageview_data.wpid }}. Name: {{ wpid_pageview_data.wpid.name }}</h2>
+            <ul>
+                {% for pageview in wpid_pageview_data.pageviews %}
+                    <li>{{ pageview.view_dt }} - {{ pageview.wpid.name }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

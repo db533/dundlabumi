@@ -43,6 +43,7 @@ urlpatterns = [
     path('named-user-list/', named_user_list, name='named_user_list'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('redirect-details/', redirect_details, name='redirect_details'),
+    path('redirect-product-details/', redirect_product_details, name='redirect_product_details'),
 
 ]
 
