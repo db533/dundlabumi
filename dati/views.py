@@ -476,41 +476,44 @@ def page(request, id):
         #UserPageview.objects.create(user_model=usermodel,wpid=wpid, aged_score=1, id=new_id)
         UserPageview.objects.create(user_model=usermodel, wpid=wpid, aged_score=1)
 
-    # Retrieve all the tags associated with the given WPID instance
-    wpid_tags = wpid.tags.all()
+    # Check if the wpid refers to a product. If so, update UserTags.
+    if wpid.post_type == 'product':
+        # Retrieve all the tags associated with the given WPID instance
+        wpid_tags = wpid.tags.all()
 
-    # Iterate over each tag instance
-    for tag in wpid_tags:
-        # Check if an instance of UserTag exists for this tag and UserModel
-        LogEntry.objects.create(key='Tag name:', value=tag)
-        user_tag = UserTag.objects.filter(tag=tag, user_model=usermodel)
-        #LogEntry.objects.create(key='len(user_tag):', value=len(user_tag))
-        created = False
-        if len(user_tag) == 0:
-            #LogEntry.objects.create(key='len(user_tag) == 0', value='')
-            #if UserTag.objects.exists():
-            #    max_id = UserTag.objects.aggregate(max_id=Max('id'))['max_id']
-            #    new_id = max_id + 1
-            #else:
-            #    new_id = 1
-            #user_tag = UserTag.objects.create(tag=tag, user_model=usermodel, aged_score=1, id=new_id)
-            user_tag = UserTag.objects.create(tag=tag, user_model=usermodel, aged_score=1)
-            created = True
-            user_tag.save()
-        else:
-            #LogEntry.objects.create(key='len(user_tag) != 0', value='')
-            user_tag = user_tag[0]
-        #user_tag, created = UserTag.objects.get_or_create(tag=tag, user_model=usermodel, defaults={'aged_score': 1})
+        # Iterate over each tag instance
+        for tag in wpid_tags:
+            # Check if an instance of UserTag exists for this tag and UserModel
+            LogEntry.objects.create(key='Tag name:', value=tag)
+            user_tag = UserTag.objects.filter(tag=tag, user_model=usermodel)
+            #LogEntry.objects.create(key='len(user_tag):', value=len(user_tag))
+            created = False
+            if len(user_tag) == 0:
+                #LogEntry.objects.create(key='len(user_tag) == 0', value='')
+                #if UserTag.objects.exists():
+                #    max_id = UserTag.objects.aggregate(max_id=Max('id'))['max_id']
+                #    new_id = max_id + 1
+                #else:
+                #    new_id = 1
+                #user_tag = UserTag.objects.create(tag=tag, user_model=usermodel, aged_score=1, id=new_id)
+                user_tag = UserTag.objects.create(tag=tag, user_model=usermodel, aged_score=1)
+                created = True
+                user_tag.save()
+            else:
+                #LogEntry.objects.create(key='len(user_tag) != 0', value='')
+                user_tag = user_tag[0]
+            #user_tag, created = UserTag.objects.get_or_create(tag=tag, user_model=usermodel, defaults={'aged_score': 1})
 
-        # Increment the aged_score if the instance already exists
-        if not created:
-            user_tag.aged_score += 1
-            user_tag.save()
-            LogEntry.objects.create(key='Existing UserTag incremented. tag_id:', value=user_tag.tag_id)
-            LogEntry.objects.create(key='New aged_score:', value=user_tag.aged_score)
-        else:
-            LogEntry.objects.create(key='New UserTag registered. ID:', value=user_tag.id)
-
+            # Increment the aged_score if the instance already exists
+            if not created:
+                user_tag.aged_score += 1
+                user_tag.save()
+                LogEntry.objects.create(key='Existing UserTag incremented. tag_id:', value=user_tag.tag_id)
+                LogEntry.objects.create(key='New aged_score:', value=user_tag.aged_score)
+            else:
+                LogEntry.objects.create(key='New UserTag registered. ID:', value=user_tag.id)
+    else:
+        LogEntry.objects.create(key='Skipping UserTag registration as WPID is not a product', value=0)
     return response
 
 def page2(request, id):
@@ -518,8 +521,6 @@ def page2(request, id):
     temp_message=""
     session, usermodel = get_session_and_usermodel2(request)
     print('usermodel.id:', usermodel.id)
-    print('Page view v2. ID passed to page2() function:',id)
-    LogEntry.objects.create(key='Page view v2. ID passed to page2() function:', value=id)
 
     image = Image.new('RGB', (1, 1), (255, 255, 255))
     response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
