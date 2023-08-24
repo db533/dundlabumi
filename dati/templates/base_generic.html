@@ -21,6 +21,7 @@
             <li><a href="{% url 'index' %}">Mani vēlamie produkti</a></li>
             <li><a href="{% url 'user_list' %}">User list</a></li>
             <li><a href="{% url 'named_user_list' %}">Named user list</a></li>
+            <li><a href="{% url 'redirect_details' %}">Pageviews after redirect</a></li>
             <p><li><strong><a href="{% url 'logout' %}?next={{ request.path }}">Atslēgties</a></strong></li></p>
           {% else %}
             <li><a href="{% url 'login' %}?next={{ request.path }}">Pieslēgties</a></li>

@@ -513,6 +513,82 @@ def page(request, id):
 
     return response
 
+def page2(request, id):
+    # Get the session from the received request
+    temp_message=""
+    session, usermodel = get_session_and_usermodel2(request)
+    print('usermodel.id:', usermodel.id)
+    LogEntry.objects.create(key='Page view v2. ID passed to page2() function:', value=id)
+
+    image = Image.new('RGB', (1, 1), (255, 255, 255))
+    response = HttpResponse(content_type="image/png", status=status.HTTP_200_OK)
+    image.save(response, "PNG")
+
+    wpid=WPID.objects.get(wp_id=id)
+    pageview = Pageview.objects.create(wpid=wpid, session=session, temp_message=temp_message)
+    LogEntry.objects.create(key='Page view registered. ID:', value=pageview.id)
+    LogEntry.objects.create(key='Viewed page title:', value=wpid.name)
+    LogEntry.objects.create(key='Page view occured. WPID:', value=id)
+    # Now increment the User / Pageview relevance score.
+    existing_userpageviews = UserPageview.objects.filter(user_model=usermodel, wpid=wpid)
+    if existing_userpageviews.exists():
+        # Already have a relevance score for this page for a specific session, so it has been clicked in the last 2 years from this session_key
+        user_page = existing_userpageviews.first()
+        # Increment aged score by 1 as new pageview today.
+        aged_score = user_page.aged_score
+        user_page.aged_score = aged_score + 1
+        if user_page.user_model is None:
+            if usermodel is not None:
+                # Session known, no username associated with the session, but we know the user.
+                user_page.user_model = usermodel
+        user_page.save()
+    else:
+        # No relevance score for a usermodel or this session_key so link not clicked in last 2 years.
+        #if UserPageview.objects.exists():
+        #    max_id = UserPageview.objects.aggregate(max_id=Max('id'))['max_id']
+            #new_id = max_id + 1
+        #else:
+            #new_id = 1
+        #UserPageview.objects.create(user_model=usermodel,wpid=wpid, aged_score=1, id=new_id)
+        UserPageview.objects.create(user_model=usermodel, wpid=wpid, aged_score=1)
+
+    # Retrieve all the tags associated with the given WPID instance
+    wpid_tags = wpid.tags.all()
+
+    # Iterate over each tag instance
+    for tag in wpid_tags:
+        # Check if an instance of UserTag exists for this tag and UserModel
+        LogEntry.objects.create(key='Tag name:', value=tag)
+        user_tag = UserTag.objects.filter(tag=tag, user_model=usermodel)
+        #LogEntry.objects.create(key='len(user_tag):', value=len(user_tag))
+        created = False
+        if len(user_tag) == 0:
+            #LogEntry.objects.create(key='len(user_tag) == 0', value='')
+            #if UserTag.objects.exists():
+            #    max_id = UserTag.objects.aggregate(max_id=Max('id'))['max_id']
+            #    new_id = max_id + 1
+            #else:
+            #    new_id = 1
+            #user_tag = UserTag.objects.create(tag=tag, user_model=usermodel, aged_score=1, id=new_id)
+            user_tag = UserTag.objects.create(tag=tag, user_model=usermodel, aged_score=1)
+            created = True
+            user_tag.save()
+        else:
+            #LogEntry.objects.create(key='len(user_tag) != 0', value='')
+            user_tag = user_tag[0]
+        #user_tag, created = UserTag.objects.get_or_create(tag=tag, user_model=usermodel, defaults={'aged_score': 1})
+
+        # Increment the aged_score if the instance already exists
+        if not created:
+            user_tag.aged_score += 1
+            user_tag.save()
+            LogEntry.objects.create(key='Existing UserTag incremented. tag_id:', value=user_tag.tag_id)
+            LogEntry.objects.create(key='New aged_score:', value=user_tag.aged_score)
+        else:
+            LogEntry.objects.create(key='New UserTag registered. ID:', value=user_tag.id)
+
+    return response
+
 from django.shortcuts import redirect
 
 def link(request, id):
