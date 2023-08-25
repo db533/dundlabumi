@@ -16,7 +16,6 @@
         <p>Click_id_list: {{ click_id_list }}</p>
         <p>Pageview_id_list: {{ pageview_id_list }}</p>
         <p>Earliest click datetime: {{ earliest_click_dt }}</p>
-        <p>wpid_pageview_dict: {{ wpid_pageview_dict }}</p>
         {% for wpid_pageview_data in wpid_pageview_dict %}
             <h2>Wpid: {{ wpid_pageview_data.wpid }}. Name: {{ wpid_pageview_data.wpid.name }}</h2>
             <ul>
