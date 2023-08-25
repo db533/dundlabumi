@@ -826,7 +826,7 @@ def redirect_product_details(request):
                     'pageview_id_list': pageview_id_list,
                     'wpid_pageview_dict': wpid_pageview_dict.values(),
                 }
-                return render(request, 'redirects_to_pageviews.html', context)
+                return render(request, 'redirects_to_pageviews_by_product.html', context)
             except Redirect.DoesNotExist:
                 error_message = 'Redirect code not found.'
         else:
