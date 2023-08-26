@@ -75,6 +75,16 @@ class OutboundEmail(models.Model):
 class Tag(models.Model):
     tag_id = models.IntegerField(default=0, help_text='The ID of the tag in Woocommerce.', primary_key=True)
     tag_name = models.CharField(max_length=120, default="", help_text='Tag name.')
+    TAG_TYPES = (
+        ('0', 'Manufacturer'),
+        ('1', 'Model'),
+        ('2', 'Garment type'),
+        ('3', 'Colour'),
+        ('4', 'Other'),
+    )
+    tag_type = models.CharField(max_length=1, choices=TAG_TYPES,
+                               help_text='The tag type for this tag.',
+                               verbose_name=('Tag type'))
 
     def __str__(self):
         return self.tag_name
