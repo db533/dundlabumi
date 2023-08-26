@@ -20,7 +20,7 @@
             <h2>Wpid: {{ wpid_pageview_data.wpid }}</h2>
             <ul>
                 {% for pageview in wpid_pageview_data.pageviews %}
-                    <li>{{ pageview.view_dt }} - User ID: {{ pageview.session.usermodel.id }} - Email: {{ pageview.session.usermodel.email }}</li>
+                    <li>{{ pageview.view_dt }} - User ID: {{ pageview.session.usermodel.first.id }} - Email: {{ pageview.session.usermodel.first.email }}</li>
                 {% endfor %}
             </ul>
         {% endfor %}
