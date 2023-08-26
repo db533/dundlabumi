@@ -17,10 +17,10 @@
         <p>Pageview_id_list: {{ pageview_id_list }}</p>
         <p>Earliest click datetime: {{ earliest_click_dt }}</p>
         {% for wpid_pageview_data in wpid_pageview_dict %}
-            <h2>Wpid: {{ wpid_pageview_data.wpid }}. Name: {{ wpid_pageview_data.wpid.name }}</h2>
+            <h2>Wpid: {{ wpid_pageview_data.wpid }}</h2>
             <ul>
                 {% for pageview in wpid_pageview_data.pageviews %}
-                    <li>{{ pageview.view_dt }} - {{ pageview.wpid.name }}</li>
+                    <li>{{ pageview.view_dt }} -  - User ID: {{ pageview.wpid.user.id }} - Email: {{ pageview.wpid.user.email }}</li>
                 {% endfor %}
             </ul>
         {% endfor %}
