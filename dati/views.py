@@ -10,7 +10,7 @@ from rest_framework import status
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth.models import User
-from django.db.models import Sum, Max
+from django.db.models import Sum, Max, Count
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime, timedelta
@@ -88,7 +88,6 @@ def login_view(request):
 
 from django.urls import reverse
 import re
-from django.db.models import Max
 
 #html_detail, redirect_instances = render_with_redirect(mail_template, set(), email, context_data, target_user)
 
@@ -840,3 +839,27 @@ def redirect_product_details(request):
         'error_message': error_message,
     }
     return render(request, 'redirects_to_pageviews_by_product.html', context)
+
+def tag_bar_chart_data(request):
+    tag_types = dict(Tag.TAG_TYPES)
+    data = []
+
+    for tag_type_value, tag_type_display in tag_types.items():
+        tag_type_data = {
+            'label': tag_type_display,
+            'data': [],
+            'backgroundColor': 'rgba(75, 192, 192, 0.2)',  # Customize the color
+            'borderColor': 'rgba(75, 192, 192, 1)',        # Customize the color
+            'borderWidth': 1
+        }
+
+        tag_names = Tag.objects.filter(tag_type=tag_type_value).values_list('tag_name', flat=True)
+        pageview_counts = Pageview.objects.filter(wpid__tags__tag_type=tag_type_value).annotate(tag_count=Count('wpid__tags')).values_list('tag_count', flat=True)
+
+        for tag_name in tag_names:
+            count = pageview_counts[tag_names.index(tag_name)] if tag_name in tag_names else 0
+            tag_type_data['data'].append(count)
+
+        data.append(tag_type_data)
+
+    return JsonResponse(data, safe=False)

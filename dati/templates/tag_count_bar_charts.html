@@ -1,0 +1,34 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}<title>Tag Type Bar Graphs</title>{% endblock %}
+
+{% block content %}
+    <h1>Tag Type Bar Graphs</h1>
+    <div>
+        <canvas id="barChart" width="400" height="200"></canvas>
+    </div>
+
+    <script>
+        // Fetch the data from the view
+        fetch('/bar_chart_data/')
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById('barChart').getContext('2d');
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.map(item => item.label),
+                        datasets: data
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            });
+    </script>
+{% endblock %}
