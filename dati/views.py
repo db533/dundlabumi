@@ -840,7 +840,7 @@ def redirect_product_details(request):
     }
     return render(request, 'redirects_to_pageviews_by_product.html', context)
 
-def tag_bar_chart_data(request):
+def bar_chart_data(request):
     tag_types = dict(Tag.TAG_TYPES)
     data = []
 
@@ -854,10 +854,13 @@ def tag_bar_chart_data(request):
         }
 
         tag_names = Tag.objects.filter(tag_type=tag_type_value).values_list('tag_name', flat=True)
-        pageview_counts = Pageview.objects.filter(wpid__tags__tag_type=tag_type_value).annotate(tag_count=Count('wpid__tags')).values_list('tag_count', flat=True)
+        pageview_counts = Pageview.objects.filter(wpid__tags__tag_type=tag_type_value).annotate(tag_count=Count('wpid__tags')).values('tag_count', 'wpid__tags__tag_name')
+
+        # Create a dictionary to map tag names to their counts
+        count_mapping = {item['wpid__tags__tag_name']: item['tag_count'] for item in pageview_counts}
 
         for tag_name in tag_names:
-            count = pageview_counts[tag_names.index(tag_name)] if tag_name in tag_names else 0
+            count = count_mapping.get(tag_name, 0)
             tag_type_data['data'].append(count)
 
         data.append(tag_type_data)
