@@ -1,33 +1,38 @@
-{% extends 'base_generic.html' %}
+<!-- user_data.html -->
+<title>Tag Type Bar Graphs</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    #myChart {
+      margin: 0 auto;
+      width: 900px;
+      height: 300px;
+    }
+  </style>
+<h1>Tag Type Bar Graphs</h1>
+<div>
+  <canvas id="tag_views_by_type" width="400" height="200"></canvas>
+</div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Fetch the data from the view
+    fetch('/bar_chart_data/')
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('tag_views_by_type').getContext('2d');
 
-{% block title %}<title>Tag Type Bar Graphs</title>{% endblock %}
-
-{% block content %}
-    <h1>Tag Type Bar Graphs</h1>
-    <div>
-        <canvas id="barChart" ></canvas>
-    </div>
-    <script>
-        // Fetch the data from the view
-        fetch('/bar_chart_data/')
-            .then(response => response.json())
-            .then(data => {
-                const ctx = document.getElementById('barChart').getContext('2d');
-
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: data.map(item => item.label),
-                        datasets: data
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(item => item.label),
+                    datasets: data
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
                         }
                     }
-                });
+                }
             });
-    </script>
-{% endblock %}
+        });
+  </script>
