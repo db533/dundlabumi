@@ -12,27 +12,25 @@
 <div>
   <canvas id="tag_views_by_type" width="400" height="200"></canvas>
 </div>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     // Fetch the data from the view
     fetch('/bar_chart_data/')
-        .then(response => response.json())
-        .then(data => {
-            const ctx = document.getElementById('tag_views_by_type').getContext('2d');
-
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: data.map(item => item.label),
-                    datasets: data
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
+      .then(response => response.json())
+      .then(data => {
+        const ctx = document.getElementById('tag_views_by_type').getContext('2d');
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: data.map(item => item.label),
+              datasets: data
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
                 }
-            });
-        });
+              }
+            }
+          });
+      });
   </script>
