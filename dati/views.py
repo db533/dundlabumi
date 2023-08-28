@@ -840,57 +840,29 @@ def redirect_product_details(request):
     }
     return render(request, 'redirects_to_pageviews_by_product.html', context)
 
-
 def tag_count_bar_charts(request):
     tag_types = Tag.TAG_TYPES
-    tag_names = [tag_type[1] for tag_type in tag_types]
+    tag_counts_by_type = []
 
-    manufacturer_labels = []
-    manufacturer_values = []
+    for tag_type in tag_types:
+        tag_type_name = tag_type[1]
+        tag_type_tags = Tag.objects.filter(tag_type=tag_type[0])
+        tag_names = [tag.tag_name for tag in tag_type_tags]
+        tag_type_counts = []
 
-    model_labels = []
-    model_values = []
+        for tag_name in tag_names:
+            pageview_count = Pageview.objects.filter(wpid__tags__tag_name=tag_name).count()
+            tag_type_counts.append(pageview_count)
 
-    garment_type_labels = []
-    garment_type_values = []
-
-    color_labels = []
-    color_values = []
-
-    other_labels = []
-    other_values = []
-
-    for tag_name in tag_names:
-        manufacturer_count = Tag.objects.filter(tag_type='0', tag_name=tag_name).count()
-        model_count = Tag.objects.filter(tag_type='1', tag_name=tag_name).count()
-        garment_type_count = Tag.objects.filter(tag_type='2', tag_name=tag_name).count()
-        color_count = Tag.objects.filter(tag_type='3', tag_name=tag_name).count()
-        other_count = Tag.objects.filter(tag_type='4', tag_name=tag_name).count()
-
-        manufacturer_labels.append(tag_name)
-        manufacturer_values.append(manufacturer_count)
-
-        model_labels.append(tag_name)
-        model_values.append(model_count)
-
-        garment_type_labels.append(tag_name)
-        garment_type_values.append(garment_type_count)
-
-        color_labels.append(tag_name)
-        color_values.append(color_count)
-
-        other_labels.append(tag_name)
-        other_values.append(other_count)
+        tag_counts_by_type.append({
+            'label': tag_type_name,
+            'data': tag_type_counts,
+            'backgroundColor': 'rgba(75, 192, 192, 0.2)',
+            'borderColor': 'rgba(75, 192, 192, 1)',
+            'borderWidth': 1
+        })
 
     return render(request, 'tag_count_bar_charts.html', {
-        'manufacturer_labels': manufacturer_labels,
-        'manufacturer_values': manufacturer_values,
-        'model_labels': model_labels,
-        'model_values': model_values,
-        'garment_type_labels': garment_type_labels,
-        'garment_type_values': garment_type_values,
-        'color_labels': color_labels,
-        'color_values': color_values,
-        'other_labels': other_labels,
-        'other_values': other_values,
+        'tag_counts_by_type': tag_counts_by_type,
+        'tag_names': tag_names
     })

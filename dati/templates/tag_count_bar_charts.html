@@ -4,21 +4,23 @@
 
 {% block content %}
     <h1>Tag Count Bar Charts</h1>
+    {% for tag_type in tag_counts_by_type %}
     <div>
-        <canvas id="manufacturer_chart" width="400" height="200"></canvas>
+        <h3>{{ tag_type.label }}</h3>
+        <canvas id="{{ tag_type.label|slugify }}_chart" width="400" height="200"></canvas>
     </div>
     <script>
-        var manufacturer_labels = {{ manufacturer_labels|safe }};
-        var manufacturer_values = {{ manufacturer_values|safe }};
+        var {{ tag_type.label|slugify }}_labels = {{ tag_names|safe }};
+        var {{ tag_type.label|slugify }}_values = {{ tag_type.data|safe }};
 
-        var manufacturerCtx = document.getElementById('manufacturer_chart').getContext('2d');
-        new Chart(manufacturerCtx, {
+        var {{ tag_type.label|slugify }}_Ctx = document.getElementById('{{ tag_type.label|slugify }}_chart').getContext('2d');
+        new Chart({{ tag_type.label|slugify }}_Ctx, {
             type: 'bar',
             data: {
-                labels: manufacturer_labels,
+                labels: {{ tag_type.label|slugify }}_labels,
                 datasets: [{
-                    label: 'Manufacturer Count',
-                    data: manufacturer_values,
+                    label: '{{ tag_type.label }} Count',
+                    data: {{ tag_type.label|slugify }}_values,
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1
@@ -33,5 +35,5 @@
             }
         });
     </script>
-    <!-- Repeat the script blocks for other charts here using the respective variables -->
+    {% endfor %}
 {% endblock %}
