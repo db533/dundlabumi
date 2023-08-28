@@ -10,36 +10,28 @@
         <canvas id="{{ tag_type.label|slugify }}_chart" width="400" height="200"></canvas>
     </div>
     <script>
-        var {{ tag_type.label|slugify }}_data = {{ tag_type.data|safe }};
-
-        var {{ tag_type.label|slugify }}_labels = [];
-        var {{ tag_type.label|slugify }}_values = [];
-
-        {{ tag_type.label|slugify }}_data.forEach(function(item) {
-            {{ tag_type.label|slugify }}_labels.push(item.label);
-            {{ tag_type.label|slugify }}_values.push(item.data);
-        });
-
-        var {{ tag_type.label|slugify }}_Ctx = document.getElementById('{{ tag_type.label|slugify }}_chart').getContext('2d');
-        new Chart({{ tag_type.label|slugify }}_Ctx, {
-            type: 'bar',
-            data: {
-                labels: {{ tag_type.label|slugify }}_labels,
-                datasets: [{
-                    label: '{{ tag_type.label }} Count',
-                    data: {{ tag_type.label|slugify }}_values,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+        document.addEventListener('DOMContentLoaded', function() {
+            var {{ tag_type.label|slugify }}_Ctx = document.getElementById('{{ tag_type.label|slugify }}_chart').getContext('2d');
+            new Chart({{ tag_type.label|slugify }}_Ctx, {
+                type: 'bar',
+                data: {
+                    labels: {% for item in tag_type.data %}"{{ item.label }}",{% endfor %}
+                    datasets: [{
+                        label: '{{ tag_type.label }} Count',
+                        data: {% for item in tag_type.data %}{{ item.data }},{% endfor %}
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
+            });
         });
     </script>
     {% endfor %}
