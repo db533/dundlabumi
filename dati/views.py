@@ -840,29 +840,57 @@ def redirect_product_details(request):
     }
     return render(request, 'redirects_to_pageviews_by_product.html', context)
 
-def bar_chart_data(request):
-    tag_types = dict(Tag.TAG_TYPES)
-    data = []
 
-    for tag_type_value, tag_type_display in tag_types.items():
-        tag_type_data = {
-            'label': tag_type_display,
-            'data': [],
-            'backgroundColor': 'rgba(75, 192, 192, 0.2)',  # Customize the color
-            'borderColor': 'rgba(75, 192, 192, 1)',        # Customize the color
-            'borderWidth': 1
-        }
+def tag_count_bar_charts(request):
+    tag_types = Tag.TAG_TYPES
+    tag_names = [tag_type[1] for tag_type in tag_types]
 
-        tag_names = Tag.objects.filter(tag_type=tag_type_value).values_list('tag_name', flat=True)
-        pageview_counts = Pageview.objects.filter(wpid__tags__tag_type=tag_type_value).annotate(tag_count=Count('wpid__tags')).values('tag_count', 'wpid__tags__tag_name')
+    manufacturer_labels = []
+    manufacturer_values = []
 
-        # Create a dictionary to map tag names to their counts
-        count_mapping = {item['wpid__tags__tag_name']: item['tag_count'] for item in pageview_counts}
+    model_labels = []
+    model_values = []
 
-        for tag_name in tag_names:
-            count = count_mapping.get(tag_name, 0)
-            tag_type_data['data'].append(count)
+    garment_type_labels = []
+    garment_type_values = []
 
-        data.append(tag_type_data)
+    color_labels = []
+    color_values = []
 
-    return JsonResponse(data, safe=False)
+    other_labels = []
+    other_values = []
+
+    for tag_name in tag_names:
+        manufacturer_count = Tag.objects.filter(tag_type='0', tag_name=tag_name).count()
+        model_count = Tag.objects.filter(tag_type='1', tag_name=tag_name).count()
+        garment_type_count = Tag.objects.filter(tag_type='2', tag_name=tag_name).count()
+        color_count = Tag.objects.filter(tag_type='3', tag_name=tag_name).count()
+        other_count = Tag.objects.filter(tag_type='4', tag_name=tag_name).count()
+
+        manufacturer_labels.append(tag_name)
+        manufacturer_values.append(manufacturer_count)
+
+        model_labels.append(tag_name)
+        model_values.append(model_count)
+
+        garment_type_labels.append(tag_name)
+        garment_type_values.append(garment_type_count)
+
+        color_labels.append(tag_name)
+        color_values.append(color_count)
+
+        other_labels.append(tag_name)
+        other_values.append(other_count)
+
+    return render(request, 'tag_count_bar_charts.html', {
+        'manufacturer_labels': manufacturer_labels,
+        'manufacturer_values': manufacturer_values,
+        'model_labels': model_labels,
+        'model_values': model_values,
+        'garment_type_labels': garment_type_labels,
+        'garment_type_values': garment_type_values,
+        'color_labels': color_labels,
+        'color_values': color_values,
+        'other_labels': other_labels,
+        'other_values': other_values,
+    })

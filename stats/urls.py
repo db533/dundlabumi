@@ -44,7 +44,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('redirect-details/', redirect_details, name='redirect_details'),
     path('redirect-product-details/', redirect_product_details, name='redirect_product_details'),
-    path('tag_bar_charts/', bar_chart_data, name='tag_bar_chart_data'),
+    path('tag_bar_charts/', tag_count_bar_charts, name='tag_bar_chart_data'),
 
 ]
 

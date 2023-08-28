@@ -1,36 +1,37 @@
-<!-- user_data.html -->
-<title>Tag Type Bar Graphs</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    #myChart {
-      margin: 0 auto;
-      width: 900px;
-      height: 300px;
-    }
-  </style>
-<h1>Tag Type Bar Graphs</h1>
-<div>
-  <canvas id="tag_views_by_type" width="400" height="200"></canvas>
-</div>
-  <script>
-    // Fetch the data from the view
-    fetch('/bar_chart_data/')
-      .then(response => response.json())
-      .then(data => {
-        const ctx = document.getElementById('tag_views_by_type').getContext('2d');
-          new Chart(ctx, {
+{% extends 'base_generic.html' %}
+
+{% block title %}<title>Tag Count Bar Charts</title>{% endblock %}
+
+{% block content %}
+    <h1>Tag Count Bar Charts</h1>
+    <div>
+        <canvas id="manufacturer_chart" width="400" height="200"></canvas>
+    </div>
+    <script>
+        var manufacturer_labels = {{ manufacturer_labels|safe }};
+        var manufacturer_values = {{ manufacturer_values|safe }};
+
+        var manufacturerCtx = document.getElementById('manufacturer_chart').getContext('2d');
+        new Chart(manufacturerCtx, {
             type: 'bar',
             data: {
-              labels: data.map(item => item.label),
-              datasets: data
+                labels: manufacturer_labels,
+                datasets: [{
+                    label: 'Manufacturer Count',
+                    data: manufacturer_values,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
             },
             options: {
-              scales: {
-                y: {
-                  beginAtZero: true
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
-              }
             }
-          });
-      });
-  </script>
+        });
+    </script>
+    <!-- Repeat the script blocks for other charts here using the respective variables -->
+{% endblock %}
