@@ -857,6 +857,10 @@ def tag_count_bar_charts(request):
         sorted_tags = sorted(zip(tag_names, tag_type_counts), key=lambda x: x[1], reverse=True)
         sorted_tag_names, sorted_tag_counts = zip(*sorted_tags)
 
+        # Convert to lists
+        sorted_tag_names = list(sorted_tag_names)
+        sorted_tag_counts = list(sorted_tag_counts)
+
         tag_counts_by_type.append({
             'label': tag_type_name,
             'data': sorted_tag_counts,  # This is the list of pageview counts
