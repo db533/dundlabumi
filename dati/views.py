@@ -859,6 +859,10 @@ def tag_count_bar_charts(request):
         sorted_tag_counts = sorted(tag_type_counts, key=lambda x: x[1], reverse=True)
         sorted_tag_names, sorted_tag_percentages = zip(*sorted_tag_counts)
 
+        # Convert to lists
+        sorted_tag_names = list(sorted_tag_names)
+        sorted_tag_counts = list(sorted_tag_counts)
+
         tag_counts_by_type.append({
             'label': tag_type_name,
             'data': sorted_tag_percentages,

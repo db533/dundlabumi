@@ -15,8 +15,22 @@
     var backgroundColor, borderColor;
 
     // Set colors based on tag type
-    // (color setting logic here...)
-
+    if ('{{ tag_type.label }}' === 'Manufacturer') {
+        backgroundColor = 'rgba(75, 192, 192, 0.2)';
+        borderColor = 'rgba(75, 192, 192, 1)';
+    } else if ('{{ tag_type.label }}' === 'Model') {
+        backgroundColor = 'rgba(255, 99, 132, 0.2)';
+        borderColor = 'rgba(255, 99, 132, 1)';
+    } else if ('{{ tag_type.label }}' === 'Garment type') {
+        backgroundColor = 'rgba(255, 165, 0, 0.2)';  // Orange color
+        borderColor = 'rgba(255, 165, 0, 1)';  // Orange color
+    } else if ('{{ tag_type.label }}' === 'Colour') {
+        backgroundColor = 'rgba(153, 102, 255, 0.2)';
+        borderColor = 'rgba(153, 102, 255, 1)';
+    } else if ('{{ tag_type.label }}' === 'Other') {
+        backgroundColor = 'rgba(128, 0, 128, 0.2)';
+        borderColor = 'rgba(128, 0, 128, 1)';
+    }
     var {{ tag_type.label_slugified }}_Ctx = document.getElementById('{{ tag_type.label_slugified }}_chart').getContext('2d');
     new Chart({{ tag_type.label_slugified }}_Ctx, {
         type: 'bar',
