@@ -10,7 +10,7 @@
         <canvas id="{{ tag_type.label|slugify }}_chart" width="400" height="200"></canvas>
     </div>
     <script>
-        var {{ tag_type.label|slugify }}_labels = {{ tag_names|safe }};
+        var {{ tag_type.label|slugify }}_labels = {{ tag_type.data|safe }};
         var {{ tag_type.label|slugify }}_values = {{ tag_type.data|safe }};
 
         var {{ tag_type.label|slugify }}_Ctx = document.getElementById('{{ tag_type.label|slugify }}_chart').getContext('2d');
