@@ -840,28 +840,36 @@ def redirect_product_details(request):
     }
     return render(request, 'redirects_to_pageviews_by_product.html', context)
 
-for tag_type in tag_types:
-    tag_type_name = tag_type[1]
-    tag_type_tags = Tag.objects.filter(tag_type=tag_type[0])
-    tag_names = [tag.tag_name for tag in tag_type_tags]
-    tag_type_counts = []
+def tag_count_bar_charts(request):
+    tag_types = Tag.TAG_TYPES
+    tag_counts_by_type = []
 
-    for tag_name in tag_names:
-        pageview_count = Pageview.objects.filter(wpid__tags__tag_name=tag_name).count()
-        tag_type_counts.append(pageview_count)
+    for tag_type in tag_types:
+        tag_type_name = tag_type[1]
+        tag_type_tags = Tag.objects.filter(tag_type=tag_type[0])
+        tag_names = [tag.tag_name for tag in tag_type_tags]
+        tag_type_counts = []
 
-    sorted_tags = sorted(zip(tag_names, tag_type_counts), key=lambda x: x[1], reverse=True)
-    sorted_tag_names, sorted_tag_counts = zip(*sorted_tags)
+        for tag_name in tag_names:
+            pageview_count = Pageview.objects.filter(wpid__tags__tag_name=tag_name).count()
+            tag_type_counts.append(pageview_count)
 
-    # Replace spaces with underscores
-    tag_type_label_slugified = tag_type_name.replace(' ', '_')
+        sorted_tags = sorted(zip(tag_names, tag_type_counts), key=lambda x: x[1], reverse=True)
+        sorted_tag_names, sorted_tag_counts = zip(*sorted_tags)
 
-    tag_counts_by_type.append({
-        'label': tag_type_name,
-        'data': sorted_tag_counts,
-        'labels': sorted_tag_names,
-        'backgroundColor': 'rgba(75, 192, 192, 0.2)',
-        'borderColor': 'rgba(75, 192, 192, 1)',
-        'borderWidth': 1,
-        'label_slugified': tag_type_label_slugified  # Add this line
+        # Replace spaces with underscores
+        tag_type_label_slugified = tag_type_name.replace(' ', '_')
+
+        tag_counts_by_type.append({
+            'label': tag_type_name,
+            'data': sorted_tag_counts,
+            'labels': sorted_tag_names,
+            'backgroundColor': 'rgba(75, 192, 192, 0.2)',
+            'borderColor': 'rgba(75, 192, 192, 1)',
+            'borderWidth': 1,
+            'label_slugified': tag_type_label_slugified  # Add this line
+        })
+
+    return render(request, 'tag_count_bar_charts.html', {
+        'tag_counts_by_type': tag_counts_by_type
     })
