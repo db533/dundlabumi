@@ -844,6 +844,8 @@ def tag_count_bar_charts(request):
     tag_types = Tag.TAG_TYPES
     tag_counts_by_type = []
 
+    total_pageviews = Pageview.objects.count()
+
     for tag_type in tag_types:
         tag_type_name = tag_type[1]
         tag_type_tags = Tag.objects.filter(tag_type=tag_type[0])
@@ -852,26 +854,18 @@ def tag_count_bar_charts(request):
 
         for tag_name in tag_names:
             pageview_count = Pageview.objects.filter(wpid__tags__tag_name=tag_name).count()
-            tag_type_counts.append(pageview_count)
+            tag_type_counts.append((tag_name, (pageview_count / total_pageviews) * 100))
 
-        sorted_tags = sorted(zip(tag_names, tag_type_counts), key=lambda x: x[1], reverse=True)
-        sorted_tag_names, sorted_tag_counts = zip(*sorted_tags)
-
-        # Replace spaces with underscores
-        tag_type_label_slugified = tag_type_name.replace(' ', '_')
-
-        # Convert to lists
-        sorted_tag_names = list(sorted_tag_names)
-        sorted_tag_counts = list(sorted_tag_counts)
+        sorted_tag_counts = sorted(tag_type_counts, key=lambda x: x[1], reverse=True)
+        sorted_tag_names, sorted_tag_percentages = zip(*sorted_tag_counts)
 
         tag_counts_by_type.append({
             'label': tag_type_name,
-            'data': sorted_tag_counts,
+            'data': sorted_tag_percentages,
             'labels': sorted_tag_names,
             'backgroundColor': 'rgba(75, 192, 192, 0.2)',
             'borderColor': 'rgba(75, 192, 192, 1)',
-            'borderWidth': 1,
-            'label_slugified': tag_type_label_slugified  # Add this line
+            'borderWidth': 1
         })
 
     return render(request, 'tag_count_bar_charts.html', {
