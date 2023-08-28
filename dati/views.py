@@ -860,6 +860,10 @@ def tag_count_bar_charts(request):
         # Replace spaces with underscores
         tag_type_label_slugified = tag_type_name.replace(' ', '_')
 
+        # Convert to lists
+        sorted_tag_names = list(sorted_tag_names)
+        sorted_tag_counts = list(sorted_tag_counts)
+
         tag_counts_by_type.append({
             'label': tag_type_name,
             'data': sorted_tag_counts,
