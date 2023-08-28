@@ -4,6 +4,7 @@
 
 {% block content %}
     <h1>Tag Count Bar Charts</h1>
+    <p>tag_counts_by_type: {{ tag_counts_by_type }}</p>
     {% for tag_type in tag_counts_by_type %}
     <div>
         <h3>{{ tag_type.label }}</h3>
