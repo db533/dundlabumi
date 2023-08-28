@@ -1,40 +1,32 @@
-{% extends 'base_generic.html' %}
+{% for tag_type in tag_counts_by_type %}
+<div>
+    <h3>{{ tag_type.label }}</h3>
+    <canvas id="{{ tag_type.label_slugified }}_chart" width="400" height="200"></canvas>
+</div>
+<script>
+    var {{ tag_type.label_slugified }}_labels = {{ tag_type.labels|safe }};
+    var {{ tag_type.label_slugified }}_values = {{ tag_type.data|safe }};
 
-{% block title %}<title>Tag Count Bar Charts</title>{% endblock %}
-
-{% block content %}
-    <h1>Tag Count Bar Charts</h1>
-    <p>tag_counts_by_type: {{ tag_counts_by_type }}</p>
-    {% for tag_type in tag_counts_by_type %}
-    <div>
-        <h3>{{ tag_type.label }}</h3>
-        <canvas id="{{ tag_type.label|slugify }}_chart" width="400" height="200"></canvas>
-    </div>
-    <script>
-        var {{ tag_type.label|slugify }}_labels = {{ tag_type.labels|safe }};
-        var {{ tag_type.label|slugify }}_values = {{ tag_type.data|safe }};
-
-        var {{ tag_type.label|slugify }}_Ctx = document.getElementById('{{ tag_type.label|slugify }}_chart').getContext('2d');
-        new Chart({{ tag_type.label|slugify }}_Ctx, {
-            type: 'bar',
-            data: {
-                labels: {{ tag_type.label|slugify }}_labels,
-                datasets: [{
-                    label: '{{ tag_type.label }} Count',
-                    data: {{ tag_type.label|slugify }}_values,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+    var {{ tag_type.label_slugified }}_Ctx = document.getElementById('{{ tag_type.label_slugified }}_chart').getContext('2d');
+    new Chart({{ tag_type.label_slugified }}_Ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ tag_type.label_slugified }}_labels,
+            datasets: [{
+                label: '{{ tag_type.label }} Count',
+                data: {{ tag_type.label_slugified }}_values,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
                 }
             }
-        });
-    </script>
-    {% endfor %}
-{% endblock %}
+        }
+    });
+</script>
+{% endfor %}
