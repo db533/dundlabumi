@@ -859,8 +859,8 @@ def tag_count_bar_charts(request):
 
         tag_counts_by_type.append({
             'label': tag_type_name,
-            'data': sorted_tag_counts,
-            'labels': sorted_tag_names,
+            'data': sorted_tag_counts,  # This is the list of pageview counts
+            'labels': sorted_tag_names,  # This is the list of tag names
             'backgroundColor': 'rgba(75, 192, 192, 0.2)',
             'borderColor': 'rgba(75, 192, 192, 1)',
             'borderWidth': 1
