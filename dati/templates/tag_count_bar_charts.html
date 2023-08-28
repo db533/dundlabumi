@@ -4,70 +4,56 @@
 
 {% block content %}
     <h1>Tag Count Bar Charts</h1>
-    <p>tag_counts_by_type: {{ tag_counts_by_type }}</p>
-{% for tag_type in tag_counts_by_type %}
-<div>
-    <h3>{{ tag_type.label }}</h3>
-    <canvas id="{{ tag_type.label_slugified }}_chart" width="400" height="200"></canvas>
-</div>
-<script>
-    var {{ tag_type.label_slugified }}_labels = {{ tag_type.labels|safe }};
-    var {{ tag_type.label_slugified }}_percentages = {{ tag_type.data|safe }};
-    var backgroundColor, borderColor;
+    {% for tag_type in tag_counts_by_type %}
+    <div>
+        <h3>{{ tag_type.label }}</h3>
+        <canvas id="{{ tag_type.label|slugify }}_chart" width="400" height="200"></canvas>
+    </div>
+    <script>
+        var _labels = {{ tag_type.labels|safe }};
+        var _values = {{ tag_type.data|safe }};
 
-    // Set colors based on tag type
-    if ('{{ tag_type.label }}' === 'Manufacturer') {
-        backgroundColor = 'rgba(75, 192, 192, 0.2)';
-        borderColor = 'rgba(75, 192, 192, 1)';
-    } else if ('{{ tag_type.label }}' === 'Model') {
-        backgroundColor = 'rgba(255, 99, 132, 0.2)';
-        borderColor = 'rgba(255, 99, 132, 1)';
-    } else if ('{{ tag_type.label }}' === 'Garment type') {
-        backgroundColor = 'rgba(255, 165, 0, 0.2)';  // Orange color
-        borderColor = 'rgba(255, 165, 0, 1)';  // Orange color
-    } else if ('{{ tag_type.label }}' === 'Colour') {
-        backgroundColor = 'rgba(153, 102, 255, 0.2)';
-        borderColor = 'rgba(153, 102, 255, 1)';
-    } else if ('{{ tag_type.label }}' === 'Other') {
-        backgroundColor = 'rgba(128, 0, 128, 0.2)';
-        borderColor = 'rgba(128, 0, 128, 1)';
-    }
+        var backgroundColor, borderColor;
 
-    var {{ tag_type.label_slugified }}_Ctx = document.getElementById('{{ tag_type.label_slugified }}_chart').getContext('2d');
-    new Chart({{ tag_type.label_slugified }}_Ctx, {
-        type: 'bar',
-        data: {
-            labels: {{ tag_type.label_slugified }}_labels,
-            datasets: [{
-                label: '{{ tag_type.label }} Percentage',
-                data: {{ tag_type.label_slugified }}_percentages,
-                backgroundColor: backgroundColor,
-                borderColor: borderColor,
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100  // Ensure y-axis shows up to 100%
-                }
+        // Set colors based on tag type
+        if ('{{ tag_type.label }}' === 'Manufacturer') {
+            backgroundColor = 'rgba(75, 192, 192, 0.2)';
+            borderColor = 'rgba(75, 192, 192, 1)';
+        } else if ('{{ tag_type.label }}' === 'Model') {
+            backgroundColor = 'rgba(255, 99, 132, 0.2)';
+            borderColor = 'rgba(255, 99, 132, 1)';
+        } else if ('{{ tag_type.label }}' === 'Garment type') {
+            backgroundColor = 'rgba(255, 165, 0, 0.2)';  // Orange color
+            borderColor = 'rgba(255, 165, 0, 1)';  // Orange color
+        } else if ('{{ tag_type.label }}' === 'Colour') {
+            backgroundColor = 'rgba(153, 102, 255, 0.2)';
+            borderColor = 'rgba(153, 102, 255, 1)';
+        } else if ('{{ tag_type.label }}' === 'Other') {
+            backgroundColor = 'rgba(128, 0, 128, 0.2)';
+            borderColor = 'rgba(128, 0, 128, 1)';
+        }
+
+        var _Ctx = document.getElementById('{{ tag_type.label|slugify }}_chart').getContext('2d');
+        new Chart(_Ctx, {
+            type: 'bar',
+            data: {
+                labels: _labels,
+                datasets: [{
+                    label: '{{ tag_type.label }} %',
+                    data: _values,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    borderWidth: 1
+                }]
             },
-            plugins: {
-                legend: {
-                    display: false
-                },
-                datalabels: {
-                    anchor: 'end',
-                    align: 'top',
-                    formatter: (value) => {
-                        return value + '%';
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
             }
-        }
-    });
-</script>
-{% endfor %}
-
+        });
+    </script>
+    {% endfor %}
 {% endblock %}
