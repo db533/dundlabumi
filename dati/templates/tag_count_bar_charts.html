@@ -4,15 +4,16 @@
 
 {% block content %}
     <h1>Tag Count Bar Charts</h1>
-    {% for tag_type in tag_counts_by_type %}
+    <p>tag_counts_by_type: {{ tag_counts_by_type }}</p>
+{% for tag_type in tag_counts_by_type %}
 <div>
     <h3>{{ tag_type.label }}</h3>
     <canvas id="{{ tag_type.label_slugified }}_chart" width="400" height="200"></canvas>
 </div>
 <script>
     var {{ tag_type.label_slugified }}_labels = {{ tag_type.labels|safe }};
-    var {{ tag_type.label_slugified }}_percentages = {{ tag_type.data|safe }};
-    var backgroundColor, borderColor;
+    var {{ tag_type.label_slugified }}_values = {{ tag_type.data|safe }};
+   var backgroundColor, borderColor;
 
     // Set colors based on tag type
     if ('{{ tag_type.label }}' === 'Manufacturer') {
@@ -37,8 +38,8 @@
         data: {
             labels: {{ tag_type.label_slugified }}_labels,
             datasets: [{
-                label: '{{ tag_type.label }} Percentage',
-                data: {{ tag_type.label_slugified }}_percentages,
+                label: '{{ tag_type.label }} %',
+                data: {{ tag_type.label_slugified }}_values,
                 backgroundColor: backgroundColor,
                 borderColor: borderColor,
                 borderWidth: 1
@@ -47,20 +48,7 @@
         options: {
             scales: {
                 y: {
-                    beginAtZero: true,
-                    max: 100  // Ensure y-axis shows up to 100%
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                },
-                datalabels: {
-                    anchor: 'end',
-                    align: 'top',
-                    formatter: (value) => {
-                        return value + '%';
-                    }
+                    beginAtZero: true
                 }
             }
         }
