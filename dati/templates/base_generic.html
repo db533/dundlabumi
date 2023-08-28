@@ -24,6 +24,7 @@
             <li><a href="{% url 'named_user_list' %}">Named user list</a></li>
             <li><a href="{% url 'redirect_details' %}">Pageviews after redirect by user</a></li>
             <li><a href="{% url 'redirect_product_details' %}">Pageviews after redirect by product</a></li>
+            <li><a href="{% url 'tag_count_bar_charts' %}">Tag popularity - all categories</a></li>
             <p><li><strong><a href="{% url 'logout' %}?next={{ request.path }}">Atslēgties</a></strong></li></p>
           {% else %}
             <li><a href="{% url 'login' %}?next={{ request.path }}">Pieslēgties</a></li>
