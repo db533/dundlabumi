@@ -165,26 +165,26 @@ class SendTemplateMailView(APIView):
 
         email = OutboundEmail.objects.create(recipient=target_user_email, subject=subject, status=False,
                                              usermodel=target_user, template_name=template_name)
-        LogEntry.objects.create(key="email", value=email)
+        #LogEntry.objects.create(key="email", value=email)
         context_data = dict()
         context_data["image_url"] = request.build_absolute_uri(("send/render_image2/")) + str(email.id)
-        LogEntry.objects.create(key='context_data["image_url"]', value=context_data["image_url"])
+        #LogEntry.objects.create(key='context_data["image_url"]', value=context_data["image_url"])
         context_data["cid"] = email.id
-        LogEntry.objects.create(key='context_data["cid"]', value=context_data["cid"])
+        #LogEntry.objects.create(key='context_data["cid"]', value=context_data["cid"])
         context_data["url_is"] = context_data["image_url"]
-        LogEntry.objects.create(key='context_data["url_is"]', value=context_data["url_is"])
+        #LogEntry.objects.create(key='context_data["url_is"]', value=context_data["url_is"])
 
         # render the email body with redirect links
         html_detail_redirects, redirect_instances = render_with_redirect(mail_template, set(), email, context_data, target_user)
         #LogEntry.objects.create(key='html_detail', value=html_detail)
-        LogEntry.objects.create(key='redirect_instances', value=redirect_instances)
+        #LogEntry.objects.create(key='redirect_instances', value=redirect_instances)
 
         email.body=html_detail_redirects
         email.save()
 
         msg = EmailMultiAlternatives(subject, html_detail_redirects, from_email, to)
         msg.content_subtype = 'html'
-        LogEntry.objects.create(key='msg', value=msg)
+        #LogEntry.objects.create(key='msg', value=msg)
         msg_result = msg.send()
         LogEntry.objects.create(key='msg_result', value=msg_result)
 
