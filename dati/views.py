@@ -890,20 +890,21 @@ def type_and_colour_bar_charts(request):
         # Filter only Color tags (tag_type='3')
         color_tags = Tag.objects.filter(tag_type='3')
 
+        # Get the total pageviews for this garment type
+        total_pageviews_garment_type = Pageview.objects.filter(wpid__in=wpids_with_garment_type).count()
+
         pageview_counts = Pageview.objects.filter(
             wpid__in=wpids_with_garment_type,
             wpid__tags__in=color_tags  # Filter only Color tags
         ).values('wpid__tags__tag_name') \
             .annotate(count=Count('wpid__tags__tag_name'))
 
-        total_pageviews = Pageview.objects.count()
-
         tag_type_counts = []
 
         for pageview_count in pageview_counts:
             color_name = pageview_count['wpid__tags__tag_name']
             pageview_color_count = pageview_count['count']
-            percentage = (pageview_color_count / total_pageviews) * 100
+            percentage = (pageview_color_count / total_pageviews_garment_type) * 100
             tag_type_counts.append((color_name, percentage))
 
         if tag_type_counts:
@@ -926,3 +927,4 @@ def type_and_colour_bar_charts(request):
     return render(request, 'type_and_colour_bar_charts.html', {
         'tag_counts_by_garment_type': tag_counts_by_garment_type
     })
+
