@@ -887,8 +887,13 @@ def type_and_colour_bar_charts(request):
         garment_type_name = garment_type.tag_name
         wpids_with_garment_type = WPID.objects.filter(tags=garment_type)
 
-        pageview_counts = Pageview.objects.filter(wpid__in=wpids_with_garment_type) \
-            .values('wpid__tags__tag_name') \
+        # Filter only Color tags (tag_type='3')
+        color_tags = Tag.objects.filter(tag_type='3')
+
+        pageview_counts = Pageview.objects.filter(
+            wpid__in=wpids_with_garment_type,
+            wpid__tags__in=color_tags  # Filter only Color tags
+        ).values('wpid__tags__tag_name') \
             .annotate(count=Count('wpid__tags__tag_name'))
 
         total_pageviews = Pageview.objects.count()
