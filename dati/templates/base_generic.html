@@ -25,6 +25,7 @@
             <li><a href="{% url 'redirect_details' %}">Pageviews after redirect by user</a></li>
             <li><a href="{% url 'redirect_product_details' %}">Pageviews after redirect by product</a></li>
             <li><a href="{% url 'tag_bar_chart_data' %}">Tag popularity - all categories</a></li>
+            <li><a href="{% url 'type_and_colour_bar_charts' %}">Colour popularity - by garment type</a></li>
             <p><li><strong><a href="{% url 'logout' %}?next={{ request.path }}">Atslēgties</a></strong></li></p>
           {% else %}
             <li><a href="{% url 'login' %}?next={{ request.path }}">Pieslēgties</a></li>
