@@ -1,0 +1,44 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}<title>Colour Count by Garment Type Bar Charts</title>{% endblock %}
+
+{% block content %}
+    <h1>Colour Count by Garment Type Bar Charts</h1>
+    {% for garment_type_data in tag_counts_by_garment_type %}
+    <div>
+        <h3>{{ garment_type_data.garment_type_name }}</h3>
+        <canvas id="{{ garment_type_data.garment_type_name|slugify }}_chart" width="400" height="200"></canvas>
+    </div>
+    <script>
+        var _labels = {{ garment_type_data.labels|safe }};
+        var _values = {{ garment_type_data.data|safe }};
+
+        var backgroundColor, borderColor;
+
+        backgroundColor = 'rgba(75, 192, 192, 0.2)';
+        borderColor = 'rgba(75, 192, 192, 1)';
+
+        var _Ctx = document.getElementById('{{ garment_type_data.garment_type_name|slugify }}_chart').getContext('2d');
+        new Chart(_Ctx, {
+            type: 'bar',
+            data: {
+                labels: _labels,
+                datasets: [{
+                    label: '{{ garment_type_data.garment_type_name }} %',
+                    data: _values,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+    {% endfor %}
+{% endblock %}

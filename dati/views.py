@@ -875,3 +875,48 @@ def tag_count_bar_charts(request):
     return render(request, 'tag_count_bar_charts.html', {
         'tag_counts_by_type': tag_counts_by_type
     })
+
+from django.db.models import Count, F
+
+def type_and_colour_bar_charts(request):
+    garment_types = Tag.objects.filter(tag_type='2')  # Filter by Garment type
+
+    tag_counts_by_garment_type = []
+
+    for garment_type in garment_types:
+        garment_type_name = garment_type.tag_name
+        wpids_with_garment_type = WPID.objects.filter(tags=garment_type)
+
+        pageview_counts = Pageview.objects.filter(wpid__in=wpids_with_garment_type) \
+            .values('wpid__tags__tag_name') \
+            .annotate(count=Count('wpid__tags__tag_name'))
+
+        total_pageviews = Pageview.objects.count()
+
+        tag_type_counts = []
+
+        for pageview_count in pageview_counts:
+            color_name = pageview_count['wpid__tags__tag_name']
+            pageview_color_count = pageview_count['count']
+            percentage = (pageview_color_count / total_pageviews) * 100
+            tag_type_counts.append((color_name, percentage))
+
+        sorted_tag_counts = sorted(tag_type_counts, key=lambda x: x[1], reverse=True)
+        sorted_tag_names, sorted_tag_percentages = zip(*sorted_tag_counts)
+
+        # Convert to lists
+        sorted_tag_names = list(sorted_tag_names)
+        sorted_tag_percentages = list(sorted_tag_percentages)
+
+        tag_counts_by_garment_type.append({
+            'garment_type_name': garment_type_name,
+            'data': sorted_tag_percentages,
+            'labels': sorted_tag_names,
+            'backgroundColor': 'rgba(75, 192, 192, 0.2)',
+            'borderColor': 'rgba(75, 192, 192, 1)',
+            'borderWidth': 1
+        })
+
+    return render(request, 'type_and_colour_bar_charts.html', {
+        'tag_counts_by_garment_type': tag_counts_by_garment_type
+    })
