@@ -906,21 +906,22 @@ def type_and_colour_bar_charts(request):
             percentage = (pageview_color_count / total_pageviews) * 100
             tag_type_counts.append((color_name, percentage))
 
-        sorted_tag_counts = sorted(tag_type_counts, key=lambda x: x[1], reverse=True)
-        sorted_tag_names, sorted_tag_percentages = zip(*sorted_tag_counts)
+        if tag_type_counts:
+            sorted_tag_counts = sorted(tag_type_counts, key=lambda x: x[1], reverse=True)
+            sorted_tag_names, sorted_tag_percentages = zip(*sorted_tag_counts)
 
-        # Convert to lists
-        sorted_tag_names = list(sorted_tag_names)
-        sorted_tag_percentages = list(sorted_tag_percentages)
+            # Convert to lists
+            sorted_tag_names = list(sorted_tag_names)
+            sorted_tag_percentages = list(sorted_tag_percentages)
 
-        tag_counts_by_garment_type.append({
-            'garment_type_name': garment_type_name,
-            'data': sorted_tag_percentages,
-            'labels': sorted_tag_names,
-            'backgroundColor': 'rgba(75, 192, 192, 0.2)',
-            'borderColor': 'rgba(75, 192, 192, 1)',
-            'borderWidth': 1
-        })
+            tag_counts_by_garment_type.append({
+                'garment_type_name': garment_type_name,
+                'data': sorted_tag_percentages,
+                'labels': sorted_tag_names,
+                'backgroundColor': 'rgba(75, 192, 192, 0.2)',
+                'borderColor': 'rgba(75, 192, 192, 1)',
+                'borderWidth': 1
+            })
 
     return render(request, 'type_and_colour_bar_charts.html', {
         'tag_counts_by_garment_type': tag_counts_by_garment_type
