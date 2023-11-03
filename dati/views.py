@@ -925,6 +925,9 @@ def type_and_colour_bar_charts(request):
                 'total_pageviews': total_pageviews_garment_type  # Add total pageviews to the data
             })
 
+    # Sort the list in descending order of total_pageviews
+    tag_counts_by_garment_type.sort(key=lambda x: x['total_pageviews'], reverse=True)
+
     return render(request, 'type_and_colour_bar_charts.html', {
         'tag_counts_by_garment_type': tag_counts_by_garment_type
     })
