@@ -3,7 +3,8 @@
 {% block title %}<title>Colour Count by Garment Type Bar Charts</title>{% endblock %}
 
 {% block content %}
-    <h1>Colour Count by Garment Type Bar Charts</h1>
+    <h1>Produktu veidu skatījumi, sadalījums pa krāsām</h1>
+    <p>Šai skatās tiek atspoguļoti dundlabumi.lv skatījumi sadalīti pa produktu veidiem. Katram produktu veidam tad uzrādīts sadalījums pa produktu krāsām. Tātad cik % no jaku skatījumiem bija zilām jakām, cik mint jakām u.t.t.</p>
     {% for garment_type_data in tag_counts_by_garment_type %}
     <div>
         <h3>{{ garment_type_data.garment_type_name }} - {{ garment_type_data.total_pageviews }} skatījumi</h3>
