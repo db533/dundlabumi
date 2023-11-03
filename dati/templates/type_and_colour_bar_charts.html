@@ -6,7 +6,7 @@
     <h1>Colour Count by Garment Type Bar Charts</h1>
     {% for garment_type_data in tag_counts_by_garment_type %}
     <div>
-        <h3>{{ garment_type_data.garment_type_name }}</h3>
+        <h3>{{ garment_type_data.garment_type_name }} - {{ garment_type_data.total_pageviews }} skatījumi</h3>
         <canvas id="{{ garment_type_data.garment_type_name|slugify }}_chart" width="400" height="200"></canvas>
     </div>
     <script>

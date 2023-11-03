@@ -921,7 +921,8 @@ def type_and_colour_bar_charts(request):
                 'labels': sorted_tag_names,
                 'backgroundColor': 'rgba(75, 192, 192, 0.2)',
                 'borderColor': 'rgba(75, 192, 192, 1)',
-                'borderWidth': 1
+                'borderWidth': 1,
+                'total_pageviews': total_pageviews_garment_type  # Add total pageviews to the data
             })
 
     return render(request, 'type_and_colour_bar_charts.html', {
