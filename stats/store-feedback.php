@@ -93,10 +93,14 @@ function store_feedback_reviews($sort = 'rating') {
         $recommend = get_user_meta($user->ID, 'store_recommend', true);
         $thumbs_icon = $recommend === 'yes' ? 'https://dundlabumi.lv/wp-content/uploads/2023/11/thumbs-up.png' : 'https://dundlabumi.lv/wp-content/uploads/2023/11/thumbs-down.png'; // Replace with actual image URLs
 
+        // Set the desired height and width for the image
+        $image_height = '30'; // height in pixels
+        $image_width = '30'; // width in pixels
+
         echo "<div class='review'>";
         echo "<p>Novērtējums: $rating no 5</p>";
         echo "<p>Atsauksme: $review</p>";
-        echo "<img src='$thumbs_icon' alt='$recommend'>";
+        echo "<img src='$thumbs_icon' alt='$recommend' height='$image_height' width='$image_width'>";
         echo "</div>";
     }
 }
@@ -120,8 +124,8 @@ function store_feedback_summary() {
     $average_rating = $count > 0 ? round($total_rating / $count, 1) : 0;
     $recommend_percentage = $count > 0 ? round(($total_recommend / $count) * 100) : 0;
 
-    echo "<p>Average Rating: $average_rating / 5</p>";
-    echo "<p>Recommend: $recommend_percentage% of reviewers recommend this store</p>";
+    echo "<p>Vidējais veikala vērtējums: $average_rating no 5</p>";
+    echo "<p>Cik % no recenzijām ieteiktu mūsu veikalu saviem draugiem: $recommend_percentage%</p>";
 }
 
 // Shortcode to display the summary and reviews
