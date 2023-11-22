@@ -41,27 +41,27 @@ function store_feedback_form_shortcode() {
         }
         ?>
         <form method="post">
-            <h3>Rate Our Store</h3>
+            <h4>Novērtē mūsu veikalu</h4>
             <div>
                 <!-- Star rating input -->
                 <?php for ($i = 1; $i <= 5; $i++): ?>
                     <input type="radio" name="rating" value="<?php echo $i; ?>"> <?php echo $i; ?>
                 <?php endfor; ?>
             </div>
-            <h3>Would you recommend our store to friends?</h3>
+            <h4>Vai Jūs ieteiktu mūsu veikalu saviem draugiem?</h4>
             <div>
-                <label><input type="radio" name="recommend" value="yes"> Yes</label>
-                <label><input type="radio" name="recommend" value="no"> No</label>
+                <label><input type="radio" name="recommend" value="jā"> Yes</label>
+                <label><input type="radio" name="recommend" value="nē"> No</label>
             </div>
-            <h3>Review</h3>
+            <h3>Atsauksme</h3>
             <textarea name="review"></textarea>
             <div>
-                <button type="submit">Submit Feedback</button>
+                <button type="submit">Pievienot atsauksmi</button>
             </div>
         </form>
         <?php
     } else {
-        echo '<p>Please log in to provide feedback.</p>';
+        echo '<p>Lai iesniegt recenziju, jāpieslēdzas vietnei.</p>';
         // Optional: Display a login form or link
     }
     return ob_get_clean();
@@ -91,11 +91,11 @@ function store_feedback_reviews($sort = 'rating') {
         $rating = get_user_meta($user->ID, 'store_rating', true);
         $review = get_user_meta($user->ID, 'store_review', true);
         $recommend = get_user_meta($user->ID, 'store_recommend', true);
-        $thumbs_icon = $recommend === 'yes' ? 'thumbs-up.png' : 'thumbs-down.png'; // Replace with actual image URLs
+        $thumbs_icon = $recommend === 'yes' ? 'https://dundlabumi.lv/wp-content/uploads/2023/11/thumbs-up.png' : 'https://dundlabumi.lv/wp-content/uploads/2023/11/thumbs-down.png'; // Replace with actual image URLs
 
         echo "<div class='review'>";
-        echo "<p>Rating: $rating / 5</p>";
-        echo "<p>Review: $review</p>";
+        echo "<p>Novērtējums: $rating no 5</p>";
+        echo "<p>Atsauksme: $review</p>";
         echo "<img src='$thumbs_icon' alt='$recommend'>";
         echo "</div>";
     }
