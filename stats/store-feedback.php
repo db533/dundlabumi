@@ -78,20 +78,6 @@ function store_feedback_reviews($sort = 'rating') {
     }
 }
 
-// Shortcode to display the summary and reviews
-function store_feedback_display_shortcode($atts) {
-    ob_start();
-
-    $atts = shortcode_atts( array(
-        'sort' => 'rating',
-    ), $atts );
-
-    store_feedback_summary();
-    store_feedback_reviews($atts['sort']);
-
-    return ob_get_clean();
-}
-
 // Function to calculate and display the summary of reviews
 function store_feedback_summary() {
     $users = get_users();
