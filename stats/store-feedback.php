@@ -87,23 +87,33 @@ function store_feedback_reviews($sort = 'rating') {
     );
     $users = get_users($args);
 
+// Start of the table
+    echo "<table class='reviews-table'>";
+    echo "<tr><th>User</th><th>Rating</th><th>Review</th><th>Recommend</th></tr>";
+
     foreach ($users as $user) {
         $rating = get_user_meta($user->ID, 'store_rating', true);
         $review = get_user_meta($user->ID, 'store_review', true);
         $recommend = get_user_meta($user->ID, 'store_recommend', true);
         $thumbs_icon = $recommend === 'yes' ? 'https://dundlabumi.lv/wp-content/uploads/2023/11/thumbs-up.png' : 'https://dundlabumi.lv/wp-content/uploads/2023/11/thumbs-down.png'; // Replace with actual image URLs
 
+        // Get user avatar
+        $avatar = get_avatar_url($user->ID);
+
         // Set the desired height and width for the image
         $image_height = '30'; // height in pixels
         $image_width = '30'; // width in pixels
 
-        echo "<div class='review'>";
-        echo "<p>Novērtējums: $rating no 5</p>";
-        echo "<p>Atsauksme: $review</p>";
-        echo "<img src='$thumbs_icon' alt='$recommend' height='$image_height' width='$image_width'>";
-        echo "</div>";
+        // Table row for each review
+        echo "<tr>";
+        echo "<td><img src='$avatar' alt='User Avatar' height='50' width='50'></td>"; // Displaying the user's avatar
+        echo "<td>$rating / 5</td>";
+        echo "<td>$review</td>";
+        echo "<td><img src='$thumbs_icon' alt='$recommend' height='$image_height' width='$image_width'></td>";
+        echo "</tr>";
     }
-}
+
+    echo "</table>"; // End of the table}
 
 // Function to calculate and display the summary of reviews
 function store_feedback_summary() {
